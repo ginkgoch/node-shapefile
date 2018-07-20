@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "ginkgoch-stream-reader": "^1.0.0",
+    "lodash": "^4.17.10",
     "shapefile": "^0.6.6"
   },
   "devDependencies": {

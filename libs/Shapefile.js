@@ -19,7 +19,7 @@ module.exports = class Shapefile {
                 this.isOpened = true;
                 res();
             });
-        })
+        });
     }
 
     async close() {
@@ -77,7 +77,6 @@ module.exports = class Shapefile {
         const id = buffer.readInt32BE(0);
         const length = buffer.readInt32BE(4) * 2;
         const type = buffer.readInt32LE();
-
 
         return { id, length, type, position };
     }
