@@ -1,6 +1,6 @@
 module.exports = function (buffer) {
     const type = buffer.readInt32LE(0);
-    if (type !== 1) throw 'Not point shapefile.';
+    if (type !== 1) throw 'Not point record.';
 
     const x = buffer.readDoubleLE(4);
     const y = buffer.readDoubleLE(12);

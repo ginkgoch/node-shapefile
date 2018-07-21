@@ -23,17 +23,12 @@ module.exports = class Shapefile {
 
     async close() {
         if (this.isOpened) {
-            return await new Promise((res, rej) => {
-                fs.close(this._fd, err => {
-                    if (err) rej(err);
-
-                    this._fd = undefined;
-                    this._header = undefined;
-                    this._recordParser = undefined;
-                    this.isOpened = false;
-                    res();
-                });
-            });
+            fs.closeSync(this._fd);
+            this._fd = undefined;
+            this._header = undefined;
+            this._recordParser = undefined;
+            this.isOpened = false;
+            return await Promise.resolve();
         }
     }
 
