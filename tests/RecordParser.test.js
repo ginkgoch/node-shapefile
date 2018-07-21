@@ -11,6 +11,9 @@ describe('parser tests', () => {
 
         let nullShapeParser = Parser.getParser(ShapefileType.nullShape);
         expect(nullShapeParser).not.toBeNull();
+
+        let polyLineParser = Parser.getParser(ShapefileType.polyLine);
+        expect(polyLineParser).not.toBeNull();
     });
 
     test('get unsupported parser test', () => {
@@ -46,6 +49,6 @@ describe('parser tests', () => {
         function parsePointBuffer() {
             Parser.getParser(ShapefileType.point)(buffer);
         }
-        expect(parsePointBuffer).toThrow(/Not point record/);
+        expect(parsePointBuffer).toThrow(/Not a point record/);
     });
 });

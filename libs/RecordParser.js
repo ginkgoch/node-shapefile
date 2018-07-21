@@ -15,9 +15,11 @@ module.exports = class Parser {
                 return Parser._getParser('nullShape');
             case 1:
                 return Parser._getParser('point');
+            case 3:
+                return Parser._getParser('polyLine');
         }
 
-        throw 'Unsupported shapefile type.';
+        throw `Unsupported shapefile type<${shapefileType}>.`;
     }
 
     /**
