@@ -11,11 +11,15 @@ module.exports = class Parser {
         Parser.constructor.parsers = _.defaults(Parser.constructor.parsers, { });
 
         switch(shapefileType) {
+            case 0:
+                return Parser._getParser('nullShape');
             case 1:
-                return Parser._getOrSetDefault(Parser.constructor.parsers, 'point', require('./parsers/parsePoint'));
+                return Parser._getParser('point');
+            case 3:
+                return Parser._getParser('polyLine');
         }
 
-        throw 'Unsupported shapefile type.';
+        throw `Unsupported shapefile type<${shapefileType}>.`;
     }
 
     /**
@@ -36,5 +40,9 @@ module.exports = class Parser {
         }
 
         return _.get(object, path);
+    }
+
+    static _getParser(type) {
+        return Parser._getOrSetDefault(Parser.constructor.parsers, type, require(`./parsers/parse${_.capitalize(type)}`));
     }
 }

@@ -15,7 +15,6 @@ module.exports = class Shapefile {
 
         this._fd = fs.openSync(this.filePath, 'r');
         this.isOpened = true;
-
         this._header = await this._readHeader();
         this._recordParser = RecordParser.getParser(this._header.fileType);
         await Promise.resolve();
@@ -23,17 +22,12 @@ module.exports = class Shapefile {
 
     async close() {
         if (this.isOpened) {
-            return await new Promise((res, rej) => {
-                fs.close(this._fd, err => {
-                    if (err) rej(err);
-
-                    this._fd = undefined;
-                    this._header = undefined;
-                    this._recordParser = undefined;
-                    this.isOpened = false;
-                    res();
-                });
-            });
+            fs.closeSync(this._fd);
+            this._fd = undefined;
+            this._header = undefined;
+            this._recordParser = undefined;
+            this.isOpened = false;
+            return await Promise.resolve();
         }
     }
 

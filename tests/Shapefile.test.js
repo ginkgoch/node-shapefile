@@ -1,8 +1,9 @@
+require('./JestEx');
 const path = require('path');
 const Shapefile = require('../libs/Shapefile');
 const citiesPath = path.join(__dirname, 'data/cities_e.shp');
 
-describe('shapefile tests', () => {
+describe('shapefile general tests', () => {
     test('open close test 1', async () => {
         const citiesShp = new Shapefile(citiesPath);
 
@@ -37,7 +38,7 @@ describe('shapefile tests', () => {
         try {
             await citiesShp.open();
             const header = await citiesShp._readHeader();
-            
+
             expect(header.fileCode).toBe(9994);
             expect(header.fileLength).toBe(533024);
             expect(header.version).toBe(1000);
@@ -46,55 +47,76 @@ describe('shapefile tests', () => {
             expect(header.envelope.miny).toBeCloseTo(19.0972, 4);
             expect(header.envelope.maxx).toBeCloseTo(173.2376, 4);
             expect(header.envelope.maxy).toBeCloseTo(70.6355, 4);
-        }
-        finally {
-            await citiesShp.close();
-        }
-    });
-
-    test('read header test 2', async () => {
-        try{ 
-            const citiesShp = new Shapefile(citiesPath);
-            await citiesShp._readHeader();
-        }
-        catch(err) {
-            expect(err).toMatch(/Shapefile not opened/);
-        }
-    });
-
-    test('read records test 1', async () => {
-        const citiesShp = new Shapefile(citiesPath);
-
-        try {
-            await citiesShp.open();
-
-            const records = await citiesShp._readRecords();
-            const mock = jest.fn();
-            let record = null;
-            while((record = await records.next()) && !record.done) {
-                mock();
-            }
-
-            expect(mock.mock.calls.length).toBe(19033);
         } finally {
             await citiesShp.close();
         }
     });
 
-    test('read records test 2', async () => {
-        const citiesShp = new Shapefile(citiesPath);
-        await citiesShp.open();
-
-        const records = await citiesShp._readRecords();
-        const record = await records.next();
-
-        expect(record).not.toBeNull();
-        expect(record).not.toBeUndefined();
-        expect(record.done).toBeFalsy();
-        expect(record.id).toBe(1);
-        expect(record.geom).not.toBeUndefined();
-        expect(record.geom.x).toBeCloseTo(-122.2065, 4);
-        expect(record.geom.y).toBeCloseTo(48.7168, 4);
-        console.log(record.geom);
+    test('read header test 2', async () => {
+        try {
+            const citiesShp = new Shapefile(citiesPath);
+            await citiesShp._readHeader();
+        } catch (err) {
+            expect(err).toMatch(/Shapefile not opened/);
+        }
     });
 });
+
+describe('shapefile test - polyline', () => {
+    const lineShpPath = path.join(__dirname, 'data/Austinstreets.shp');
+
+    test('read records test - polygine loop', async () => {
+        const callbackMock = jest.fn();
+        await loopRecords(lineShpPath, callbackMock);
+        expect(callbackMock.mock.calls.length).toBe(13843);
+    });
+
+    test('read records test - polygine read first record', async () => {
+        const lineShp = new Shapefile(lineShpPath);
+        await lineShp.open();
+
+        const records = await lineShp._readRecords();
+        let record = await records.next();
+
+        expect(record).toBeGeneralRecord();
+        expect(record.geom).toBeClosePolyLineTo([-97.731192, 30.349088, -97.731584, 30.349305]);
+
+        await lineShp.close();
+    });
+});
+
+describe('shapefile test - point', () => {
+    test('read records test - point loop', async () => {
+        const callbackMock = jest.fn();
+        await loopRecords(citiesPath, callbackMock);
+        expect(callbackMock.mock.calls.length).toBe(19033);
+    });
+
+    test('read records test - point read first record', async () => {
+        const record = await getFirstRecord(citiesPath);
+        expect(record).toBeGeneralRecord();
+        expect(record.geom).toBeClosePointTo([-122.2065, 48.7168]);
+    });
+});
+
+async function loopRecords(path, callback) {
+    const shapefile = new Shapefile(path);
+    await shapefile.open();
+    const records = await shapefile._readRecords();
+    let record = null;
+    while ((record = await records.next()) && !record.done) {
+        callback();
+    }
+    await shapefile.close();
+}
+
+async function getFirstRecord(path) {
+    const shapefile = new Shapefile(path);
+    await shapefile.open();
+
+    const records = await shapefile._readRecords();
+    const record = await records.next();
+    await shapefile.close();
+
+    return await Promise.resolve(record);
+}
