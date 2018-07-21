@@ -15,7 +15,6 @@ module.exports = class Shapefile {
 
         this._fd = fs.openSync(this.filePath, 'r');
         this.isOpened = true;
-
         this._header = await this._readHeader();
         this._recordParser = RecordParser.getParser(this._header.fileType);
         await Promise.resolve();
