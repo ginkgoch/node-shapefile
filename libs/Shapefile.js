@@ -1,6 +1,8 @@
 const fs = require('fs');
 const StreamReader = require('ginkgoch-stream-reader');
 const Validators = require('./Validators');
+const RecordParser = require('./RecordParser');
+const RecordIterator = require('./RecordIterator');
 
 module.exports = class Shapefile {
     constructor(filePath) {
@@ -9,27 +11,26 @@ module.exports = class Shapefile {
     }
 
     async open() {
-        if(this.isOpened) return;
+        if (this.isOpened) return;
 
-        return await new Promise((res, rej) => {
-            fs.open(this.filePath, 'r', (err, fd) => {
-                if (err) rej(err);
+        this._fd = fs.openSync(this.filePath, 'r');
+        this.isOpened = true;
 
-                this._fd = fd;
-                this.isOpened = true;
-                res();
-            });
-        });
+        this._header = await this._readHeader();
+        this._recordParser = RecordParser.getParser(this._header.fileType);
+        await Promise.resolve();
     }
 
     async close() {
-        if(this.isOpened) {
+        if (this.isOpened) {
             return await new Promise((res, rej) => {
                 fs.close(this._fd, err => {
-                    if(err) rej(err);
+                    if (err) rej(err);
 
-                    this.isOpened = false;
                     this._fd = undefined;
+                    this._header = undefined;
+                    this._recordParser = undefined;
+                    this.isOpened = false;
                     res();
                 });
             });
@@ -39,10 +40,16 @@ module.exports = class Shapefile {
     async _readHeader() {
         Validators.checkShapefileIsOpened(this.isOpened);
 
-        const stream = fs.createReadStream(null, { fd: this._fd, start: 0, end: 68, highWaterMark: 100 });
+        const stream = fs.createReadStream(null, {
+            fd: this._fd,
+            autoClose: false,
+            start: 0,
+            end: 68,
+            highWaterMark: 100
+        });
         const sr = new StreamReader(stream);
         await sr.open();
-        const buffer = await sr.read(); 
+        const buffer = await sr.read();
 
         const fileCode = buffer.readInt32BE(0);
         const fileLength = buffer.readInt32BE(24) * 2;
@@ -55,29 +62,23 @@ module.exports = class Shapefile {
         return await Promise.resolve({
             fileCode,
             fileLength,
-            version, 
-            fileType, 
+            version,
+            fileType,
             envelope: { minx, miny, maxx, maxy }
         });
     }
 
     async _readRecords() {
         Validators.checkShapefileIsOpened(this.isOpened);
-
-        const stream = fs.createReadStream(null, { fd: this._fd, start: 100 });
+        const stream = fs.createReadStream(null, {
+            fd: this._fd,
+            start: 100,
+            autoClose: false,
+            highWaterMark: 65535
+        });
         const sr = new StreamReader(stream);
         await sr.open();
 
-        const recordHeader = await this._readRecordHeader(sr);
-    }
-
-    async _readRecordHeader(sr) {
-        const position = sr.pos;
-        const buffer = await sr.read(12);
-        const id = buffer.readInt32BE(0);
-        const length = buffer.readInt32BE(4) * 2;
-        const type = buffer.readInt32LE();
-
-        return { id, length, type, position };
+        return new RecordIterator(sr, this._recordParser);
     }
 }
