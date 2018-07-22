@@ -2,7 +2,7 @@ module.exports = Object.freeze({
     nullShape: 0,
     point: 1,
     polyLine: 3,
-    polygpon: 5,
+    polygon: 5,
     multiPoint: 8,
     pointZ: 11,
     polyLineZ: 13,

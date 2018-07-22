@@ -16,9 +16,15 @@ expect.extend({
     },
 
     toBeNullOrUndefined(actual) {
-        expect(actual).toBeUndefined();
-        expect(actual).toBeNull();
-        return { pass: true };
+        if (this.isNot) {
+            expect(actual).not.toBeUndefined();
+            expect(actual).not.toBeNull();
+        } else {
+            expect(actual).toBeUndefined();
+            expect(actual).toBeNull();
+        }
+
+        return { pass: !this.isNot };
     },
 
     toBeClosePointTo(actual, expected, numDigit = 4) {
