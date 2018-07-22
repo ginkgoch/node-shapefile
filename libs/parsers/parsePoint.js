@@ -1,6 +1,8 @@
+const Validators = require('../Validators');
+
 module.exports = function (buffer) {
     const type = buffer.readInt32LE(0);
-    if (type !== 1) throw 'Not a point record.';
+    Validators.checkIsValidShapeType(type, 1, 'point');
 
     const x = buffer.readDoubleLE(4);
     const y = buffer.readDoubleLE(12);

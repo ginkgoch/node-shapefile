@@ -14,6 +14,12 @@ describe('parser tests', () => {
 
         let polyLineParser = Parser.getParser(ShapefileType.polyLine);
         expect(polyLineParser).not.toBeNull();
+
+        let multiPointParser = Parser.getParser(ShapefileType.multiPoint);
+        expect(multiPointParser).not.toBeNull();
+
+        let polygonParser = Parser.getParser(ShapefileType.polygon);
+        expect(polygonParser).not.toBeNull();
     });
 
     test('get unsupported parser test', () => {

@@ -71,7 +71,7 @@ describe('shapefile test - polyline', () => {
         expect(callbackMock.mock.calls.length).toBe(13843);
     });
 
-    test('read records test - polygine read first record', async () => {
+    test('read records test - polyline read first record', async () => {
         const lineShp = new Shapefile(lineShpPath);
         await lineShp.open();
 
@@ -96,6 +96,29 @@ describe('shapefile test - point', () => {
         const record = await getFirstRecord(citiesPath);
         expect(record).toBeGeneralRecord();
         expect(record.geom).toBeClosePointTo([-122.2065, 48.7168]);
+    });
+});
+
+describe('shapefile test - polygon', () => {
+    const shpPath = path.join(__dirname, 'data/USStates.shp');
+
+    test('read records test - polygon loop', async () => {
+        const callbackMock = jest.fn();
+        await loopRecords(shpPath, callbackMock);
+        expect(callbackMock.mock.calls.length).toBe(51);
+    });
+
+    test('read records test - polygon read first record', async () => {
+        const record = await getFirstRecord(shpPath);
+        expect(record).toBeGeneralRecord();
+
+        expect(record.geom.length).toBe(3);
+        expect(record.geom[0].length).toBe(244);
+        expect(record.geom[1].length).toBe(12);
+        expect(record.geom[2].length).toBe(20);
+        expect(record.geom[0][0]).toEqual(record.geom[0][243]);
+        expect(record.geom[1][0]).toEqual(record.geom[1][11]);
+        expect(record.geom[2][0]).toEqual(record.geom[2][19]);
     });
 });
 
