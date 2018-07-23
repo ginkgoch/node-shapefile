@@ -6,5 +6,6 @@ module.exports = function (buffer) {
 
     const x = buffer.readDoubleLE(4);
     const y = buffer.readDoubleLE(12);
-    return { geom: { x, y } };
+    
+    return { geom: { x, y }, envelope: { x, y, x, y } };
 };

@@ -27,6 +27,6 @@ module.exports = class RecordIterator {
         }
 
         const content = this._recordParser(contentBuffer);
-        return _.merge({ done: false}, { id }, content);
+        return _.merge({ done: false }, { id }, content);
     }
 }

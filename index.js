@@ -1,20 +1,22 @@
 const Shapefile = require('./libs/Shapefile');
-const StreamReader = require('ginkgoch-stream-reader');
+const Stopwatch = require('statman-stopwatch');
 
-async function load() {
-    const citiesShp = new Shapefile('./tests/data/cities_e.shp');
+async function loopRecords() {
+    const citiesShp = new Shapefile('./tests/data/USStates.shp');
     await citiesShp.open();
 
+    const sw = new Stopwatch();
+    sw.start();
     const records = await citiesShp._readRecords();
-    let record = await records.next();
     let count = 0;
-    while (record && !record.done) {
-        //console.log(record.value);
+    let record = undefined;
+    while ((record = await records.next()) && !record.done) {
         count++;
-        record = await records.next().catch(err => console.log(err));
+        // console.log(record);
     }
-
+    sw.stop();
+    console.log(sw.read());
     console.log('done', count);
 }
 
-load();
+loopRecords();
