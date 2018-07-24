@@ -1,3 +1,4 @@
+const fs = require('fs');
 const Shapefile = require('./libs/Shapefile');
 const Stopwatch = require('statman-stopwatch');
 
@@ -19,4 +20,13 @@ async function loopRecords() {
     console.log('done', count);
 }
 
-loopRecords();
+function loadDbf() {
+    const dbfPath = './tests/data/USStates.dbf';
+    const fd = fs.openSync(dbfPath, 'r');
+    
+    const ldid = fd.readUInt8(1);
+    console.log(ldid);
+}
+
+// loopRecords();
+loadDbf();

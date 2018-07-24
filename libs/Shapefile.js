@@ -3,36 +3,35 @@ const StreamReader = require('ginkgoch-stream-reader');
 const Validators = require('./Validators');
 const RecordParser = require('./RecordParser');
 const RecordIterator = require('./RecordIterator');
+const Openable = require('./Openable');
 
-module.exports = class Shapefile {
+module.exports = class Shapefile extends Openable {
     constructor(filePath) {
+        super();
         this.filePath = filePath;
-        this.isOpened = false;
     }
 
-    async open() {
-        if (this.isOpened) return;
-
+    /**
+     * @override
+     */
+    async _open() {
         this._fd = fs.openSync(this.filePath, 'r');
-        this.isOpened = true;
         this._header = await this._readHeader();
         this._recordParser = RecordParser.getParser(this._header.fileType);
-        await Promise.resolve();
     }
 
-    async close() {
-        if (this.isOpened) {
-            fs.closeSync(this._fd);
-            this._fd = undefined;
-            this._header = undefined;
-            this._recordParser = undefined;
-            this.isOpened = false;
-            return await Promise.resolve();
-        }
-    }
+    /**
+     * @override
+     */
+    async _close() {
+        fs.closeSync(this._fd);
+        this._fd = undefined;
+        this._header = undefined;
+        this._recordParser = undefined;
+    } 
 
     async _readHeader() {
-        Validators.checkShapefileIsOpened(this.isOpened);
+        Validators.checkIsOpened(this.isOpened);
 
         const stream = fs.createReadStream(null, {
             fd: this._fd,
@@ -63,7 +62,7 @@ module.exports = class Shapefile {
     }
 
     async _readRecords() {
-        Validators.checkShapefileIsOpened(this.isOpened);
+        Validators.checkIsOpened(this.isOpened);
         const stream = fs.createReadStream(null, {
             fd: this._fd,
             start: 100,
