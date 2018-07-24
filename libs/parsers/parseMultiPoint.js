@@ -1,16 +1,17 @@
-const ParserHelper = require('./ParserHelper');
 const Validators = require('../Validators');
+const RecordReader = require('../RecordReader');
 
 module.exports = function (buffer) {
-    const type = buffer.readInt32LE(0);
+    const br = new RecordReader(buffer);
+    const type = br.readInt32LE();
     Validators.checkIsValidShapeType(type, 8, 'multipoint');
 
-    const envelope = ParserHelper.readEnvelope(buffer, 4);
-    const numPoints = buffer.readInt32LE(36);
+    const envelope = br.nextEnvelope();
+    const numPoints = br.nextIn32LE(); 
     const points = [];
 
     for (let i = 0; i < numPoints; i++) {
-        points.push(ParserHelper.readPoint(buffer, 40 + i * 16));
+        points.push(br.nextPoint());
     }
 
     return { geom: points, envelope };

@@ -1,11 +1,11 @@
 const Validators = require('../Validators');
+const RecordReader = require('../RecordReader');
 
 module.exports = function (buffer) {
-    const type = buffer.readInt32LE(0);
+    const br = new RecordReader(buffer);
+    const type = br.nextInt32LE();
     Validators.checkIsValidShapeType(type, 1, 'point');
 
-    const x = buffer.readDoubleLE(4);
-    const y = buffer.readDoubleLE(12);
-    
-    return { geom: { x, y }, envelope: { x, y, x, y } };
+    const geom = br.nextPoint();
+    return { geom, envelope: { minx: geom.x, miny: geom.y, maxx: geom.x, maxy: geom.y } };
 };
