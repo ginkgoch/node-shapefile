@@ -1,14 +1,15 @@
-const ParserHelper = require('./ParserHelper');
 const Validators = require('../Validators');
+const RecordReader = require('../RecordReader');
 
 module.exports = function(buffer) {
-    const type = buffer.readInt32LE(0);
+    const br = new RecordReader(buffer);
+    const type = br.nextInt32LE();
     Validators.checkIsValidShapeType(type, 5, 'polygon');
 
-    const envelope = ParserHelper.readEnvelope(buffer, 4);
-    const numParts = buffer.readInt32LE(36);
-    const numPoints = buffer.readInt32LE(40);
-    const parts = ParserHelper.readParts(buffer, numParts, 44);
-    const points = ParserHelper.readPointsByParts(buffer, numPoints, 44 + numParts * 4, parts);
+    const envelope = br.nextEnvelope(); 
+    const numParts = br.nextInt32LE(); 
+    const numPoints = br.nextInt32LE(); 
+    const parts = br.nextParts(numParts); 
+    const points = br.nextPointsByParts(numPoints, parts); 
     return { geom: points, envelope };
 };

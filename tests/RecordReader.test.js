@@ -1,4 +1,4 @@
-const ParserHelper = require('../libs/parsers/ParserHelper');
+const RecordReader = require('../libs/RecordReader');
 
 describe('parser helper tests', () => {
     const src = { minx: -120.0236, miny: -140.8975, maxx: 98.98, maxy: 34.8765 };
@@ -10,7 +10,8 @@ describe('parser helper tests', () => {
         buffer.writeDoubleLE(src.maxx, 16);
         buffer.writeDoubleLE(src.maxy, 24);
 
-        const newEnv = ParserHelper.readEnvelope(buffer);
+        const br = new RecordReader(buffer);
+        const newEnv = br.nextEnvelope();
         expect(newEnv).toEqual(src);
     });
 
@@ -23,7 +24,10 @@ describe('parser helper tests', () => {
         buffer.writeDoubleLE(src.maxx, 24);
         buffer.writeDoubleLE(src.maxy, 32);
 
-        const newEnv = ParserHelper.readEnvelope(buffer, 8);
+        const br = new RecordReader(buffer);
+        br.seek(8);
+
+        const newEnv = br.nextEnvelope();
         expect(newEnv).toEqual(src);
     });
 });
