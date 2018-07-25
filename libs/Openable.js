@@ -20,4 +20,13 @@ module.exports = class Openable {
     }
 
     async _close() { }
+
+    async openWith(action) {
+        try {
+            await this.open();
+            await action();
+        } finally {
+            await this.close();
+        }
+    }
 }

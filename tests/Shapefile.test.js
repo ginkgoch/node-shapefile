@@ -75,7 +75,7 @@ describe('shapefile test - polyline', () => {
         const lineShp = new Shapefile(lineShpPath);
         await lineShp.open();
 
-        const records = await lineShp._readRecords();
+        const records = await lineShp.readRecords();
         let record = await records.next();
 
         expect(record).toBeGeneralRecord();
@@ -125,7 +125,7 @@ describe('shapefile test - polygon', () => {
 async function loopRecords(path, callback) {
     const shapefile = new Shapefile(path);
     await shapefile.open();
-    const records = await shapefile._readRecords();
+    const records = await shapefile.readRecords();
     let record = null;
     while ((record = await records.next()) && !record.done) {
         callback();
@@ -137,7 +137,7 @@ async function getFirstRecord(path) {
     const shapefile = new Shapefile(path);
     await shapefile.open();
 
-    const records = await shapefile._readRecords();
+    const records = await shapefile.readRecords();
     const record = await records.next();
     await shapefile.close();
 

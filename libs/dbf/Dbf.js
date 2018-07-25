@@ -3,6 +3,7 @@ const StreamReader = require('ginkgoch-stream-reader');
 const Openable = require('../Openable');
 const Validators = require('../Validators');
 const RecordReader = require('../RecordReader');
+const DbfIterator = require('./DbfIterator');
 
 module.exports = class Dbf extends Openable {
     constructor(filePath) {
@@ -41,6 +42,7 @@ module.exports = class Dbf extends Openable {
         
         const numRecords = headerBufferReader.nextUInt32LE();
         const headerLength = headerBufferReader.nextUInt16LE();
+        const recordLength = headerBufferReader.nextUInt16LE();
 
         let position = headerBuffer.length;
         const fields = [];
@@ -61,7 +63,21 @@ module.exports = class Dbf extends Openable {
         }
 
         return {
-            fileType, date, numRecords, headerLength, fields
+            fileType, date, numRecords, headerLength, recordLength, fields
         };
+    }
+
+    async readRecords() {
+        Validators.checkIsOpened(this.isOpened);
+
+        const stream = fs.createReadStream(null, {
+            fd: this._fd,
+            start: this._header.headerLength + 1,
+            autoClose: false
+        });
+        const sr = new StreamReader(stream);
+        await sr.open();
+
+        return new DbfIterator(sr, this._header);
     }
 }

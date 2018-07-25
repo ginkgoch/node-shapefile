@@ -61,7 +61,7 @@ module.exports = class Shapefile extends Openable {
         });
     }
 
-    async _readRecords() {
+    async readRecords() {
         Validators.checkIsOpened(this.isOpened);
         const stream = fs.createReadStream(null, {
             fd: this._fd,

@@ -8,7 +8,7 @@ async function loopRecords() {
 
     const sw = new Stopwatch();
     sw.start();
-    const records = await citiesShp._readRecords();
+    const records = await citiesShp.readRecords();
     let count = 0;
     let record = undefined;
     while ((record = await records.next()) && !record.done) {
