@@ -14,6 +14,12 @@ describe('parser tests', () => {
 
         let polyLineParser = Parser.getParser(ShapefileType.polyLine);
         expect(polyLineParser).not.toBeNull();
+
+        let multiPointParser = Parser.getParser(ShapefileType.multiPoint);
+        expect(multiPointParser).not.toBeNull();
+
+        let polygonParser = Parser.getParser(ShapefileType.polygon);
+        expect(polygonParser).not.toBeNull();
     });
 
     test('get unsupported parser test', () => {
@@ -35,7 +41,7 @@ describe('parser tests', () => {
         buffer.writeDoubleLE(x, 4);
         buffer.writeDoubleLE(y, 12);
         let obj = Parser.getParser(ShapefileType.point)(buffer);
-        expect(obj).toEqual({ geom: { x, y } });
+        expect(obj).toEqual({ geom: { x, y }, envelope: { minx: x, miny: y, maxx: x, maxy: y } });
     });
 
     test('point shape parser test - incorrect buffer', () => {

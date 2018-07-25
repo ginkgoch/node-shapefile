@@ -1,8 +1,11 @@
-module.exports = function (buffer) {
-    const type = buffer.readInt32LE(0);
-    if (type !== 1) throw 'Not a point record.';
+const Validators = require('../Validators');
+const RecordReader = require('../RecordReader');
 
-    const x = buffer.readDoubleLE(4);
-    const y = buffer.readDoubleLE(12);
-    return { geom: { x, y } };
+module.exports = function (buffer) {
+    const br = new RecordReader(buffer);
+    const type = br.nextInt32LE();
+    Validators.checkIsValidShapeType(type, 1, 'point');
+
+    const geom = br.nextPoint();
+    return { geom, envelope: { minx: geom.x, miny: geom.y, maxx: geom.x, maxy: geom.y } };
 };

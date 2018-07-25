@@ -71,11 +71,11 @@ describe('shapefile test - polyline', () => {
         expect(callbackMock.mock.calls.length).toBe(13843);
     });
 
-    test('read records test - polygine read first record', async () => {
+    test('read records test - polyline read first record', async () => {
         const lineShp = new Shapefile(lineShpPath);
         await lineShp.open();
 
-        const records = await lineShp._readRecords();
+        const records = await lineShp.readRecords();
         let record = await records.next();
 
         expect(record).toBeGeneralRecord();
@@ -99,10 +99,33 @@ describe('shapefile test - point', () => {
     });
 });
 
+describe('shapefile test - polygon', () => {
+    const shpPath = path.join(__dirname, 'data/USStates.shp');
+
+    test('read records test - polygon loop', async () => {
+        const callbackMock = jest.fn();
+        await loopRecords(shpPath, callbackMock);
+        expect(callbackMock.mock.calls.length).toBe(51);
+    });
+
+    test('read records test - polygon read first record', async () => {
+        const record = await getFirstRecord(shpPath);
+        expect(record).toBeGeneralRecord();
+
+        expect(record.geom.length).toBe(3);
+        expect(record.geom[0].length).toBe(244);
+        expect(record.geom[1].length).toBe(12);
+        expect(record.geom[2].length).toBe(20);
+        expect(record.geom[0][0]).toEqual(record.geom[0][243]);
+        expect(record.geom[1][0]).toEqual(record.geom[1][11]);
+        expect(record.geom[2][0]).toEqual(record.geom[2][19]);
+    });
+});
+
 async function loopRecords(path, callback) {
     const shapefile = new Shapefile(path);
     await shapefile.open();
-    const records = await shapefile._readRecords();
+    const records = await shapefile.readRecords();
     let record = null;
     while ((record = await records.next()) && !record.done) {
         callback();
@@ -114,7 +137,7 @@ async function getFirstRecord(path) {
     const shapefile = new Shapefile(path);
     await shapefile.open();
 
-    const records = await shapefile._readRecords();
+    const records = await shapefile.readRecords();
     const record = await records.next();
     await shapefile.close();
 
