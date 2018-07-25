@@ -1,5 +1,5 @@
 module.exports = class Validators {
-    static checkShapefileIsOpened(isOpened) {
+    static checkIsOpened(isOpened) {
         if(!isOpened) {
             throw 'Shapefile not opened. Call open() method first.';
         }

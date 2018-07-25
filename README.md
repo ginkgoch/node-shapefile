@@ -8,7 +8,7 @@ async function loopRecords() {
     const citiesShp = new Shapefile('./tests/data/sample.shp');
     await citiesShp.open();
 
-    const records = await citiesShp._readRecords();
+    const records = await citiesShp.readRecords();
     let count = 0;
     let record = undefined;
     while ((record = await records.next()) && !record.done) {
