@@ -11,7 +11,7 @@ module.exports = class RecordIterator extends Iterator {
      */
     constructor(streamReader, recordParser) {
         super();
-        
+
         this._streamReader = streamReader;
         this._recordParser = recordParser;
     }
@@ -22,18 +22,18 @@ module.exports = class RecordIterator extends Iterator {
     async next() {
         let buffer = await this._streamReader.read(8);
         if (buffer === null || buffer.length === 0) {
-            return this._done();// { done: true };
+            return this._done();
         }
 
         const id = buffer.readInt32BE(0);
         const length = buffer.readInt32BE(4) * 2;
         let contentBuffer = await this._streamReader.read(length);
         if (contentBuffer === null || contentBuffer.length === 0) {
-            return this._done();// { done: true }
+            return this._done();
         }
 
         const content = this._recordParser(contentBuffer);
         content.id = id;
-        return this._continue(content); //_.merge({ done: false }, { id }, content);
+        return this._continue(content); 
     }
 }
