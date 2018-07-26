@@ -24,6 +24,7 @@ module.exports = class Dbf extends Openable {
      */
     async _close() {
         fs.closeSync(this._fd);
+        this._fd = undefined;
     }
 
     async _readHeader() {
