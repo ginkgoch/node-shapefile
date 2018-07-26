@@ -8,7 +8,7 @@ async function loopRecords() {
     const shp = new Shapefile(shpPath);
     await shp.open();
 
-    const r = await shp._get(0);
+    const r = await shp.get(0);
     console.log(r);
 }
 loopRecords();

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const StreamReader = require('ginkgoch-stream-reader');
-const Openable = require('../Openable');
+const Openable = require('../StreamOpenable');
 const Validators = require('../Validators');
 const RecordReader = require('../RecordReader');
 const DbfIterator = require('./DbfIterator');
@@ -70,15 +70,16 @@ module.exports = class Dbf extends Openable {
 
     async readRecords() {
         Validators.checkIsOpened(this.isOpened);
+    
+        const records = await this._getRecordIteractor(this._header.headerLength + 1);
+        return records;
+    }
 
-        const stream = fs.createReadStream(null, {
-            fd: this._fd,
-            start: this._header.headerLength + 1,
-            autoClose: false
-        });
+    async _getRecordIteractor(start, end) { 
+        const option = this._getStreamOption(start, end);
+        const stream = fs.createReadStream(null, option);
         const sr = new StreamReader(stream);
         await sr.open();
-
         return new DbfIterator(sr, this._header);
     }
 }

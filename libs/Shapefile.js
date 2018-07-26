@@ -4,7 +4,7 @@ const StreamReader = require('ginkgoch-stream-reader');
 const Validators = require('./Validators');
 const RecordParser = require('./RecordParser');
 const RecordIterator = require('./RecordIterator');
-const Openable = require('./Openable');
+const Openable = require('./StreamOpenable');
 const Shx = require('./shx/Shx');
 const Dbf = require('./dbf/Dbf');
 const extReg = /\.\w+$/;
@@ -87,27 +87,22 @@ module.exports = class Shapefile extends Openable {
 
     async readRecords() {
         Validators.checkIsOpened(this.isOpened);
-       
-        const option = this._getStreamOption(100);
-        return await this._getRecordIteractor(option);
+        return await this._getRecordIteractor(100);
     }
 
-    async _get(id) {
+    async get(id) {
         const rshx = this._shx.get(id);
-        const option = this._getStreamOption(rshx.offset, rshx.offset + 8 + rshx.length);
-        const iterator = await this._getRecordIteractor(option);
+        const iterator = await this._getRecordIteractor(rshx.offset, rshx.offset + 8 + rshx.length);
         const result = await iterator.next();
+
         return _.omit(result, ['done']);
     }
 
-    async _getRecordIteractor(optionShp) { 
-        const stream = fs.createReadStream(null, optionShp);
+    async _getRecordIteractor(start, end) { 
+        const option = this._getStreamOption(start, end);
+        const stream = fs.createReadStream(null, option);
         const sr = new StreamReader(stream);
         await sr.open();
         return new RecordIterator(sr, this._recordParser);
-    }
-
-    _getStreamOption(start, end) {
-        return _.pickBy({ fd: this._fd, autoClose: false, start, end }, i => !_.isUndefined(i));
     }
 }

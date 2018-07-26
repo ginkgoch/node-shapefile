@@ -154,7 +154,7 @@ describe('read by id tests', () => {
             let index = 0, ri = undefined;
             while((ri = await recordIterator.next()) && !ri.done) {
                 ri = _.omit(ri, ['done']);
-                const r = await shp._get(index);
+                const r = await shp.get(index);
                 expect(r).toEqual(ri);
                 index++;
             }
