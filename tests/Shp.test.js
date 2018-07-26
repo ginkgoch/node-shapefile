@@ -1,12 +1,12 @@
 require('./JestEx');
 const _ = require('lodash');
 const path = require('path');
-const Shapefile = require('../libs/Shapefile');
+const Shp = require('../libs/shp/Shp');
 const citiesPath = path.join(__dirname, 'data/cities_e.shp');
 
 describe('shapefile general tests', () => {
     test('get stream option test', async () => {
-        const citiesShp = await (new Shapefile(citiesPath).open());
+        const citiesShp = await (new Shp(citiesPath).open());
         let opt1 = citiesShp._getStreamOption(100);
         expect(_.keys(opt1).length).toBe(3);
         expect(opt1.autoClose).toBeFalsy();
@@ -23,24 +23,20 @@ describe('shapefile general tests', () => {
     });
 
     test('open close test 1', async () => {
-        const citiesShp = new Shapefile(citiesPath);
+        const citiesShp = new Shp(citiesPath);
 
         expect(citiesShp.isOpened).toBeFalsy();
         await citiesShp.open();
         expect(citiesShp.isOpened).toBeTruthy();
         expect(citiesShp._fd).not.toBeUndefined();
-        expect(citiesShp._shx).not.toBeUndefined();
-        expect(citiesShp._dbf).not.toBeUndefined();
 
         await citiesShp.close();
         expect(citiesShp.isOpened).toBeFalsy();
         expect(citiesShp._fd).toBeUndefined();
-        expect(citiesShp._shx).toBeUndefined();
-        expect(citiesShp._dbf).toBeUndefined();
     });
 
     test('open close test 2', async () => {
-        const citiesShp = new Shapefile(citiesPath);
+        const citiesShp = new Shp(citiesPath);
 
         expect(citiesShp.isOpened).toBeFalsy();
         await citiesShp.open();
@@ -55,7 +51,7 @@ describe('shapefile general tests', () => {
     });
 
     test('read header test 1', async () => {
-        const citiesShp = new Shapefile(citiesPath);
+        const citiesShp = new Shp(citiesPath);
 
         try {
             await citiesShp.open();
@@ -76,7 +72,7 @@ describe('shapefile general tests', () => {
 
     test('read header test 2', async () => {
         try {
-            const citiesShp = new Shapefile(citiesPath);
+            const citiesShp = new Shp(citiesPath);
             await citiesShp._readHeader();
         } catch (err) {
             expect(err).toMatch(/Shapefile not opened/);
@@ -94,7 +90,7 @@ describe('shapefile test - polyline', () => {
     });
 
     test('read records test - polyline read first record', async () => {
-        const lineShp = new Shapefile(lineShpPath);
+        const lineShp = new Shp(lineShpPath);
         await lineShp.open();
 
         const records = await lineShp.readRecords();
@@ -147,7 +143,7 @@ describe('shapefile test - polygon', () => {
 describe('read by id tests', () => {
     test('read single test', async () => {
         const shpPath = path.join(__dirname, 'data/USStates.shp');
-        const shp = new Shapefile(shpPath);
+        const shp = new Shp(shpPath);
         await shp.openWith(async () => {
             const recordIterator = await shp.readRecords();
 
@@ -163,7 +159,7 @@ describe('read by id tests', () => {
 });
 
 async function loopRecords(path, callback) {
-    const shapefile = new Shapefile(path);
+    const shapefile = new Shp(path);
     await shapefile.open();
     const records = await shapefile.readRecords();
     let record = null;
@@ -174,7 +170,7 @@ async function loopRecords(path, callback) {
 }
 
 async function getFirstRecord(path) {
-    const shapefile = new Shapefile(path);
+    const shapefile = new Shp(path);
     await shapefile.open();
 
     const records = await shapefile.readRecords();
