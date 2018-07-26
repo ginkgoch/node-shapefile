@@ -1,5 +1,5 @@
-const Iterator = require('../Iterator');
-const RecordReader = require('../RecordReader');
+const Iterator = require('../base/Iterator');
+const BufferReader = require('ginkgoch-buffer-reader');
 
 module.exports = class DbfIterator extends Iterator {
     constructor(streamReader, header) {
@@ -16,7 +16,7 @@ module.exports = class DbfIterator extends Iterator {
             return this._done();
         }
         
-        const br = new RecordReader(buffer);
+        const br = new BufferReader(buffer);
         const fieldValues = {};
         for (let i = 0; i < this._header.fields.length; i++) {
             const field = this._header.fields[i];

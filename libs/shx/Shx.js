@@ -1,5 +1,5 @@
 const fs = require('fs');
-const Openable = require('../Openable');
+const Openable = require('../base/Openable');
 
 const _recordLength = 8;
 const _headerLength = 100;

@@ -1,8 +1,8 @@
 const fs = require('fs');
 const StreamReader = require('ginkgoch-stream-reader');
-const Openable = require('../Openable');
+const Openable = require('../base/StreamOpenable');
 const Validators = require('../Validators');
-const RecordReader = require('../RecordReader');
+const BufferReader = require('ginkgoch-buffer-reader');
 const DbfIterator = require('./DbfIterator');
 
 module.exports = class Dbf extends Openable {
@@ -30,10 +30,10 @@ module.exports = class Dbf extends Openable {
     async _readHeader() {
         Validators.checkIsOpened(this.isOpened);
 
-        const stream = fs.createReadStream(null, { fd: this._fd });
+        const stream = fs.createReadStream(null, { fd: this._fd, autoClose: false });
         const sr = new StreamReader(stream);
         const headerBuffer = await sr.read(32);
-        const headerBufferReader = new RecordReader(headerBuffer);
+        const headerBufferReader = new BufferReader(headerBuffer);
 
         const fileType = headerBufferReader.nextInt8();
         const year = await headerBufferReader.nextInt8();
@@ -70,15 +70,16 @@ module.exports = class Dbf extends Openable {
 
     async readRecords() {
         Validators.checkIsOpened(this.isOpened);
+    
+        const records = await this._getRecordIteractor(this._header.headerLength + 1);
+        return records;
+    }
 
-        const stream = fs.createReadStream(null, {
-            fd: this._fd,
-            start: this._header.headerLength + 1,
-            autoClose: false
-        });
+    async _getRecordIteractor(start, end) { 
+        const option = this._getStreamOption(start, end);
+        const stream = fs.createReadStream(null, option);
         const sr = new StreamReader(stream);
         await sr.open();
-
         return new DbfIterator(sr, this._header);
     }
 }

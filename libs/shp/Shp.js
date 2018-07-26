@@ -1,15 +1,16 @@
 const fs = require('fs');
+const path = require('path');
+const assert = require('assert');
 const _ = require('lodash');
 const StreamReader = require('ginkgoch-stream-reader');
-const Validators = require('./Validators');
-const ShpParser = require('./shp/ShpParser');
-const ShpIterator = require('./shp/ShpIterator');
-const Openable = require('./base/StreamOpenable');
-const Shx = require('./shx/Shx');
-const Dbf = require('./dbf/Dbf');
+const Validators = require('../Validators');
+const ShpParser = require('./ShpParser');
+const ShpIterator = require('./ShpIterator');
+const Openable = require('../base/StreamOpenable');
+const Shx = require('../shx/Shx');
 const extReg = /\.\w+$/;
 
-module.exports = class Shapefile extends Openable {
+module.exports = class Shp extends Openable {
     constructor(filePath) {
         super();
         this.filePath = filePath;
@@ -26,12 +27,10 @@ module.exports = class Shapefile extends Openable {
         this._shpParser = ShpParser.getParser(this._header.fileType);
 
         const filePathShx = this.filePath.replace(extReg, '.shx');
-        this._shx = new Shx(filePathShx);
-        await this._shx.open();
-
-        const filePathDbf = this.filePath.replace(extReg, '.dbf');
-        this._dbf = new Dbf(filePathDbf);
-        await this._dbf.open();
+        if(fs.existsSync(filePathShx)) {
+            this._shx = new Shx(filePathShx);
+            await this._shx.open();
+        }
     }
 
     /**
@@ -46,11 +45,6 @@ module.exports = class Shapefile extends Openable {
         if(this._shx) {
             await this._shx.close();
             this._shx = undefined;
-        }
-
-        if(this._dbf) {
-            await this._dbf.close();
-            this._dbf = undefined;
         }
     } 
 
@@ -91,6 +85,9 @@ module.exports = class Shapefile extends Openable {
     }
 
     async get(id) {
+        const shxPath = this.filePath.replace(extReg, '.shx');
+        assert(!_.isUndefined(this._shx), `${path.basename(shxPath)} doesn't exist.`)
+
         const rshx = this._shx.get(id);
         const iterator = await this._getRecordIteractor(rshx.offset, rshx.offset + 8 + rshx.length);
         const result = await iterator.next();

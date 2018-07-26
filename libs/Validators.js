@@ -1,3 +1,6 @@
+const fs = require('fs');
+const assert = require('assert');
+
 module.exports = class Validators {
     static checkIsOpened(isOpened) {
         if(!isOpened) {
@@ -9,5 +12,9 @@ module.exports = class Validators {
         if(actual !== expected) {
             throw `Not a ${expectedName} record.`;
         }
+    }
+
+    static checkFileExists(filePath) {
+       assert(fs.existsSync(filePath), `${filePath} not exists.`);
     }
 }
