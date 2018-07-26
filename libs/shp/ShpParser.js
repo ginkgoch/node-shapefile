@@ -1,5 +1,4 @@
 const _ = require('lodash');
-const StreamReader = require('ginkgoch-stream-reader');
 const ShapefileType = require('../ShapefileType');
 
 module.exports = class ShpParser {
@@ -18,12 +17,6 @@ module.exports = class ShpParser {
             throw `Unsupported shapefile type<${shapefileType}>.`;
         }
     }
-
-    /**
-     * 
-     * @param {StreamReader} streamReader 
-     */
-    async readEnvelope(streamReader) { }
 
     /**
      * @private
