@@ -1,9 +1,13 @@
 const fs = require('fs');
+const _ = require('lodash');
 const StreamReader = require('ginkgoch-stream-reader');
 const Validators = require('./Validators');
 const RecordParser = require('./RecordParser');
 const RecordIterator = require('./RecordIterator');
 const Openable = require('./Openable');
+const Shx = require('./shx/Shx');
+const Dbf = require('./dbf/Dbf');
+const extReg = /\.\w+$/;
 
 module.exports = class Shapefile extends Openable {
     constructor(filePath) {
@@ -15,9 +19,19 @@ module.exports = class Shapefile extends Openable {
      * @override
      */
     async _open() {
+        Validators.checkFileExists(this.filePath);
+
         this._fd = fs.openSync(this.filePath, 'r');
         this._header = await this._readHeader();
         this._recordParser = RecordParser.getParser(this._header.fileType);
+
+        const filePathShx = this.filePath.replace(extReg, '.shx');
+        this._shx = new Shx(filePathShx);
+        await this._shx.open();
+
+        const filePathDbf = this.filePath.replace(extReg, '.dbf');
+        this._dbf = new Dbf(filePathDbf);
+        await this._dbf.open();
     }
 
     /**
@@ -28,6 +42,16 @@ module.exports = class Shapefile extends Openable {
         this._fd = undefined;
         this._header = undefined;
         this._recordParser = undefined;
+        
+        if(this._shx) {
+            await this._shx.close();
+            this._shx = undefined;
+        }
+
+        if(this._dbf) {
+            await this._dbf.close();
+            this._dbf = undefined;
+        }
     } 
 
     async _readHeader() {
@@ -66,12 +90,27 @@ module.exports = class Shapefile extends Openable {
         const stream = fs.createReadStream(null, {
             fd: this._fd,
             start: 100,
-            autoClose: false,
-            highWaterMark: 65535
+            autoClose: false
         });
         const sr = new StreamReader(stream);
         await sr.open();
 
         return new RecordIterator(sr, this._recordParser);
+    }
+
+    async _get(id) {
+        const rshx = this._shx.get(id);
+        const stream = fs.createReadStream(null, { 
+            fd: this._fd, 
+            start: rshx.offset, 
+            end: rshx.offset + 8 + rshx.length, 
+            autoClose: false 
+        });
+
+        const sr = new StreamReader(stream);
+        await sr.open();
+        const iterator = new RecordIterator(sr, this._recordParser);
+        const result = await iterator.next();
+        return _.omit(result, ['done']);
     }
 }

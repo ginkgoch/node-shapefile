@@ -1,4 +1,5 @@
 require('./JestEx');
+const _ = require('lodash');
 const path = require('path');
 const Shapefile = require('../libs/Shapefile');
 const citiesPath = path.join(__dirname, 'data/cities_e.shp');
@@ -11,10 +12,14 @@ describe('shapefile general tests', () => {
         await citiesShp.open();
         expect(citiesShp.isOpened).toBeTruthy();
         expect(citiesShp._fd).not.toBeUndefined();
+        expect(citiesShp._shx).not.toBeUndefined();
+        expect(citiesShp._dbf).not.toBeUndefined();
 
         await citiesShp.close();
         expect(citiesShp.isOpened).toBeFalsy();
         expect(citiesShp._fd).toBeUndefined();
+        expect(citiesShp._shx).toBeUndefined();
+        expect(citiesShp._dbf).toBeUndefined();
     });
 
     test('open close test 2', async () => {
@@ -119,6 +124,24 @@ describe('shapefile test - polygon', () => {
         expect(record.geom[0][0]).toEqual(record.geom[0][243]);
         expect(record.geom[1][0]).toEqual(record.geom[1][11]);
         expect(record.geom[2][0]).toEqual(record.geom[2][19]);
+    });
+});
+
+describe('read by id tests', () => {
+    test('read single test', async () => {
+        const shpPath = path.join(__dirname, 'data/USStates.shp');
+        const shp = new Shapefile(shpPath);
+        await shp.openWith(async () => {
+            const recordIterator = await shp.readRecords();
+
+            let index = 0, ri = undefined;
+            while((ri = await recordIterator.next()) && !ri.done) {
+                ri = _.omit(ri, ['done']);
+                const r = await shp._get(index);
+                expect(r).toEqual(ri);
+                index++;
+            }
+        });
     });
 });
 

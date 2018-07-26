@@ -30,7 +30,7 @@ module.exports = class Dbf extends Openable {
     async _readHeader() {
         Validators.checkIsOpened(this.isOpened);
 
-        const stream = fs.createReadStream(null, { fd: this._fd });
+        const stream = fs.createReadStream(null, { fd: this._fd, autoClose: false });
         const sr = new StreamReader(stream);
         const headerBuffer = await sr.read(32);
         const headerBufferReader = new RecordReader(headerBuffer);
