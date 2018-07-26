@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const BufferReader = require('ginkgoch-buffer-reader');
 
-module.exports = class RecordReader extends BufferReader {
+module.exports = class ShpReader extends BufferReader {
     nextEnvelope() {
         const minx = this.nextDoubleLE();
         const miny = this.nextDoubleLE();

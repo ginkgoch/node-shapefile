@@ -1,4 +1,4 @@
-const Parser = require('../libs/RecordParser');
+const Parser = require('../libs/shp/ShpParser');
 const ShapefileType = require('../libs/ShapefileType');
 
 describe('parser tests', () => {

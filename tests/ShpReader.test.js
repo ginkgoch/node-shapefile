@@ -1,4 +1,4 @@
-const RecordReader = require('../libs/RecordReader');
+const ShpReader = require('../libs/shp/ShpReader');
 
 describe('parser helper tests', () => {
     const src = { minx: -120.0236, miny: -140.8975, maxx: 98.98, maxy: 34.8765 };
@@ -10,7 +10,7 @@ describe('parser helper tests', () => {
         buffer.writeDoubleLE(src.maxx, 16);
         buffer.writeDoubleLE(src.maxy, 24);
 
-        const br = new RecordReader(buffer);
+        const br = new ShpReader(buffer);
         const newEnv = br.nextEnvelope();
         expect(newEnv).toEqual(src);
     });
@@ -24,7 +24,7 @@ describe('parser helper tests', () => {
         buffer.writeDoubleLE(src.maxx, 24);
         buffer.writeDoubleLE(src.maxy, 32);
 
-        const br = new RecordReader(buffer);
+        const br = new ShpReader(buffer);
         br.seek(8);
 
         const newEnv = br.nextEnvelope();

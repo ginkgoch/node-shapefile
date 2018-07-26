@@ -2,9 +2,9 @@ const fs = require('fs');
 const _ = require('lodash');
 const StreamReader = require('ginkgoch-stream-reader');
 const Validators = require('./Validators');
-const RecordParser = require('./RecordParser');
-const RecordIterator = require('./RecordIterator');
-const Openable = require('./StreamOpenable');
+const ShpParser = require('./shp/ShpParser');
+const ShpIterator = require('./shp/ShpIterator');
+const Openable = require('./base/StreamOpenable');
 const Shx = require('./shx/Shx');
 const Dbf = require('./dbf/Dbf');
 const extReg = /\.\w+$/;
@@ -23,7 +23,7 @@ module.exports = class Shapefile extends Openable {
 
         this._fd = fs.openSync(this.filePath, 'r');
         this._header = await this._readHeader();
-        this._recordParser = RecordParser.getParser(this._header.fileType);
+        this._shpParser = ShpParser.getParser(this._header.fileType);
 
         const filePathShx = this.filePath.replace(extReg, '.shx');
         this._shx = new Shx(filePathShx);
@@ -41,7 +41,7 @@ module.exports = class Shapefile extends Openable {
         fs.closeSync(this._fd);
         this._fd = undefined;
         this._header = undefined;
-        this._recordParser = undefined;
+        this._shpParser = undefined;
         
         if(this._shx) {
             await this._shx.close();
@@ -103,6 +103,6 @@ module.exports = class Shapefile extends Openable {
         const stream = fs.createReadStream(null, option);
         const sr = new StreamReader(stream);
         await sr.open();
-        return new RecordIterator(sr, this._recordParser);
+        return new ShpIterator(sr, this._shpParser);
     }
 }
