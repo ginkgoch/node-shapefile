@@ -87,30 +87,27 @@ module.exports = class Shapefile extends Openable {
 
     async readRecords() {
         Validators.checkIsOpened(this.isOpened);
-        const stream = fs.createReadStream(null, {
-            fd: this._fd,
-            start: 100,
-            autoClose: false
-        });
-        const sr = new StreamReader(stream);
-        await sr.open();
-
-        return new RecordIterator(sr, this._recordParser);
+       
+        const option = this._getStreamOption(100);
+        return await this._getRecordIteractor(option);
     }
 
     async _get(id) {
         const rshx = this._shx.get(id);
-        const stream = fs.createReadStream(null, { 
-            fd: this._fd, 
-            start: rshx.offset, 
-            end: rshx.offset + 8 + rshx.length, 
-            autoClose: false 
-        });
-
-        const sr = new StreamReader(stream);
-        await sr.open();
-        const iterator = new RecordIterator(sr, this._recordParser);
+        const option = this._getStreamOption(rshx.offset, rshx.offset + 8 + rshx.length);
+        const iterator = await this._getRecordIteractor(option);
         const result = await iterator.next();
         return _.omit(result, ['done']);
+    }
+
+    async _getRecordIteractor(optionShp) { 
+        const stream = fs.createReadStream(null, optionShp);
+        const sr = new StreamReader(stream);
+        await sr.open();
+        return new RecordIterator(sr, this._recordParser);
+    }
+
+    _getStreamOption(start, end) {
+        return _.pickBy({ fd: this._fd, autoClose: false, start, end }, i => !_.isUndefined(i));
     }
 }
