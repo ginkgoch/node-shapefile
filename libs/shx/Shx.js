@@ -22,7 +22,7 @@ module.exports = class Shx extends Openable {
         this._totalSize = undefined;
     }
 
-    getCount() {
+    count() {
         return (this._totalSize - _headerLength) / _recordLength;
     }
 

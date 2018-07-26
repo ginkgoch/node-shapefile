@@ -6,7 +6,7 @@ describe('shx tests', () => {
     test('get record count test', async () => {
         const shx = new Shx(filePath);
         await shx.openWith(() => {
-            const count = shx.getCount();
+            const count = shx.count();
             expect(count).toBe(51);
         });
     });
@@ -14,7 +14,7 @@ describe('shx tests', () => {
     test('read record test', async () => {
         const shx = new Shx(filePath);
         await shx.openWith(() => {
-            const count = shx.getCount();
+            const count = shx.count();
             let previousRec = shx.get(0);
             for(let i = 1; i < count; i++) {
                 const currentRec = shx.get(i);
