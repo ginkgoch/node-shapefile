@@ -93,7 +93,7 @@ describe('shapefile test - polyline', () => {
         const lineShp = new Shp(lineShpPath);
         await lineShp.open();
 
-        const records = await lineShp.readRecords();
+        const records = await lineShp.iterator();
         let record = await records.next();
 
         expect(record).toBeGeneralRecord();
@@ -145,7 +145,7 @@ describe('read by id tests', () => {
         const shpPath = path.join(__dirname, 'data/USStates.shp');
         const shp = new Shp(shpPath);
         await shp.openWith(async () => {
-            const recordIterator = await shp.readRecords();
+            const recordIterator = await shp.iterator();
 
             let index = 0, ri = undefined;
             while((ri = await recordIterator.next()) && !ri.done) {
@@ -161,7 +161,7 @@ describe('read by id tests', () => {
 async function loopRecords(path, callback) {
     const shapefile = new Shp(path);
     await shapefile.open();
-    const records = await shapefile.readRecords();
+    const records = await shapefile.iterator();
     let record = null;
     while ((record = await records.next()) && !record.done) {
         callback();
@@ -173,7 +173,7 @@ async function getFirstRecord(path) {
     const shapefile = new Shp(path);
     await shapefile.open();
 
-    const records = await shapefile.readRecords();
+    const records = await shapefile.iterator();
     const record = await records.next();
     await shapefile.close();
 

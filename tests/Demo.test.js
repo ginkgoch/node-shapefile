@@ -5,7 +5,7 @@ describe('demos tests', () => {
         const citiesShp = new Shapefile('./tests/data/USStates.shp');
         await citiesShp.open();
     
-        const records = await citiesShp.readRecords();
+        const records = await citiesShp.iterator();
         let record = undefined;
         while ((record = await records.next()) && !record.done) {
             callback(record);

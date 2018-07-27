@@ -1,10 +1,9 @@
 const fs = require('fs');
 const _ = require('lodash');
-const StreamReader = require('ginkgoch-stream-reader');
 const Validators = require('./Validators');
-const ShpParser = require('./shp/ShpParser');
-const ShpIterator = require('./shp/ShpIterator');
 const Openable = require('./base/StreamOpenable');
+const ShapefileIt = require('./ShapefileIterator');
+const Shp = require('./shp/Shp');
 const Shx = require('./shx/Shx');
 const Dbf = require('./dbf/Dbf');
 const extReg = /\.\w+$/;
@@ -19,11 +18,10 @@ module.exports = class Shapefile extends Openable {
      * @override
      */
     async _open() {
-        Validators.checkFileExists(this.filePath);
+        Validators.checkFileExists(this.filePath, ['.shp', '.shx', '.dbf']);
 
-        this._fd = fs.openSync(this.filePath, 'r');
-        this._header = await this._readHeader();
-        this._shpParser = ShpParser.getParser(this._header.fileType);
+        this._shp = new Shp(this.filePath);
+        await this._shp.open();
 
         const filePathShx = this.filePath.replace(extReg, '.shx');
         this._shx = new Shx(filePathShx);
@@ -38,10 +36,10 @@ module.exports = class Shapefile extends Openable {
      * @override
      */
     async _close() {
-        fs.closeSync(this._fd);
-        this._fd = undefined;
-        this._header = undefined;
-        this._shpParser = undefined;
+        if(this._shp) {
+            await this._shp.close();
+            this._shp = undefined;
+        }
         
         if(this._shx) {
             await this._shx.close();
@@ -54,55 +52,38 @@ module.exports = class Shapefile extends Openable {
         }
     } 
 
-    async _readHeader() {
+    async iterator(fields) {
         Validators.checkIsOpened(this.isOpened);
-
-        const stream = fs.createReadStream(null, {
-            fd: this._fd,
-            autoClose: false,
-            start: 0,
-            end: 68,
-            highWaterMark: 100
-        });
-        const sr = new StreamReader(stream);
-        await sr.open();
-        const buffer = await sr.read();
-
-        const fileCode = buffer.readInt32BE(0);
-        const fileLength = buffer.readInt32BE(24) * 2;
-        const version = buffer.readInt32LE(28);
-        const fileType = buffer.readInt32LE(32);
-        const minx = buffer.readDoubleLE(36);
-        const miny = buffer.readDoubleLE(44);
-        const maxx = buffer.readDoubleLE(52);
-        const maxy = buffer.readDoubleLE(60);
-        return await Promise.resolve({
-            fileCode,
-            fileLength,
-            version,
-            fileType,
-            envelope: { minx, miny, maxx, maxy }
-        });
+        const shpIt = await this._shp.iterator();
+        const dbfIt = await this._dbf.iterator();
+        dbfIt.filter = fields;
+        const shapefileIt = new ShapefileIt(shpIt, dbfIt);
+        return shapefileIt;
     }
-
-    async readRecords() {
+    
+    async get(id, fields) {
         Validators.checkIsOpened(this.isOpened);
-        return await this._getRecordIteractor(100);
+        const geom = await this._shp.get(id);
+        
+        fields = this._normalizeFields(fields);
+        const fieldValues = await this._dbf.get(id, fields);
+        return { geom, fields: fieldValues };
     }
 
-    async get(id) {
-        const rshx = this._shx.get(id);
-        const iterator = await this._getRecordIteractor(rshx.offset, rshx.offset + 8 + rshx.length);
-        const result = await iterator.next();
+    /**
+     * @private
+     * @param {*} fields The fields filter could be 'all', 'none', Array.<string> - field names. Default value is 'all' which means returns all fields.
+     */
+    _normalizeFields(fields) {
+        if (fields === 'none') {
+            return [];
+        }
 
-        return _.omit(result, ['done']);
-    }
-
-    async _getRecordIteractor(start, end) { 
-        const option = this._getStreamOption(start, end);
-        const stream = fs.createReadStream(null, option);
-        const sr = new StreamReader(stream);
-        await sr.open();
-        return new ShpIterator(sr, this._shpParser);
+        const allFields = this._dbf.getFields();
+        if (_.isArray(fields)) {
+            return _.intersection(allFields, fields);
+        } else {
+            return _.clone(allFields);
+        }
     }
 }
