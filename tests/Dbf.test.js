@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const Dbf = require('../libs/dbf/Dbf');
 const DbfFieldType = require('../libs/dbf/DbfFieldType');
 const dbf_usstates_header = require('./data/dbf_usstates_header.json');
@@ -10,7 +11,7 @@ describe('Dbf tests', () => {
 
     test('read header test', async () => {
         const dbf = new Dbf(filePath);
-        dbf.openWith(() => {
+        await dbf.openWith(() => {
             const header = dbf._header;
             expect(JSON.stringify(header)).toEqual(JSON.stringify(dbf_usstates_header));
         });
@@ -18,7 +19,7 @@ describe('Dbf tests', () => {
 
     test('read record - first', async () => {
         const dbf = new Dbf(filePath);
-        dbf.openWith(async () => {
+        await dbf.openWith(async () => {
             const records = await dbf.readRecords();
             const record = await records.next();
             expect(JSON.stringify(record)).toBe(JSON.stringify(dbf_usstates_record1));
@@ -27,7 +28,7 @@ describe('Dbf tests', () => {
 
     test('read record - second', async () => {
         const dbf = new Dbf(filePath);
-        dbf.openWith(async () => {
+        await dbf.openWith(async () => {
             const records = await dbf.readRecords();
             let record = await records.next();
             record = await records.next();
@@ -37,7 +38,7 @@ describe('Dbf tests', () => {
 
     test('read record - final', async () => {
         const dbf = new Dbf(filePath);
-        dbf.openWith(async () => {
+        await dbf.openWith(async () => {
             const records = await dbf.readRecords();
             let temp = await records.next();
             let record = undefined;
@@ -50,6 +51,24 @@ describe('Dbf tests', () => {
 
             expect(count).toBe(51);
             expect(JSON.stringify(record)).toBe(JSON.stringify(dbf_usstates_record51));
+        });
+    });
+
+    test('read record - by id', async () => {
+        const dbf = new Dbf(filePath);
+        await dbf.openWith(async () => {
+            const records = await dbf.readRecords();
+            let record1 = await records.next();
+            let count = 0;
+            while (!record1.done) {
+                const record2 = await dbf.get(count); 
+                expect(record2).toEqual(_.omit(record1, ['done']));
+                
+                count++;
+                record1 = await records.next();
+            }
+
+            expect(count).toBe(51);
         });
     });
 });

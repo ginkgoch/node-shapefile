@@ -1,5 +1,7 @@
 const fs = require('fs');
+const path = require('path');
 const assert = require('assert');
+const _ = require('lodash');
 
 module.exports = class Validators {
     static checkIsOpened(isOpened) {
@@ -14,7 +16,19 @@ module.exports = class Validators {
         }
     }
 
-    static checkFileExists(filePath) {
-       assert(fs.existsSync(filePath), `${filePath} not exists.`);
+    static checkFileExists(filePath, exts = undefined) {
+        const files = new Set();
+        files.add(filePath);
+
+        if(exts && _.isArray(exts)) {
+            exts.map(f => filePath.replace(/\.\w+$/, f).trim()).forEach(f => files.add(f));
+        }
+
+        files.forEach(Validators._checkFileExists);
+    }
+
+    static _checkFileExists(filePath) {
+        const basename = path.basename(filePath);
+        assert(fs.existsSync(filePath), `${basename} not exists.`);
     }
 }

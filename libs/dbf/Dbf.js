@@ -1,4 +1,5 @@
 const fs = require('fs');
+const _ = require('lodash');
 const StreamReader = require('ginkgoch-stream-reader');
 const Openable = require('../base/StreamOpenable');
 const Validators = require('../Validators');
@@ -66,6 +67,15 @@ module.exports = class Dbf extends Openable {
         return {
             fileType, date, numRecords, headerLength, recordLength, fields
         };
+    }
+
+    async get(id) {
+        Validators.checkIsOpened(this.isOpened);
+
+        const offset = this._header.headerLength + 1 + this._header.recordLength * id;
+        const records = await this._getRecordIteractor(offset, offset + this._header.recordLength);
+        const record = await records.next();
+        return _.omit(record, ['done']);
     }
 
     async readRecords() {
