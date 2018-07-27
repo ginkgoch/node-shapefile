@@ -64,5 +64,6 @@ module.exports = class Shapefile extends Openable {
         Validators.checkIsOpened(this.isOpened);
         const geom = await this._shp.get(id);
         const fields = await this._dbf.get(id);
+        return { geom, fields };
     }
 }
