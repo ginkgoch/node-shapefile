@@ -50,7 +50,11 @@ module.exports = class Shapefile extends Openable {
             await this._dbf.close();
             this._dbf = undefined;
         }
-    } 
+    }
+
+    header() {
+        return this._shp._header;
+    }
 
     async iterator(fields) {
         Validators.checkIsOpened(this.isOpened);
