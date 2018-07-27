@@ -8,6 +8,7 @@ module.exports = class Openable {
 
         this.isOpened = true;
         await this._open();
+        return await Promise.resolve(this);
     }
 
     async _open() { }

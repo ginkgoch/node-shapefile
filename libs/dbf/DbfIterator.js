@@ -1,12 +1,13 @@
-const Iterator = require('../Iterator');
-const RecordReader = require('../RecordReader');
+const _ = require('lodash');
+const Iterator = require('../base/Iterator');
+const BufferReader = require('ginkgoch-buffer-reader');
 
 module.exports = class DbfIterator extends Iterator {
     constructor(streamReader, header) {
         super();
 
-        this._streamReader = streamReader;
         this._header = header;
+        this._streamReader = streamReader;
     }
 
     async next() {
@@ -16,11 +17,14 @@ module.exports = class DbfIterator extends Iterator {
             return this._done();
         }
         
-        const br = new RecordReader(buffer);
+        const br = new BufferReader(buffer);
         const fieldValues = {};
         for (let i = 0; i < this._header.fields.length; i++) {
             const field = this._header.fields[i];
             const buffer = br.nextBuffer(field.length);
+
+            if(this.filter && !_.includes(this.filter, field.name)) continue;
+
             const text = buffer.toString().replace(/\0/g, '').trim();
             fieldValues[field.name] = DbfIterator._parseFieldValue(text, field);
         }
