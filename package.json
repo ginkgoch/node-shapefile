@@ -1,22 +1,34 @@
 {
-  "name": "shapefile-reader",
+  "name": "ginkgoch-shapefile-reader",
   "version": "1.0.0",
-  "description": "",
+  "description": "This is a NodeJs library to help to read shapefiles from your disk.",
   "main": "index.js",
+  "keywords": [
+    "shapefile for nodejs", "shapefile reader", "shapefile source", "gis"
+  ],
   "scripts": {
     "test": "./node_modules/.bin/jest"
   },
-  "author": "",
-  "license": "ISC",
+  "author": {
+    "name": "Ginkgoch",
+    "email": "ginkgoch@outlook.com",
+    "url": "https://github.com/ginkgoch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ginkgoch/node-shapefile-reader"
+  },
+  "license": "MIT",
   "dependencies": {
     "ginkgoch-buffer-reader": "^1.0.1",
     "ginkgoch-stream-reader": "^1.0.0",
-    "lodash": "^4.17.10",
-    "shapefile": "^0.6.6",
-    "statman-stopwatch": "^2.7.0"
+    "lodash": "^4.17.10"
   },
   "devDependencies": {
     "jest": "^23.4.1",
     "jest-cli": "^23.4.1"
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
 }
