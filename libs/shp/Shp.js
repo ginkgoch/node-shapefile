@@ -79,7 +79,7 @@ module.exports = class Shp extends Openable {
         });
     }
 
-    async readRecords() {
+    async iterator() {
         Validators.checkIsOpened(this.isOpened);
         return await this._getRecordIteractor(100);
     }

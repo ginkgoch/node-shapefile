@@ -20,7 +20,7 @@ describe('Dbf tests', () => {
     test('read record - first', async () => {
         const dbf = new Dbf(filePath);
         await dbf.openWith(async () => {
-            const records = await dbf.readRecords();
+            const records = await dbf.iterator();
             const record = await records.next();
             expect(JSON.stringify(record)).toBe(JSON.stringify(dbf_usstates_record1));
         });
@@ -29,7 +29,7 @@ describe('Dbf tests', () => {
     test('read record - second', async () => {
         const dbf = new Dbf(filePath);
         await dbf.openWith(async () => {
-            const records = await dbf.readRecords();
+            const records = await dbf.iterator();
             let record = await records.next();
             record = await records.next();
             expect(JSON.stringify(record)).toBe(JSON.stringify(dbf_usstates_record2));
@@ -39,7 +39,7 @@ describe('Dbf tests', () => {
     test('read record - final', async () => {
         const dbf = new Dbf(filePath);
         await dbf.openWith(async () => {
-            const records = await dbf.readRecords();
+            const records = await dbf.iterator();
             let temp = await records.next();
             let record = undefined;
             let count = 0;
@@ -57,7 +57,7 @@ describe('Dbf tests', () => {
     test('read record - by id', async () => {
         const dbf = new Dbf(filePath);
         await dbf.openWith(async () => {
-            const records = await dbf.readRecords();
+            const records = await dbf.iterator();
             let record1 = await records.next();
             let count = 0;
             while (!record1.done) {

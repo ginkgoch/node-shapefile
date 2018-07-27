@@ -52,10 +52,10 @@ module.exports = class Shapefile extends Openable {
         }
     } 
 
-    async readRecords(fields) {
+    async iterator(fields) {
         Validators.checkIsOpened(this.isOpened);
-        const shpIt = await this._shp.readRecords();
-        const dbfIt = await this._dbf.readRecords();
+        const shpIt = await this._shp.iterator();
+        const dbfIt = await this._dbf.iterator();
         dbfIt.filter = fields;
         const shapefileIt = new ShapefileIt(shpIt, dbfIt);
         return shapefileIt;

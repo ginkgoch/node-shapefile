@@ -85,7 +85,7 @@ module.exports = class Dbf extends Openable {
         return _.omit(record, ['done']);
     }
 
-    async readRecords(fields) {
+    async iterator(fields) {
         Validators.checkIsOpened(this.isOpened);
     
         const records = await this._getRecordIteractor(this._header.headerLength + 1);
