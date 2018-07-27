@@ -1,145 +1,90 @@
-require('./JestEx');
-const path = require('path');
 const Shapefile = require('../libs/Shapefile');
-const citiesPath = path.join(__dirname, 'data/cities_e.shp');
+const _ = require('lodash');
 
-describe('shapefile general tests', () => {
-    test('open close test 1', async () => {
-        const citiesShp = new Shapefile(citiesPath);
+describe('shapefile test', () => {
+    const citiesPath = './tests/data/USStates.shp';
 
-        expect(citiesShp.isOpened).toBeFalsy();
-        await citiesShp.open();
-        expect(citiesShp.isOpened).toBeTruthy();
-        expect(citiesShp._fd).not.toBeUndefined();
+    test('shapefile - general test', async () => {
+        const shapefile = new Shapefile(citiesPath);
+        await shapefile.openWith(async () => {
+            const shapefileIt = await shapefile.iterator();
+            let record1 = await shapefileIt.next();
+            let count = 0;
+            while(!record1.done) {
+                record1 = _.omit(record1, ['done']);
+                const record2 = await shapefile.get(count);
+                expect(record2).toHaveProperty('geom');
+                expect(record2).toHaveProperty('fields');
+                expect(record2).toEqual(record1);
 
-        await citiesShp.close();
-        expect(citiesShp.isOpened).toBeFalsy();
-        expect(citiesShp._fd).toBeUndefined();
+                count++;
+                record1 = await shapefileIt.next();
+            }
+            expect(count).toBe(51);
+        });
     });
 
-    test('open close test 2', async () => {
-        const citiesShp = new Shapefile(citiesPath);
+    test('shapefile - specific fields test', async () => {
+        const shapefile = new Shapefile(citiesPath);
+        await shapefile.openWith(async () => {
+            const shapefileIt = await shapefile.iterator(['RECID']);
+            let record1 = await shapefileIt.next();
+            let count = 0;
+            while(!record1.done) {
+                record1 = _.omit(record1, ['done']);
+                const record2 = await shapefile.get(count, ['RECID']);
+                expect(record2).toHaveProperty('geom');
+                expect(record2).toHaveProperty('fields');
+                expect(_.keys(record2.fields).length).toBe(1);
+                expect(_.keys(record2.fields)[0]).toBe('RECID');
+                expect(record2).toEqual(record1);
 
-        expect(citiesShp.isOpened).toBeFalsy();
-        await citiesShp.open();
-        await citiesShp.open();
-        expect(citiesShp.isOpened).toBeTruthy();
-        expect(citiesShp._fd).not.toBeUndefined();
-
-        await citiesShp.close();
-        await citiesShp.close();
-        expect(citiesShp.isOpened).toBeFalsy();
-        expect(citiesShp._fd).toBeUndefined();
+                count++;
+                record1 = await shapefileIt.next();
+            }
+            expect(count).toBe(51);
+        });
     });
 
-    test('read header test 1', async () => {
-        const citiesShp = new Shapefile(citiesPath);
+    test('shapefile - specific fields test 1', async () => {
+        const shapefile = new Shapefile(citiesPath);
+        await shapefile.openWith(async () => {
+            const shapefileIt = await shapefile.iterator([]);
+            let record1 = await shapefileIt.next();
+            let count = 0;
+            while(!record1.done) {
+                record1 = _.omit(record1, ['done']);
+                const record2 = await shapefile.get(count, []);
+                expect(record2).toHaveProperty('geom');
+                expect(record2).toHaveProperty('fields');
+                expect(_.keys(record2.fields).length).toBe(0);
+                expect(record2).toEqual(record1);
 
-        try {
-            await citiesShp.open();
-            const header = await citiesShp._readHeader();
-
-            expect(header.fileCode).toBe(9994);
-            expect(header.fileLength).toBe(533024);
-            expect(header.version).toBe(1000);
-            expect(header.fileType).toBe(1);
-            expect(header.envelope.minx).toBeCloseTo(-174.1964, 4);
-            expect(header.envelope.miny).toBeCloseTo(19.0972, 4);
-            expect(header.envelope.maxx).toBeCloseTo(173.2376, 4);
-            expect(header.envelope.maxy).toBeCloseTo(70.6355, 4);
-        } finally {
-            await citiesShp.close();
-        }
+                count++;
+                record1 = await shapefileIt.next();
+            }
+            expect(count).toBe(51);
+        });
     });
 
-    test('read header test 2', async () => {
-        try {
-            const citiesShp = new Shapefile(citiesPath);
-            await citiesShp._readHeader();
-        } catch (err) {
-            expect(err).toMatch(/Shapefile not opened/);
-        }
-    });
-});
+    test('field names tests', async () => {
+        const filePath = './tests/data/USStates.shp';
+        const shapefile = new Shapefile(filePath);
+        await shapefile.openWith(async () => {
+            let fields = shapefile._normalizeFields();
+            expect(fields.length).toBe(52);
 
-describe('shapefile test - polyline', () => {
-    const lineShpPath = path.join(__dirname, 'data/Austinstreets.shp');
+            fields = shapefile._normalizeFields('none');
+            expect(fields.length).toBe(0);
 
-    test('read records test - polygine loop', async () => {
-        const callbackMock = jest.fn();
-        await loopRecords(lineShpPath, callbackMock);
-        expect(callbackMock.mock.calls.length).toBe(13843);
-    });
+            fields = shapefile._normalizeFields('all');
+            expect(fields.length).toBe(52);
 
-    test('read records test - polyline read first record', async () => {
-        const lineShp = new Shapefile(lineShpPath);
-        await lineShp.open();
+            fields = shapefile._normalizeFields(['RECID', 'AREA', 'PERIMETER', 'STATE_', 'STATE_ID', 'STATE_NAME', 'STATE_FIPS', 'SUB_REGION']);
+            expect(fields.length).toBe(8);
 
-        const records = await lineShp.readRecords();
-        let record = await records.next();
-
-        expect(record).toBeGeneralRecord();
-        expect(record.geom).toBeClosePolyLineTo([-97.731192, 30.349088, -97.731584, 30.349305]);
-
-        await lineShp.close();
-    });
-});
-
-describe('shapefile test - point', () => {
-    test('read records test - point loop', async () => {
-        const callbackMock = jest.fn();
-        await loopRecords(citiesPath, callbackMock);
-        expect(callbackMock.mock.calls.length).toBe(19033);
-    });
-
-    test('read records test - point read first record', async () => {
-        const record = await getFirstRecord(citiesPath);
-        expect(record).toBeGeneralRecord();
-        expect(record.geom).toBeClosePointTo([-122.2065, 48.7168]);
+            fields = shapefile._normalizeFields(['RECID1', 'AREA', 'PERIMETER', 'STATE_', 'STATE_ID', 'STATE_NAME', 'STATE_FIPS', 'SUB_REGION']);
+            expect(fields.length).toBe(7);
+        });
     });
 });
-
-describe('shapefile test - polygon', () => {
-    const shpPath = path.join(__dirname, 'data/USStates.shp');
-
-    test('read records test - polygon loop', async () => {
-        const callbackMock = jest.fn();
-        await loopRecords(shpPath, callbackMock);
-        expect(callbackMock.mock.calls.length).toBe(51);
-    });
-
-    test('read records test - polygon read first record', async () => {
-        const record = await getFirstRecord(shpPath);
-        expect(record).toBeGeneralRecord();
-
-        expect(record.geom.length).toBe(3);
-        expect(record.geom[0].length).toBe(244);
-        expect(record.geom[1].length).toBe(12);
-        expect(record.geom[2].length).toBe(20);
-        expect(record.geom[0][0]).toEqual(record.geom[0][243]);
-        expect(record.geom[1][0]).toEqual(record.geom[1][11]);
-        expect(record.geom[2][0]).toEqual(record.geom[2][19]);
-    });
-});
-
-async function loopRecords(path, callback) {
-    const shapefile = new Shapefile(path);
-    await shapefile.open();
-    const records = await shapefile.readRecords();
-    let record = null;
-    while ((record = await records.next()) && !record.done) {
-        callback();
-    }
-    await shapefile.close();
-}
-
-async function getFirstRecord(path) {
-    const shapefile = new Shapefile(path);
-    await shapefile.open();
-
-    const records = await shapefile.readRecords();
-    const record = await records.next();
-    await shapefile.close();
-
-    return await Promise.resolve(record);
-}

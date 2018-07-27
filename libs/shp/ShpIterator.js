@@ -1,19 +1,19 @@
 const _ = require('lodash');
 const StreamReader = require('ginkgoch-stream-reader');
-const RecordParser = require('./RecordParser');
-const Iterator = require('./Iterator');
+const ShpParser = require('./ShpParser');
+const Iterator = require('../base/Iterator');
 
-module.exports = class RecordIterator extends Iterator {
+module.exports = class ShpIterator extends Iterator {
     /**
      * 
      * @param {StreamReader} streamReader 
-     * @param {RecordParser} recordParser
+     * @param {ShpParser} shpParser
      */
-    constructor(streamReader, recordParser) {
+    constructor(streamReader, shpParser) {
         super();
 
         this._streamReader = streamReader;
-        this._recordParser = recordParser;
+        this._shpParser = shpParser;
     }
 
     /**
@@ -32,7 +32,7 @@ module.exports = class RecordIterator extends Iterator {
             return this._done();
         }
 
-        const content = this._recordParser(contentBuffer);
+        const content = this._shpParser(contentBuffer);
         content.id = id;
         return this._continue(content); 
     }

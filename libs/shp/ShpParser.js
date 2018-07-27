@@ -1,17 +1,16 @@
 const _ = require('lodash');
-const StreamReader = require('ginkgoch-stream-reader');
-const ShapefileType = require('./ShapefileType');
+const ShapefileType = require('../ShapefileType');
 
-module.exports = class Parser {
+module.exports = class ShpParser {
     /**
      * 
      * @param {ShapefileType|number} shapefileType 
      */
     static getParser(shapefileType) {
-        Parser.constructor.parsers = _.defaults(Parser.constructor.parsers, { });
+        ShpParser.constructor.parsers = _.defaults(ShpParser.constructor.parsers, { });
         
         try {
-            const parser = Parser._getParser(shapefileType);
+            const parser = ShpParser._getParser(shapefileType);
             return parser;
         }
         catch (err) {
@@ -20,16 +19,10 @@ module.exports = class Parser {
     }
 
     /**
-     * 
-     * @param {StreamReader} streamReader 
-     */
-    async readEnvelope(streamReader) { }
-
-    /**
      * @private
      * @param {*} object 
      * @param {string} path 
-     * @param {Parser} dv 
+     * @param {ShpParser} dv 
      */
     static _getOrSetDefault(object, path, dv) {
         if(!_.has(object, path)) {
@@ -44,6 +37,7 @@ module.exports = class Parser {
             type = _.findKey(ShapefileType, key => key === type);
         }
 
-        return Parser._getOrSetDefault(Parser.constructor.parsers, type, require(`./parsers/parse${_.capitalize(type)}`));
+        const parser = ShpParser._getOrSetDefault(ShpParser.constructor.parsers, type, require(`./parsers/parse${_.capitalize(type)}`));
+        return parser;
     }
 }

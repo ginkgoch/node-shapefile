@@ -1,27 +1,58 @@
 # Shapefile Reader
 This is a NodeJs library to help to read shapefiles from your disk.  
 
+## Install
+```terminal
+npm i ginkgoch-shapefile-reader
+```
+
+## Test
+```terminal
+npm test
+```
+
 ## Sample
-### Loop all records and print the vertices
+### Loops all records and print the vertices
 ```js
-async function loopRecords() {
-    const citiesShp = new Shapefile('./tests/data/sample.shp');
-    await citiesShp.open();
-
-    const records = await citiesShp.readRecords();
-    let count = 0;
+async function loopUSStates(callback) {
+    const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
+    const iterator = await statesShp.iterator();
     let record = undefined;
-    while ((record = await records.next()) && !record.done) {
-        count++;
-        console.log(record);
+    while ((record = await iterator.next()) && !record.done) {
+        callback(record);
     }
-
-    console.log('done', count);
+    await statesShp.close();
 }
 ```
 
-### Filter records to get better performance
-Peek every records header and keep read the content when necessary. It has better reading performance.
+### Gets specific record by id
+
+Gets records by id with all fields.
+```js
+async function getRecordById(id) {
+    const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
+    const record = await statesShp.get(0);
+    await statesShp.close();
+
+    // returns { geom: { geom: /**geom points*/, envelope: { minx, miny, maxx, maxy } }, fields: { name1: value1 ... } }
+    return record;
+}
+```
+
+Gets records by id with none fields. Specify the fields to fetch from DBF to ignore reading unnecessary field values.
+```js
+async function getRecordById(id) {
+    const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
+    const record = await statesShp.get(0, []);
+    await statesShp.close();
+
+    // returns { geom: { geom: /**geom points*/, envelope: { minx, miny, maxx, maxy } }, fields: { } }
+    return record;
+}
+```
+
+## Issues
+Contact [ginkgoch@outlook.com](mailto:ginkgoch@outlook.com) or [sumbit an issue](https://github.com/ginkgoch/node-shapefile-reader/issues).
 
 
 
