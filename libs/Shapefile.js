@@ -52,18 +52,38 @@ module.exports = class Shapefile extends Openable {
         }
     } 
 
-    async readRecords() {
+    async readRecords(fields) {
         Validators.checkIsOpened(this.isOpened);
         const shpIt = await this._shp.readRecords();
         const dbfIt = await this._dbf.readRecords();
+        dbfIt.filter = fields;
         const shapefileIt = new ShapefileIt(shpIt, dbfIt);
         return shapefileIt;
     }
     
-    async get(id) {
+    async get(id, fields) {
         Validators.checkIsOpened(this.isOpened);
         const geom = await this._shp.get(id);
-        const fields = await this._dbf.get(id);
-        return { geom, fields };
+        
+        fields = this._normalizeFields(fields);
+        const fieldValues = await this._dbf.get(id, fields);
+        return { geom, fields: fieldValues };
+    }
+
+    /**
+     * @private
+     * @param {*} fields The fields filter could be 'all', 'none', Array.<string> - field names. Default value is 'all' which means returns all fields.
+     */
+    _normalizeFields(fields) {
+        if (fields === 'none') {
+            return [];
+        }
+
+        const allFields = this._dbf.getFields();
+        if (_.isArray(fields) && fields.length > 0) {
+            return _.intersection(allFields, fields);
+        } else {
+            return _.clone(allFields);
+        }
     }
 }

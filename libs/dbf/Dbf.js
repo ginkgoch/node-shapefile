@@ -10,6 +10,7 @@ module.exports = class Dbf extends Openable {
     constructor(filePath) {
         super();
         this.filePath = filePath;
+        this.filter = undefined;
     }
 
     /**
@@ -18,6 +19,10 @@ module.exports = class Dbf extends Openable {
     async _open() {
         this._fd = fs.openSync(this.filePath, 'r');
         this._header = await this._readHeader();
+    }
+
+    getFields() {
+        return this._header.fields.map(f => f.name);
     }
 
     /**
@@ -69,19 +74,22 @@ module.exports = class Dbf extends Openable {
         };
     }
 
-    async get(id) {
+    async get(id, fields) {
         Validators.checkIsOpened(this.isOpened);
 
         const offset = this._header.headerLength + 1 + this._header.recordLength * id;
         const records = await this._getRecordIteractor(offset, offset + this._header.recordLength);
+        records.filter = fields;
+
         const record = await records.next();
         return _.omit(record, ['done']);
     }
 
-    async readRecords() {
+    async readRecords(fields) {
         Validators.checkIsOpened(this.isOpened);
     
         const records = await this._getRecordIteractor(this._header.headerLength + 1);
+        records.filter = fields;
         return records;
     }
 
