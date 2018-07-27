@@ -80,7 +80,7 @@ module.exports = class Shapefile extends Openable {
         }
 
         const allFields = this._dbf.getFields();
-        if (_.isArray(fields) && fields.length > 0) {
+        if (_.isArray(fields)) {
             return _.intersection(allFields, fields);
         } else {
             return _.clone(allFields);

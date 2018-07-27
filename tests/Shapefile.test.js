@@ -46,6 +46,27 @@ describe('shapefile test', () => {
         });
     });
 
+    test('shapefile - specific fields test 1', async () => {
+        const shapefile = new Shapefile(citiesPath);
+        await shapefile.openWith(async () => {
+            const shapefileIt = await shapefile.readRecords([]);
+            let record1 = await shapefileIt.next();
+            let count = 0;
+            while(!record1.done) {
+                record1 = _.omit(record1, ['done']);
+                const record2 = await shapefile.get(count, []);
+                expect(record2).toHaveProperty('geom');
+                expect(record2).toHaveProperty('fields');
+                expect(_.keys(record2.fields).length).toBe(0);
+                expect(record2).toEqual(record1);
+
+                count++;
+                record1 = await shapefileIt.next();
+            }
+            expect(count).toBe(51);
+        });
+    });
+
     test('field names tests', async () => {
         const filePath = './tests/data/USStates.shp';
         const shapefile = new Shapefile(filePath);
