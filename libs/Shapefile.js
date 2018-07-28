@@ -56,13 +56,26 @@ module.exports = class Shapefile extends Openable {
         return this._shp._header;
     }
 
+    /**
+     * 
+     * @param {boolean} detail Indicates whether to show field details (name, type, length, decimal) or not.
+     */
+    fields(detail = false) {
+        return this._dbf.fields(detail);
+    }
+
     async iterator(fields) {
         Validators.checkIsOpened(this.isOpened);
         const shpIt = await this._shp.iterator();
         const dbfIt = await this._dbf.iterator();
-        dbfIt.filter = fields;
+        dbfIt.filter = this._normalizeFields(fields);
         const shapefileIt = new ShapefileIt(shpIt, dbfIt);
         return shapefileIt;
+    }
+    
+    async count() {
+        Validators.checkIsOpened(this.isOpened);
+        return await Promise.resolve(this._shx.count());
     }
     
     async get(id, fields) {
@@ -84,7 +97,7 @@ module.exports = class Shapefile extends Openable {
             return [];
         }
 
-        const allFields = this._dbf.getFields();
+        const allFields = this._dbf.fields();
         if (_.isArray(fields)) {
             return _.intersection(allFields, fields);
         } else {

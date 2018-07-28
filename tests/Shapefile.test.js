@@ -22,10 +22,38 @@ describe('cli-support-tests', () => {
             expect(err.toString()).toMatch(/not exists./);
         }
     });
+
+    test('get fields - default', async () => {
+        const shapefile = new Shapefile(statesPath);
+        await shapefile.openWith(async () => {
+            const fields = shapefile.fields();
+            expect(fields).not.toBeNull();
+            expect(fields).not.toBeUndefined();
+            expect(fields.length).toBe(52);
+        });
+    });
+
+    test('get fields - detail', async () => {
+        const shapefile = new Shapefile(statesPath);
+        await shapefile.openWith(async () => {
+            const fields = shapefile.fields(true);
+            expect(fields).not.toBeNull();
+            expect(fields).not.toBeUndefined();
+            expect(_.entries(fields).length).toBe(52);
+            expect(_.keys(_.first(fields))).toEqual(['name', 'type', 'length', 'decimal']);
+        });
+    });
 });
 
 describe('shapefile test', () => {
     const citiesPath = './tests/data/USStates.shp';
+
+    test('shapefile - get count', async () => {
+        const shapefile = new Shapefile(citiesPath);
+        await shapefile.openWith(async () => {
+            expect(await shapefile.count()).toBe(51);
+        });
+    });
 
     test('shapefile - general test', async () => {
         const shapefile = new Shapefile(citiesPath);
