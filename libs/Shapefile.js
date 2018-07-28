@@ -60,7 +60,7 @@ module.exports = class Shapefile extends Openable {
         Validators.checkIsOpened(this.isOpened);
         const shpIt = await this._shp.iterator();
         const dbfIt = await this._dbf.iterator();
-        dbfIt.filter = fields;
+        dbfIt.filter = this._normalizeFields(fields);
         const shapefileIt = new ShapefileIt(shpIt, dbfIt);
         return shapefileIt;
     }
