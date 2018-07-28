@@ -65,6 +65,11 @@ module.exports = class Shapefile extends Openable {
         return shapefileIt;
     }
     
+    async count() {
+        Validators.checkIsOpened(this.isOpened);
+        return await Promise.resolve(this._shx.count());
+    }
+    
     async get(id, fields) {
         Validators.checkIsOpened(this.isOpened);
         const geom = await this._shp.get(id);

@@ -27,6 +27,13 @@ describe('cli-support-tests', () => {
 describe('shapefile test', () => {
     const citiesPath = './tests/data/USStates.shp';
 
+    test('shapefile - get count', async () => {
+        const shapefile = new Shapefile(citiesPath);
+        await shapefile.openWith(async () => {
+            expect(await shapefile.count()).toBe(51);
+        });
+    });
+
     test('shapefile - general test', async () => {
         const shapefile = new Shapefile(citiesPath);
         await shapefile.openWith(async () => {
