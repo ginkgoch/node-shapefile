@@ -8,6 +8,7 @@ const ShpParser = require('./ShpParser');
 const ShpIterator = require('./ShpIterator');
 const Openable = require('../base/StreamOpenable');
 const Shx = require('../shx/Shx');
+const Envelope = require('./parsers/Envelope');
 const extReg = /\.\w+$/;
 
 module.exports = class Shp extends Openable {
@@ -77,6 +78,16 @@ module.exports = class Shp extends Openable {
             fileType,
             envelope: { minx, miny, maxx, maxy }
         });
+    }
+
+    envelope() {
+        Validators.checkIsOpened(this.isOpened);
+        return new Envelope(this._header.envelope.minx, this._header.envelope.miny, this._header.envelope.maxx, this._header.envelope.maxy);
+    }
+
+    count() {
+        Validators.checkIsOpened(this.isOpened);
+        return this._shx.count();
     }
 
     async iterator() {

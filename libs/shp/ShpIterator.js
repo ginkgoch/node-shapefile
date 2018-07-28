@@ -32,7 +32,9 @@ module.exports = class ShpIterator extends Iterator {
             return this._done();
         }
 
-        const content = this._shpParser(contentBuffer);
+        let content = this._shpParser(contentBuffer);
+        if(content === null) return null;
+
         content.id = id;
         return this._continue(content); 
     }

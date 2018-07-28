@@ -48,6 +48,15 @@ describe('cli-support-tests', () => {
 describe('shapefile test', () => {
     const citiesPath = './tests/data/USStates.shp';
 
+    test('shapefile - envelope', async () => {
+        const shapefile = new Shapefile(citiesPath);
+        await shapefile.openWith(async () => {
+            const envelope = shapefile.envelope();
+            expect(envelope).not.toBeUndefined();
+            expect(envelope).not.toBeNull();
+        });
+    });
+
     test('shapefile - get count', async () => {
         const shapefile = new Shapefile(citiesPath);
         await shapefile.openWith(async () => {
@@ -136,6 +145,29 @@ describe('shapefile test', () => {
 
             fields = shapefile._normalizeFields(['RECID1', 'AREA', 'PERIMETER', 'STATE_', 'STATE_ID', 'STATE_NAME', 'STATE_FIPS', 'SUB_REGION']);
             expect(fields.length).toBe(7);
+        });
+    });
+});
+
+describe('shapefile filters', () => {
+    const filePath = './tests/data/USStates.shp';
+
+    test('shapefile - filter 1', async () => {
+        const shapefile = new Shapefile(filePath);
+        await shapefile.openWith(async () => {
+            const iterator = await shapefile.iterator();
+            // const filter = { minx: 0, miny: 0, maxx: 180, maxy: 90 };
+            // iterator.filter = filter;
+
+            // const disjoined = shapefile.envelope().disjoined(filter);
+            // expect(disjoined).toBeTruthy();
+        
+            // let rec = undefined;
+            // const action = jest.fn();
+            // while((rec = await iterator.next()) && !rec.done) {
+            // }
+
+            // expect(action.mock.calls.length).toBe(0);
         });
     });
 });
