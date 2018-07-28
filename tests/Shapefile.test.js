@@ -155,7 +155,7 @@ describe('shapefile filters', () => {
     test('shapefile - filter 1', async () => {
         const shapefile = new Shapefile(filePath);
         await shapefile.openWith(async () => {
-            const iterator = await shapefile.iterator();
+            let iterator = await shapefile.iterator();
             // const filter = { minx: 0, miny: 0, maxx: 180, maxy: 90 };
             // iterator.filter = filter;
 
