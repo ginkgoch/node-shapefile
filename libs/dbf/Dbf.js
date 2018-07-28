@@ -21,8 +21,17 @@ module.exports = class Dbf extends Openable {
         this._header = await this._readHeader();
     }
 
-    getFields() {
-        return this._header.fields.map(f => f.name);
+    /**
+     * 
+     * @param {boolean} detail Indicates whether to show field details (name, type, length, decimal) or not.
+     */
+    fields(detail = false) {
+        let fields = _.cloneDeep(this._header.fields);
+        if(!detail) {
+            fields = fields.map(f => f.name);
+        }
+
+        return fields;
     }
 
     /**
