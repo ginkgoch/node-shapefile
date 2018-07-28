@@ -50,7 +50,11 @@ module.exports = class Shapefile extends Openable {
             await this._dbf.close();
             this._dbf = undefined;
         }
-    } 
+    }
+
+    header() {
+        return this._shp._header;
+    }
 
     async iterator(fields) {
         Validators.checkIsOpened(this.isOpened);
@@ -67,7 +71,8 @@ module.exports = class Shapefile extends Openable {
         
         fields = this._normalizeFields(fields);
         const fieldValues = await this._dbf.get(id, fields);
-        return { geom, fields: fieldValues };
+        // return { geom, fields: fieldValues };
+        return _.merge(geom, { fields: fieldValues });
     }
 
     /**

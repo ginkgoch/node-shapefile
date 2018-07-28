@@ -27,7 +27,7 @@ describe('demos tests', () => {
 
     test('demo 2 - get record by id - all fields', async () => {
         const record = await getRecordById(0);
-        console.log(JSON.stringify(record));
-        console.log(record);
+        expect(record).not.toBeNull();
+        expect(record).not.toBeUndefined();
     });
 });

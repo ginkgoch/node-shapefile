@@ -1,6 +1,29 @@
 const Shapefile = require('../libs/Shapefile');
 const _ = require('lodash');
 
+describe('cli-support-tests', () => {
+    const statesPath = './tests/data/USStates.shp';
+    test('get header - normal', async () => {
+        const shapefile = new Shapefile(statesPath);
+        await shapefile.openWith(async () => {
+            const header = shapefile.header();
+            expect(header).not.toBeNull();
+            expect(header).not.toBeUndefined();
+        });
+    });
+
+    test('get header - not exist', async () => {
+        try {
+            const shapefile = new Shapefile('un-exist-statesPath.shp');
+            await shapefile.openWith(async () => { });
+            throw 'open should not pass';
+        }
+        catch(err) {
+            expect(err.toString()).toMatch(/not exists./);
+        }
+    });
+});
+
 describe('shapefile test', () => {
     const citiesPath = './tests/data/USStates.shp';
 
