@@ -8,17 +8,17 @@ describe('shapefile general tests', () => {
     test('get stream option test', async () => {
         const citiesShp = await (new Shp(citiesPath).open());
         let opt1 = citiesShp._getStreamOption(100);
-        expect(_.keys(opt1).length).toBe(3);
-        expect(opt1.autoClose).toBeFalsy();
+        expect(_.keys(opt1).length).toBe(2);
+        expect(opt1.autoClose).toBeTruthy();
         expect(opt1.start).toBe(100);
-        expect(_.isNumber(opt1.fd)).toBeTruthy();
+        // expect(_.isNumber(opt1.fd)).toBeTruthy();
 
         opt1 = citiesShp._getStreamOption(100, 108);
-        expect(_.keys(opt1).length).toBe(4);
-        expect(opt1.autoClose).toBeFalsy();
+        expect(_.keys(opt1).length).toBe(3);
+        expect(opt1.autoClose).toBeTruthy();
         expect(opt1.start).toBe(100);
         expect(opt1.end).toBe(108);
-        expect(_.isNumber(opt1.fd)).toBeTruthy();
+        // expect(_.isNumber(opt1.fd)).toBeTruthy();
         await citiesShp.close();
     });
 

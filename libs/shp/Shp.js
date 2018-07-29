@@ -23,7 +23,7 @@ module.exports = class Shp extends Openable {
     async _open() {
         Validators.checkFileExists(this.filePath);
 
-        this._fd = fs.openSync(this.filePath, 'r');
+        this._fd = fs.openSync(this.filePath, 'rs');
         this._header = await this._readHeader();
         this._shpParser = ShpParser.getParser(this._header.fileType);
 
@@ -51,17 +51,8 @@ module.exports = class Shp extends Openable {
 
     async _readHeader() {
         Validators.checkIsOpened(this.isOpened);
-
-        const stream = fs.createReadStream(null, {
-            fd: this._fd,
-            autoClose: false,
-            start: 0,
-            end: 68,
-            highWaterMark: 100
-        });
-        const sr = new StreamReader(stream);
-        await sr.open();
-        const buffer = await sr.read();
+        const buffer = Buffer.alloc(68);
+        fs.readSync(this._fd, buffer, 0, buffer.length, 0);
 
         const fileCode = buffer.readInt32BE(0);
         const fileLength = buffer.readInt32BE(24) * 2;
@@ -71,13 +62,9 @@ module.exports = class Shp extends Openable {
         const miny = buffer.readDoubleLE(44);
         const maxx = buffer.readDoubleLE(52);
         const maxy = buffer.readDoubleLE(60);
-        return await Promise.resolve({
-            fileCode,
-            fileLength,
-            version,
-            fileType,
-            envelope: { minx, miny, maxx, maxy }
-        });
+        const header = { fileCode, fileLength, version, fileType, envelope: { minx, miny, maxx, maxy } };
+
+        return await Promise.resolve(header);
     }
 
     envelope() {
@@ -108,7 +95,7 @@ module.exports = class Shp extends Openable {
 
     async _getRecordIteractor(start, end) { 
         const option = this._getStreamOption(start, end);
-        const stream = fs.createReadStream(null, option);
+        const stream = fs.createReadStream(this.filePath, option);
         const sr = new StreamReader(stream);
         await sr.open();
         return new ShpIterator(sr, this._shpParser);
