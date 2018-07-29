@@ -87,7 +87,7 @@ describe('shapefile test', () => {
     test('shapefile - specific fields test', async () => {
         const shapefile = new Shapefile(citiesPath);
         await shapefile.openWith(async () => {
-            const shapefileIt = await shapefile.iterator(['RECID']);
+            const shapefileIt = await shapefile.iterator({ fields: ['RECID'] });
             let record1 = await shapefileIt.next();
             let count = 0;
             while(!record1.done) {
@@ -109,7 +109,7 @@ describe('shapefile test', () => {
     test('shapefile - specific fields test 1', async () => {
         const shapefile = new Shapefile(citiesPath);
         await shapefile.openWith(async () => {
-            const shapefileIt = await shapefile.iterator([]);
+            const shapefileIt = await shapefile.iterator({ fields: [] });
             let record1 = await shapefileIt.next();
             let count = 0;
             while(!record1.done) {

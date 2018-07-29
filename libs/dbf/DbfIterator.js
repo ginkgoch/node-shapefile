@@ -6,6 +6,7 @@ module.exports = class DbfIterator extends Iterator {
     constructor(streamReader, header) {
         super();
 
+        this.fields = undefined;
         this._header = header;
         this._streamReader = streamReader;
     }
@@ -23,7 +24,7 @@ module.exports = class DbfIterator extends Iterator {
             const field = this._header.fields[i];
             const buffer = br.nextBuffer(field.length);
 
-            if(this.filter && !_.includes(this.filter, field.name)) continue;
+            if(this.fields && !_.includes(this.fields, field.name)) continue;
 
             const text = buffer.toString().replace(/\0/g, '').trim();
             fieldValues[field.name] = DbfIterator._parseFieldValue(text, field);

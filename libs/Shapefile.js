@@ -1,4 +1,3 @@
-const fs = require('fs');
 const _ = require('lodash');
 const Validators = require('./Validators');
 const Openable = require('./base/StreamOpenable');
@@ -61,13 +60,14 @@ module.exports = class Shapefile extends Openable {
         return this._dbf.fields(detail);
     }
 
-    async iterator(fields) {
+    async iterator(filter) {
         Validators.checkIsOpened(this.isOpened);
 
         const shpIt = await this._shp.iterator();
         const dbfIt = await this._dbf.iterator();
-        dbfIt.filter = this._normalizeFields(fields);
         const shapefileIt = new ShapefileIt(shpIt, dbfIt);
+        shapefileIt.fields = this._normalizeFields(filter && filter.fields);
+        shapefileIt.envelope = filter && filter.envelope;
         return shapefileIt;
     }
     

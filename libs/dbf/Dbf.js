@@ -92,7 +92,7 @@ module.exports = class Dbf extends Openable {
 
         const offset = this._header.headerLength + 1 + this._header.recordLength * id;
         const records = await this._getRecordIteractor(offset, offset + this._header.recordLength);
-        records.filter = fields;
+        records.fields = fields;
 
         const record = await records.next();
         return _.omit(record, ['done']);

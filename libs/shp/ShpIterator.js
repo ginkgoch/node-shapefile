@@ -12,6 +12,7 @@ module.exports = class ShpIterator extends Iterator {
     constructor(streamReader, shpParser) {
         super();
 
+        this.envelope = undefined;
         this._streamReader = streamReader;
         this._shpParser = shpParser;
     }

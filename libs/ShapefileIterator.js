@@ -15,6 +15,14 @@ module.exports = class ShapefileIterator extends Iterator {
         this._dbfIt = dbfIt;
     }
 
+    set fields(v) {
+        this._dbfIt.fields = v;
+    }
+
+    set envelope(v) {
+        this._shpIt.envelope = v;
+    }
+
     async next() {
         let shpRecord = await this._shpIt.next();
         let dbfRecord = await this._dbfIt.next();
