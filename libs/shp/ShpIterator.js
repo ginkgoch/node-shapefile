@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const StreamReader = require('ginkgoch-stream-reader');
 const ShpParser = require('./ShpParser');
+const ShpReader = require('./ShpReader');
 const Iterator = require('../base/Iterator');
 
 module.exports = class ShpIterator extends Iterator {
@@ -12,6 +13,7 @@ module.exports = class ShpIterator extends Iterator {
     constructor(streamReader, shpParser) {
         super();
 
+        this.envelope = undefined;
         this._streamReader = streamReader;
         this._shpParser = shpParser;
     }
@@ -32,7 +34,14 @@ module.exports = class ShpIterator extends Iterator {
             return this._done();
         }
 
-        const content = this._shpParser(contentBuffer);
+        let reader = new ShpReader(contentBuffer);
+        let content = this._shpParser(reader);
+        if (_.isUndefined(this.envelope) || (this.envelope && !content.envelope.disjoined(this.envelope))) {
+            content = { geom: content.readGeom() };
+        } else {
+            content = { geom: null };
+        }
+
         content.id = id;
         return this._continue(content); 
     }

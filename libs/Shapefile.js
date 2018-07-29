@@ -1,10 +1,8 @@
-const fs = require('fs');
 const _ = require('lodash');
 const Validators = require('./Validators');
 const Openable = require('./base/StreamOpenable');
 const ShapefileIt = require('./ShapefileIterator');
 const Shp = require('./shp/Shp');
-const Shx = require('./shx/Shx');
 const Dbf = require('./dbf/Dbf');
 const extReg = /\.\w+$/;
 
@@ -23,10 +21,6 @@ module.exports = class Shapefile extends Openable {
         this._shp = new Shp(this.filePath);
         await this._shp.open();
 
-        const filePathShx = this.filePath.replace(extReg, '.shx');
-        this._shx = new Shx(filePathShx);
-        await this._shx.open();
-
         const filePathDbf = this.filePath.replace(extReg, '.dbf');
         this._dbf = new Dbf(filePathDbf);
         await this._dbf.open();
@@ -40,11 +34,6 @@ module.exports = class Shapefile extends Openable {
             await this._shp.close();
             this._shp = undefined;
         }
-        
-        if(this._shx) {
-            await this._shx.close();
-            this._shx = undefined;
-        }
 
         if(this._dbf) {
             await this._dbf.close();
@@ -53,7 +42,13 @@ module.exports = class Shapefile extends Openable {
     }
 
     header() {
+        Validators.checkIsOpened(this.isOpened);
         return this._shp._header;
+    }
+
+    envelope() {
+        Validators.checkIsOpened(this.isOpened);
+        return this._shp.envelope();
     }
 
     /**
@@ -61,21 +56,24 @@ module.exports = class Shapefile extends Openable {
      * @param {boolean} detail Indicates whether to show field details (name, type, length, decimal) or not.
      */
     fields(detail = false) {
+        Validators.checkIsOpened(this.isOpened);
         return this._dbf.fields(detail);
     }
 
-    async iterator(fields) {
+    async iterator(filter) {
         Validators.checkIsOpened(this.isOpened);
+
         const shpIt = await this._shp.iterator();
         const dbfIt = await this._dbf.iterator();
-        dbfIt.filter = this._normalizeFields(fields);
         const shapefileIt = new ShapefileIt(shpIt, dbfIt);
+        shapefileIt.fields = this._normalizeFields(filter && filter.fields);
+        shapefileIt.envelope = filter && filter.envelope;
         return shapefileIt;
     }
     
     async count() {
         Validators.checkIsOpened(this.isOpened);
-        return await Promise.resolve(this._shx.count());
+        return await Promise.resolve(this._shp.count());
     }
     
     async get(id, fields) {
@@ -84,7 +82,6 @@ module.exports = class Shapefile extends Openable {
         
         fields = this._normalizeFields(fields);
         const fieldValues = await this._dbf.get(id, fields);
-        // return { geom, fields: fieldValues };
         return _.merge(geom, { fields: fieldValues });
     }
 

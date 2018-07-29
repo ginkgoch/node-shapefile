@@ -48,6 +48,15 @@ describe('cli-support-tests', () => {
 describe('shapefile test', () => {
     const citiesPath = './tests/data/USStates.shp';
 
+    test('shapefile - envelope', async () => {
+        const shapefile = new Shapefile(citiesPath);
+        await shapefile.openWith(async () => {
+            const envelope = shapefile.envelope();
+            expect(envelope).not.toBeUndefined();
+            expect(envelope).not.toBeNull();
+        });
+    });
+
     test('shapefile - get count', async () => {
         const shapefile = new Shapefile(citiesPath);
         await shapefile.openWith(async () => {
@@ -78,7 +87,7 @@ describe('shapefile test', () => {
     test('shapefile - specific fields test', async () => {
         const shapefile = new Shapefile(citiesPath);
         await shapefile.openWith(async () => {
-            const shapefileIt = await shapefile.iterator(['RECID']);
+            const shapefileIt = await shapefile.iterator({ fields: ['RECID'] });
             let record1 = await shapefileIt.next();
             let count = 0;
             while(!record1.done) {
@@ -100,7 +109,7 @@ describe('shapefile test', () => {
     test('shapefile - specific fields test 1', async () => {
         const shapefile = new Shapefile(citiesPath);
         await shapefile.openWith(async () => {
-            const shapefileIt = await shapefile.iterator([]);
+            const shapefileIt = await shapefile.iterator({ fields: [] });
             let record1 = await shapefileIt.next();
             let count = 0;
             while(!record1.done) {
@@ -136,6 +145,56 @@ describe('shapefile test', () => {
 
             fields = shapefile._normalizeFields(['RECID1', 'AREA', 'PERIMETER', 'STATE_', 'STATE_ID', 'STATE_NAME', 'STATE_FIPS', 'SUB_REGION']);
             expect(fields.length).toBe(7);
+        });
+    });
+});
+
+describe('shapefile filters', () => {
+    const filePath = './tests/data/USStates.shp';
+
+    test('shapefile - filter 1', async () => {
+        const shapefile = new Shapefile(filePath);
+        await shapefile.openWith(async () => {
+            const filter = { minx: 0, miny: 0, maxx: 180, maxy: 90 };
+            let iterator = await shapefile.iterator({ envelope: filter });
+
+            const disjoined = shapefile.envelope().disjoined(filter);
+            expect(disjoined).toBeTruthy();
+        
+            let rec = undefined;
+            const actionForGeom = jest.fn();
+            const actionForGeomNull = jest.fn();
+            while((rec = await iterator.next()) && !rec.done) {
+                if(rec.geom !== null) {
+                    actionForGeom();
+                } else {
+                    actionForGeomNull();
+                }
+            }
+
+            expect(actionForGeom.mock.calls.length).toBe(0);
+            expect(actionForGeomNull.mock.calls.length).toBe(0);
+        });
+    });
+
+    test('shapefile - filter 2', async () => {
+        const shapefile = new Shapefile(filePath);
+        await shapefile.openWith(async () => {
+            const filter = { minx: -178, miny: 0, maxx: -122, maxy: 90 };
+            let iterator = await shapefile.iterator({ envelope: filter });
+
+            let rec = undefined;
+            const actionForGeom = jest.fn();
+            const actionForAll = jest.fn();
+            while((rec = await iterator.next()) && !rec.done) {
+                actionForAll();
+                if(rec.geom !== null) {
+                    actionForGeom();
+                }
+            }
+
+            expect(actionForGeom.mock.calls.length).toBe(5);
+            expect(actionForAll.mock.calls.length).toBe(5);
         });
     });
 });

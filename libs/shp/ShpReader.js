@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const BufferReader = require('ginkgoch-buffer-reader');
+const Envelope = require('./parsers/Envelope');
 
 module.exports = class ShpReader extends BufferReader {
     nextEnvelope() {
@@ -7,12 +8,7 @@ module.exports = class ShpReader extends BufferReader {
         const miny = this.nextDoubleLE();
         const maxx = this.nextDoubleLE();
         const maxy = this.nextDoubleLE();
-        return {
-            minx,
-            miny,
-            maxx,
-            maxy
-        };
+        return new Envelope(minx, miny, maxx, maxy);
     }
 
     nextPoint() {

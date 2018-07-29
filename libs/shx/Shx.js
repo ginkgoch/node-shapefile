@@ -11,7 +11,7 @@ module.exports = class Shx extends Openable {
     }
 
     async _open() {
-        this._fd = fs.openSync(this.filePath, 'r');
+        this._fd = fs.openSync(this.filePath, 'rs');
         const stats = fs.statSync(this.filePath);
         this._totalSize = stats.size;
     }
