@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const BufferReader = require('ginkgoch-buffer-reader');
-const Envelope = require('./parsers/Envelope');
+const Envelope = require('./Envelope');
 
 module.exports = class ShpReader extends BufferReader {
     nextEnvelope() {

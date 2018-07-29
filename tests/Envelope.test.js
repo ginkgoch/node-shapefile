@@ -1,4 +1,4 @@
-const Envelope = require('../libs/shp/parsers/Envelope');
+const Envelope = require('../libs/shp/Envelope');
 
 describe('envelope helper test', () => {
     test('disjoined test', () => {

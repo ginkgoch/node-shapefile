@@ -1,5 +1,5 @@
 const Validators = require('../../Validators');
-const Envelope = require('./Envelope');
+const Envelope = require('../Envelope');
 
 module.exports = function (br) {
     const type = br.nextInt32LE();
