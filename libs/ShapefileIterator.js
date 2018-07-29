@@ -24,6 +24,15 @@ module.exports = class ShapefileIterator extends Iterator {
     }
 
     async next() {
+        let record = await this._next();
+        while(!record.done && record.geom === null) {
+            record = await this._next();
+        }
+
+        return record;
+    }
+
+    async _next() {
         let shpRecord = await this._shpIt.next();
         let dbfRecord = await this._dbfIt.next();
         if (!shpRecord.done && !dbfRecord.done) {

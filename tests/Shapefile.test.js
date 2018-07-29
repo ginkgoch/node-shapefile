@@ -155,19 +155,46 @@ describe('shapefile filters', () => {
     test('shapefile - filter 1', async () => {
         const shapefile = new Shapefile(filePath);
         await shapefile.openWith(async () => {
-            let iterator = await shapefile.iterator();
-            // const filter = { minx: 0, miny: 0, maxx: 180, maxy: 90 };
-            // iterator.filter = filter;
+            const filter = { minx: 0, miny: 0, maxx: 180, maxy: 90 };
+            let iterator = await shapefile.iterator({ envelope: filter });
 
-            // const disjoined = shapefile.envelope().disjoined(filter);
-            // expect(disjoined).toBeTruthy();
+            const disjoined = shapefile.envelope().disjoined(filter);
+            expect(disjoined).toBeTruthy();
         
-            // let rec = undefined;
-            // const action = jest.fn();
-            // while((rec = await iterator.next()) && !rec.done) {
-            // }
+            let rec = undefined;
+            const actionForGeom = jest.fn();
+            const actionForGeomNull = jest.fn();
+            while((rec = await iterator.next()) && !rec.done) {
+                if(rec.geom !== null) {
+                    actionForGeom();
+                } else {
+                    actionForGeomNull();
+                }
+            }
 
-            // expect(action.mock.calls.length).toBe(0);
+            expect(actionForGeom.mock.calls.length).toBe(0);
+            expect(actionForGeomNull.mock.calls.length).toBe(0);
+        });
+    });
+
+    test('shapefile - filter 2', async () => {
+        const shapefile = new Shapefile(filePath);
+        await shapefile.openWith(async () => {
+            const filter = { minx: -178, miny: 0, maxx: -122, maxy: 90 };
+            let iterator = await shapefile.iterator({ envelope: filter });
+
+            let rec = undefined;
+            const actionForGeom = jest.fn();
+            const actionForAll = jest.fn();
+            while((rec = await iterator.next()) && !rec.done) {
+                actionForAll();
+                if(rec.geom !== null) {
+                    actionForGeom();
+                }
+            }
+
+            expect(actionForGeom.mock.calls.length).toBe(5);
+            expect(actionForAll.mock.calls.length).toBe(5);
         });
     });
 });

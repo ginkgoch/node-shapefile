@@ -36,12 +36,10 @@ module.exports = class ShpIterator extends Iterator {
 
         let reader = new ShpReader(contentBuffer);
         let content = this._shpParser(reader);
-        if(content === null) return null;
-
-        if (_.isUndefined(this.envelope) || (this.envelope && !this.envelope.disjoined(content.envelope))) {
+        if (_.isUndefined(this.envelope) || (this.envelope && !content.envelope.disjoined(this.envelope))) {
             content = { geom: content.readGeom() };
         } else {
-            return null;
+            content = { geom: null };
         }
 
         content.id = id;
