@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const ShapefileType = require('../ShapefileType');
+const parsers = require('./parsers');
 
 module.exports = class ShpParser {
     /**
@@ -26,7 +27,10 @@ module.exports = class ShpParser {
      */
     static _getOrSetDefault(object, path, dv) {
         if(!_.has(object, path)) {
-            _.set(object, path, dv)
+            if(_.isUndefined(dv)) { 
+                throw `${path} not support`; 
+            }
+            _.set(object, path, dv);
         }
 
         return _.get(object, path);
@@ -37,7 +41,7 @@ module.exports = class ShpParser {
             type = _.findKey(ShapefileType, key => key === type);
         }
 
-        const parser = ShpParser._getOrSetDefault(ShpParser.constructor.parsers, type, require(`./parsers/parse${_.capitalize(type)}`));
+        const parser = ShpParser._getOrSetDefault(ShpParser.constructor.parsers, type, parsers[type]);
         return parser;
     }
 }
