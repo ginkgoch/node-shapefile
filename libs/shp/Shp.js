@@ -8,7 +8,7 @@ const ShpParser = require('./ShpParser');
 const ShpIterator = require('./ShpIterator');
 const Openable = require('../base/StreamOpenable');
 const Shx = require('../shx/Shx');
-const Envelope = require('./parsers/Envelope');
+const Envelope = require('./Envelope');
 const extReg = /\.\w+$/;
 
 module.exports = class Shp extends Openable {
