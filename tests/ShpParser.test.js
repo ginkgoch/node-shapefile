@@ -1,16 +1,11 @@
 const Parser = require('../libs/shp/ShpParser');
 const ShapefileType = require('../libs/ShapefileType');
+const ShpReader = require('../libs/shp/ShpReader');
 
 describe('parser tests', () => {
     test('get parsers test', () => {
-        let pointParser = Parser.getParser(1);
+        let pointParser = Parser.getParser(ShapefileType.point);
         expect(pointParser).not.toBeNull();
-
-        pointParser = Parser.getParser(ShapefileType.point);
-        expect(pointParser).not.toBeNull();
-
-        let nullShapeParser = Parser.getParser(ShapefileType.nullShape);
-        expect(nullShapeParser).not.toBeNull();
 
         let polyLineParser = Parser.getParser(ShapefileType.polyLine);
         expect(polyLineParser).not.toBeNull();
@@ -29,8 +24,9 @@ describe('parser tests', () => {
     });
 
     test('null shape parser test', () => {
-        let obj = Parser.getParser(ShapefileType.nullShape)(Buffer.from([0]));
-        expect(obj).toEqual({ geom: null });
+        expect(() => {
+            Parser.getParser(ShapefileType.nullShape);
+        }).toThrow(/Unsupported/);
     });
 
     test('point shape parser test', () => {
@@ -40,8 +36,9 @@ describe('parser tests', () => {
         buffer.writeInt32LE(type, 0);
         buffer.writeDoubleLE(x, 4);
         buffer.writeDoubleLE(y, 12);
-        let obj = Parser.getParser(ShapefileType.point)(buffer);
-        expect(obj).toEqual({ geom: { x, y } });
+        let obj = Parser.getParser(ShapefileType.point)(new ShpReader(buffer));
+        obj = obj.readGeom();
+        expect(obj).toEqual({ x, y });
     });
 
     test('point shape parser test - incorrect buffer', () => {
@@ -53,7 +50,7 @@ describe('parser tests', () => {
         buffer.writeDoubleLE(y, 12);
 
         function parsePointBuffer() {
-            Parser.getParser(ShapefileType.point)(buffer);
+            Parser.getParser(ShapefileType.point)(new ShpReader(buffer));
         }
         expect(parsePointBuffer).toThrow(/Not a point record/);
     });

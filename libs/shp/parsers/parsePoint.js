@@ -1,15 +1,15 @@
 const Validators = require('../../Validators');
-const ShpReader = require('../ShpReader');
 const Envelope = require('./Envelope');
 
-module.exports = function (buffer, filter) {
-    const br = new ShpReader(buffer);
+module.exports = function (br) {
     const type = br.nextInt32LE();
     Validators.checkIsValidShapeType(type, 1, 'point');
 
     const geom = br.nextPoint();
     const envelope =  new Envelope(geom.x, geom.y, geom.x, geom.y);
-    if (envelope.disjoined(filter)) return null;
+    const readGeom = function() {
+        return geom;
+    }
 
-    return { geom };
+    return { readGeom, envelope };
 };
