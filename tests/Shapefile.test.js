@@ -197,4 +197,24 @@ describe('shapefile filters', () => {
             expect(actionForAll.mock.calls.length).toBe(5);
         });
     });
+
+    test('shapefile - filter 3', async () => {
+        const shapefile = new Shapefile(filePath);
+        await shapefile.openWith(async () => {
+            let iterator = await shapefile.iterator({ fields: 'all' });
+
+            let rec = undefined;
+            const actionForGeom = jest.fn();
+            const actionForAll = jest.fn();
+            while((rec = await iterator.next()) && !rec.done) {
+                actionForAll();
+                if(rec.geom !== null) {
+                    actionForGeom();
+                }
+            }
+
+            expect(actionForGeom.mock.calls.length).toBe(51);
+            expect(actionForAll.mock.calls.length).toBe(51);
+        });
+    });
 });

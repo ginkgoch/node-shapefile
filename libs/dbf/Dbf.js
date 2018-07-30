@@ -10,7 +10,6 @@ module.exports = class Dbf extends Openable {
     constructor(filePath) {
         super();
         this.filePath = filePath;
-        this.filter = undefined;
     }
 
     /**
