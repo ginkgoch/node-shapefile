@@ -7,12 +7,19 @@ const Dbf = require('./dbf/Dbf');
 const extReg = /\.\w+$/;
 
 module.exports = class Shapefile extends Openable {
+
+    /**
+     * Creates a Shapefile instance.
+     * @constructor
+     * @param {*} filePath The shapefile file path. 
+     */
     constructor(filePath) {
         super();
         this.filePath = filePath;
     }
 
     /**
+     * Opens the related resources and get ready for reading records.
      * @override
      */
     async _open() {
@@ -27,6 +34,7 @@ module.exports = class Shapefile extends Openable {
     }
 
     /**
+     * Closes the related resources and release the file handlers.
      * @override
      */
     async _close() {
@@ -41,25 +49,39 @@ module.exports = class Shapefile extends Openable {
         }
     }
 
+    /**
+     * Gets the header detail of the shapefile.
+     * @returns The header of shapefile.
+     */
     header() {
         Validators.checkIsOpened(this.isOpened);
         return this._shp._header;
     }
 
+    /**
+     * Gets the envelope of the shapefile.
+     * @returns The envelope of shapefile. 
+     */
     envelope() {
         Validators.checkIsOpened(this.isOpened);
         return this._shp.envelope();
     }
 
     /**
-     * 
-     * @param {boolean} detail Indicates whether to show field details (name, type, length, decimal) or not.
+     * Gets the fields detail of the shapefile.
+     * @param {boolean} detail Indicates whether to show field details (name, type, length, decimal) or not. Default to false.
+     * @returns The fields of shapefile.
      */
     fields(detail = false) {
         Validators.checkIsOpened(this.isOpened);
         return this._dbf.fields(detail);
     }
 
+    /**
+     * Gets the iterator of the shapefile. Used to loop all the records in flow mode.
+     * @param { fields: ['all'|'none'|undefined|Array.<string>], envelope: Envelope } filter Indicates the filter for iterating the records. Allows to filter with fields and envelopes.
+     * @returns The iterator for looping records of shapefile.
+     */
     async iterator(filter) {
         Validators.checkIsOpened(this.isOpened);
 
@@ -71,11 +93,21 @@ module.exports = class Shapefile extends Openable {
         return shapefileIt;
     }
     
+    /**
+     * Gets the record count of shapefile.
+     * @returns The count of shapefile.
+     */
     async count() {
         Validators.checkIsOpened(this.isOpened);
         return await Promise.resolve(this._shp.count());
     }
     
+    /**
+     * Gets shapefile record by a specified id, and returnes with the given fields. If fields is not indicated, all fields will be fetched.
+     * @param {number} id The record id. Starts from 0.
+     * @param {undefined|'all'|'none'|Array.<string>} fields The fields that will be fetch from DBF file.
+     * @returns The record that contains the required id.
+     */
     async get(id, fields) {
         Validators.checkIsOpened(this.isOpened);
         const geom = await this._shp.get(id);
