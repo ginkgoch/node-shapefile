@@ -6,6 +6,9 @@ const Shp = require('./shp/Shp');
 const Dbf = require('./dbf/Dbf');
 const extReg = /\.\w+$/;
 
+/**
+ * The Shapefile class.
+ */
 module.exports = class Shapefile extends Openable {
 
     /**
@@ -79,7 +82,7 @@ module.exports = class Shapefile extends Openable {
 
     /**
      * Gets the iterator of the shapefile. Used to loop all the records in flow mode.
-     * @param { fields: ['all'|'none'|undefined|Array.<string>], envelope: Envelope } filter Indicates the filter for iterating the records. Allows to filter with fields and envelopes.
+     * @param {*} filter Indicates the filter for iterating the records. Allows to filter with fields and envelopes.
      * @returns The iterator for looping records of shapefile.
      */
     async iterator(filter) {
