@@ -38,18 +38,18 @@ expect.extend({
             [x, y] = [expected.x, expected.y];
         }
 
-        expect(actual[0]).toBeCloseTo(x, numDigit);
-        expect(actual[1]).toBeCloseTo(y, numDigit);
+        expect(actual.coords[0]).toBeCloseTo(x, numDigit);
+        expect(actual.coords[1]).toBeCloseTo(y, numDigit);
         return { pass: true };
     },
 
     toBeClosePolyLineTo(actual, expected, numDigit = 4) {
         let pointArrays = _.chunk(expected, 2);
-        expect(actual.length).toBe(1);
-        expect(actual[0].length).toBe(pointArrays.length);
-        for(let i in actual[0]) {
-            expect(actual[0][i][0]).toBeCloseTo(pointArrays[i][0], numDigit);
-            expect(actual[0][i][1]).toBeCloseTo(pointArrays[i][1], numDigit);
+        expect(actual.coords.length).toBe(1);
+        expect(actual.coords[0].length).toBe(pointArrays.length);
+        for(let i in actual.coords[0]) {
+            expect(actual.coords[0][i][0]).toBeCloseTo(pointArrays[i][0], numDigit);
+            expect(actual.coords[0][i][1]).toBeCloseTo(pointArrays[i][1], numDigit);
         }
 
         return { pass: true };

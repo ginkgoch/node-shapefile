@@ -11,7 +11,7 @@ module.exports = function (br) {
         const numPoints = br.nextInt32LE(); 
         const parts = _.range(numParts).map(i => br.nextInt32LE());
         const points = br.nextPointsByParts(numPoints, parts); 
-        return points;
+        return { type: 3, coords: points };
     };
     
     return { envelope, readGeom };

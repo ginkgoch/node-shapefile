@@ -130,13 +130,14 @@ describe('shapefile test - polygon', () => {
         const record = await getFirstRecord(shpPath);
         expect(record).toBeGeneralRecord();
 
-        expect(record.geom.length).toBe(3);
-        expect(record.geom[0].length).toBe(244);
-        expect(record.geom[1].length).toBe(12);
-        expect(record.geom[2].length).toBe(20);
-        expect(record.geom[0][0]).toEqual(record.geom[0][243]);
-        expect(record.geom[1][0]).toEqual(record.geom[1][11]);
-        expect(record.geom[2][0]).toEqual(record.geom[2][19]);
+        expect(record.geom.type).toBe(5);
+        expect(record.geom.coords.length).toBe(3);
+        expect(record.geom.coords[0].length).toBe(244);
+        expect(record.geom.coords[1].length).toBe(12);
+        expect(record.geom.coords[2].length).toBe(20);
+        expect(record.geom.coords[0][0]).toEqual(record.geom.coords[0][243]);
+        expect(record.geom.coords[1][0]).toEqual(record.geom.coords[1][11]);
+        expect(record.geom.coords[2][0]).toEqual(record.geom.coords[2][19]);
     });
 });
 

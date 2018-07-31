@@ -10,7 +10,7 @@ module.exports = function(br) {
         const numPoints = br.nextInt32LE(); 
         const parts = br.nextParts(numParts); 
         const points = br.nextPointsByParts(numPoints, parts); 
-        return points;
+        return { type: 5, coords: points };
     };
     
     return { envelope, readGeom };
