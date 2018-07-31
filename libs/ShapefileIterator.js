@@ -61,7 +61,7 @@ module.exports = class ShapefileIterator extends Iterator {
         if (!shpRecord.done && !dbfRecord.done) {
             shpRecord = _.omit(shpRecord, ['done']);
             dbfRecord = _.omit(dbfRecord, ['done']);
-            return this._continue(_.merge(shpRecord, { properties: dbfRecord }));
+            return this._continue(_.merge(shpRecord, { properties: dbfRecord, type: 'Feature' }));
         } else if (shpRecord.done && dbfRecord.done) {
             return this._done();
         } else {

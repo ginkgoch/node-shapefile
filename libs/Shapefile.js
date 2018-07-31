@@ -117,7 +117,7 @@ module.exports = class Shapefile extends Openable {
         
         fields = this._normalizeFields(fields);
         const fieldValues = await this._dbf.get(id, fields);
-        return _.merge(geom, { properties: fieldValues });
+        return _.merge(geom, { properties: fieldValues, type: 'Feature' });
     }
 
     /**
