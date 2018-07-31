@@ -73,8 +73,8 @@ describe('shapefile test', () => {
             while(!record1.done) {
                 record1 = _.omit(record1, ['done']);
                 const record2 = await shapefile.get(count);
-                expect(record2).toHaveProperty('geom');
-                expect(record2).toHaveProperty('fields');
+                expect(record2).toHaveProperty('geometry');
+                expect(record2).toHaveProperty('properties');
                 expect(record2).toEqual(record1);
 
                 count++;
@@ -93,10 +93,10 @@ describe('shapefile test', () => {
             while(!record1.done) {
                 record1 = _.omit(record1, ['done']);
                 const record2 = await shapefile.get(count, ['RECID']);
-                expect(record2).toHaveProperty('geom');
-                expect(record2).toHaveProperty('fields');
-                expect(_.keys(record2.fields).length).toBe(1);
-                expect(_.keys(record2.fields)[0]).toBe('RECID');
+                expect(record2).toHaveProperty('geometry');
+                expect(record2).toHaveProperty('properties');
+                expect(_.keys(record2.properties).length).toBe(1);
+                expect(_.keys(record2.properties)[0]).toBe('RECID');
                 expect(record2).toEqual(record1);
 
                 count++;
@@ -115,9 +115,9 @@ describe('shapefile test', () => {
             while(!record1.done) {
                 record1 = _.omit(record1, ['done']);
                 const record2 = await shapefile.get(count, []);
-                expect(record2).toHaveProperty('geom');
-                expect(record2).toHaveProperty('fields');
-                expect(_.keys(record2.fields).length).toBe(0);
+                expect(record2).toHaveProperty('geometry');
+                expect(record2).toHaveProperty('properties');
+                expect(_.keys(record2.properties).length).toBe(0);
                 expect(record2).toEqual(record1);
 
                 count++;
@@ -165,7 +165,7 @@ describe('shapefile filters', () => {
             const actionForGeom = jest.fn();
             const actionForGeomNull = jest.fn();
             while((rec = await iterator.next()) && !rec.done) {
-                if(rec.geom !== null) {
+                if(rec.geometry !== null) {
                     actionForGeom();
                 } else {
                     actionForGeomNull();
@@ -188,7 +188,7 @@ describe('shapefile filters', () => {
             const actionForAll = jest.fn();
             while((rec = await iterator.next()) && !rec.done) {
                 actionForAll();
-                if(rec.geom !== null) {
+                if(rec.geometry !== null) {
                     actionForGeom();
                 }
             }
@@ -208,7 +208,7 @@ describe('shapefile filters', () => {
             const actionForAll = jest.fn();
             while((rec = await iterator.next()) && !rec.done) {
                 actionForAll();
-                if(rec.geom !== null) {
+                if(rec.geometry !== null) {
                     actionForGeom();
                 }
             }

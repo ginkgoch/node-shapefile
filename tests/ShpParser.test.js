@@ -38,7 +38,7 @@ describe('parser tests', () => {
         buffer.writeDoubleLE(y, 12);
         let obj = Parser.getParser(ShapefileType.point)(new ShpReader(buffer));
         obj = obj.readGeom();
-        expect(obj).toEqual({ x, y });
+        expect(obj).toEqual({ type:'Point', coordinates: [x, y] });
     });
 
     test('point shape parser test - incorrect buffer', () => {

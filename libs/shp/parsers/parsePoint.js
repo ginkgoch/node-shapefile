@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const Validators = require('../../Validators');
 const Envelope = require('../Envelope');
 
@@ -8,7 +9,7 @@ module.exports = function (br) {
     const geom = br.nextPoint();
     const envelope =  new Envelope(geom.x, geom.y, geom.x, geom.y);
     const readGeom = function() {
-        return geom;
+        return { type: 'Point', coordinates: geom };
     }
 
     return { readGeom, envelope };

@@ -13,7 +13,7 @@ module.exports = function (br) {
         for (let i = 0; i < numPoints; i++) {
             points.push(br.nextPoint());
         }
-        return points;
+        return { type: 'MultiPoint', coordinates: points };
     }
     
     return { envelope, readGeom };
