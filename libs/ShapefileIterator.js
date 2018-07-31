@@ -45,7 +45,7 @@ module.exports = class ShapefileIterator extends Iterator {
      */
     async next() {
         let record = await this._next();
-        while(!record.done && record.geom === null) {
+        while(!record.done && record.geometry === null) {
             record = await this._next();
         }
 
@@ -61,7 +61,7 @@ module.exports = class ShapefileIterator extends Iterator {
         if (!shpRecord.done && !dbfRecord.done) {
             shpRecord = _.omit(shpRecord, ['done']);
             dbfRecord = _.omit(dbfRecord, ['done']);
-            return this._continue(_.merge(shpRecord, { fields: dbfRecord }));
+            return this._continue(_.merge(shpRecord, { properties: dbfRecord }));
         } else if (shpRecord.done && dbfRecord.done) {
             return this._done();
         } else {

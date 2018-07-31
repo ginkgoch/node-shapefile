@@ -9,7 +9,7 @@ module.exports = function (br) {
     let geom = br.nextPoint();
     const envelope =  new Envelope(geom.x, geom.y, geom.x, geom.y);
     const readGeom = function() {
-        return { type: 1, coords: geom };
+        return { type: 'Point', coordinates: geom };
     }
 
     return { readGeom, envelope };

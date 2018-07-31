@@ -97,7 +97,7 @@ describe('shapefile test - polyline', () => {
         let record = await records.next();
 
         expect(record).toBeGeneralRecord();
-        expect(record.geom).toBeClosePolyLineTo([-97.731192, 30.349088, -97.731584, 30.349305]);
+        expect(record.geometry).toBeClosePolyLineTo([-97.731192, 30.349088, -97.731584, 30.349305]);
 
         await lineShp.close();
     });
@@ -113,7 +113,7 @@ describe('shapefile test - point', () => {
     test('read records test - point read first record', async () => {
         const record = await getFirstRecord(citiesPath);
         expect(record).toBeGeneralRecord();
-        expect(record.geom).toBeClosePointTo([-122.2065, 48.7168]);
+        expect(record.geometry).toBeClosePointTo([-122.2065, 48.7168]);
     });
 });
 
@@ -130,14 +130,14 @@ describe('shapefile test - polygon', () => {
         const record = await getFirstRecord(shpPath);
         expect(record).toBeGeneralRecord();
 
-        expect(record.geom.type).toBe(5);
-        expect(record.geom.coords.length).toBe(3);
-        expect(record.geom.coords[0].length).toBe(244);
-        expect(record.geom.coords[1].length).toBe(12);
-        expect(record.geom.coords[2].length).toBe(20);
-        expect(record.geom.coords[0][0]).toEqual(record.geom.coords[0][243]);
-        expect(record.geom.coords[1][0]).toEqual(record.geom.coords[1][11]);
-        expect(record.geom.coords[2][0]).toEqual(record.geom.coords[2][19]);
+        expect(record.geometry.type).toEqual('Polygon');
+        expect(record.geometry.coordinates.length).toBe(3);
+        expect(record.geometry.coordinates[0].length).toBe(244);
+        expect(record.geometry.coordinates[1].length).toBe(12);
+        expect(record.geometry.coordinates[2].length).toBe(20);
+        expect(record.geometry.coordinates[0][0]).toEqual(record.geometry.coordinates[0][243]);
+        expect(record.geometry.coordinates[1][0]).toEqual(record.geometry.coordinates[1][11]);
+        expect(record.geometry.coordinates[2][0]).toEqual(record.geometry.coordinates[2][19]);
     });
 });
 

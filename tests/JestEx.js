@@ -6,7 +6,7 @@ expect.extend({
         expect(record).not.toBeUndefined();
         expect(record.done).toBeFalsy();
         expect(record.id).toBe(id);
-        expect(record.geom).not.toBeNullOrUndefined();
+        expect(record.geometry).not.toBeNullOrUndefined();
 
         if(_.has(record, 'envelope')) {
             expect(record.envelope).not.toBeNullOrUndefined();
@@ -38,18 +38,18 @@ expect.extend({
             [x, y] = [expected.x, expected.y];
         }
 
-        expect(actual.coords[0]).toBeCloseTo(x, numDigit);
-        expect(actual.coords[1]).toBeCloseTo(y, numDigit);
+        expect(actual.coordinates[0]).toBeCloseTo(x, numDigit);
+        expect(actual.coordinates[1]).toBeCloseTo(y, numDigit);
         return { pass: true };
     },
 
     toBeClosePolyLineTo(actual, expected, numDigit = 4) {
         let pointArrays = _.chunk(expected, 2);
-        expect(actual.coords.length).toBe(1);
-        expect(actual.coords[0].length).toBe(pointArrays.length);
-        for(let i in actual.coords[0]) {
-            expect(actual.coords[0][i][0]).toBeCloseTo(pointArrays[i][0], numDigit);
-            expect(actual.coords[0][i][1]).toBeCloseTo(pointArrays[i][1], numDigit);
+        expect(actual.coordinates.length).toBe(1);
+        expect(actual.coordinates[0].length).toBe(pointArrays.length);
+        for(let i in actual.coordinates[0]) {
+            expect(actual.coordinates[0][i][0]).toBeCloseTo(pointArrays[i][0], numDigit);
+            expect(actual.coordinates[0][i][1]).toBeCloseTo(pointArrays[i][1], numDigit);
         }
 
         return { pass: true };
