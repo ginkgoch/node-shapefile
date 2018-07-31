@@ -38,8 +38,8 @@ expect.extend({
             [x, y] = [expected.x, expected.y];
         }
 
-        expect(actual.x).toBeCloseTo(x, numDigit);
-        expect(actual.y).toBeCloseTo(y, numDigit);
+        expect(actual[0]).toBeCloseTo(x, numDigit);
+        expect(actual[1]).toBeCloseTo(y, numDigit);
         return { pass: true };
     },
 
@@ -48,8 +48,8 @@ expect.extend({
         expect(actual.length).toBe(1);
         expect(actual[0].length).toBe(pointArrays.length);
         for(let i in actual[0]) {
-            expect(actual[0][i].x).toBeCloseTo(pointArrays[i][0], numDigit);
-            expect(actual[0][i].y).toBeCloseTo(pointArrays[i][1], numDigit);
+            expect(actual[0][i][0]).toBeCloseTo(pointArrays[i][0], numDigit);
+            expect(actual[0][i][1]).toBeCloseTo(pointArrays[i][1], numDigit);
         }
 
         return { pass: true };

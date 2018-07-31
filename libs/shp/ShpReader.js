@@ -14,10 +14,11 @@ module.exports = class ShpReader extends BufferReader {
     nextPoint() {
         const x = this.nextDoubleLE();
         const y = this.nextDoubleLE();
-        return {
-            x,
-            y
-        };
+        return [x, y];
+        // return {
+        //     x,
+        //     y
+        // };
     }
 
     nextParts(numParts) {
