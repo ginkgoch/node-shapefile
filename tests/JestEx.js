@@ -45,11 +45,11 @@ expect.extend({
 
     toBeClosePolyLineTo(actual, expected, numDigit = 4) {
         let pointArrays = _.chunk(expected, 2);
-        expect(actual.coordinates.length).toBe(1);
-        expect(actual.coordinates[0].length).toBe(pointArrays.length);
-        for(let i in actual.coordinates[0]) {
-            expect(actual.coordinates[0][i][0]).toBeCloseTo(pointArrays[i][0], numDigit);
-            expect(actual.coordinates[0][i][1]).toBeCloseTo(pointArrays[i][1], numDigit);
+        expect(actual.coordinates.length).toBe(2);
+        expect(actual.coordinates.length).toBe(pointArrays.length);
+        for(let i in actual.coordinates) {
+            expect(actual.coordinates[i][0]).toBeCloseTo(pointArrays[i][0], numDigit);
+            expect(actual.coordinates[i][1]).toBeCloseTo(pointArrays[i][1], numDigit);
         }
 
         return { pass: true };
