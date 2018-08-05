@@ -10,7 +10,11 @@ module.exports = function (br) {
         const numParts = br.nextInt32LE(); 
         const numPoints = br.nextInt32LE(); 
         const parts = _.range(numParts).map(i => br.nextInt32LE());
-        const points = br.nextPointsByParts(numPoints, parts); 
+        let points = br.nextPointsByParts(numPoints, parts); 
+
+        if (points.length === 1) {
+            points = _.first(points);
+        }
         return { type: 'LineString', coordinates: points };
     };
     
