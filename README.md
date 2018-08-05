@@ -33,8 +33,6 @@ async function getRecordById(id) {
     const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
     const record = await statesShp.get(0);
     await statesShp.close();
-
-    // returns { geom: { geom: /**geom points*/, envelope: { minx, miny, maxx, maxy } }, fields: { name1: value1 ... } }
     return record;
 }
 ```
@@ -45,8 +43,6 @@ async function getRecordById(id) {
     const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
     const record = await statesShp.get(0, []);
     await statesShp.close();
-
-    // returns { geom: { geom: /**geom points*/, envelope: { minx, miny, maxx, maxy } }, fields: { } }
     return record;
 }
 ```
