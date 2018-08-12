@@ -1,4 +1,5 @@
 const Validators = require('../../Validators');
+const GEOM_TYPE_MULTIPOINT = 'MultiPoint';
 
 module.exports = function (br) {
     const type = br.readInt32LE();
@@ -13,7 +14,7 @@ module.exports = function (br) {
         for (let i = 0; i < numPoints; i++) {
             points.push(br.nextPoint());
         }
-        return { type: 'MultiPoint', coordinates: points };
+        return { type: GEOM_TYPE_MULTIPOINT, coordinates: points };
     }
     
     return { envelope, readGeom };
