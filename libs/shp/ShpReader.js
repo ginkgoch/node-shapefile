@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const BufferReader = require('ginkgoch-buffer-reader');
 const Envelope = require('./Envelope');
 
