@@ -3,6 +3,8 @@ const Iterator = require('./base/Iterator');
 const ShpIterator = require('./shp/ShpIterator');
 const DbfIterator = require('./dbf/DbfIterator');
 
+const FEATURE_TYPE = 'Feature';
+
 /**
  * The Shapefile iterator.
  * @example Usage
@@ -61,7 +63,9 @@ module.exports = class ShapefileIterator extends Iterator {
         if (!shpRecord.done && !dbfRecord.done) {
             shpRecord = _.omit(shpRecord, ['done']);
             dbfRecord = _.omit(dbfRecord, ['done']);
-            return this._continue(_.merge(shpRecord, { properties: dbfRecord, type: 'Feature' }));
+            shpRecord.properties = dbfRecord;
+            shpRecord.type = FEATURE_TYPE;
+            return this._continue(shpRecord);
         } else if (shpRecord.done && dbfRecord.done) {
             return this._done();
         } else {
