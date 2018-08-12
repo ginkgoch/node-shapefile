@@ -5,6 +5,7 @@ const ShapefileIt = require('./ShapefileIterator');
 const Shp = require('./shp/Shp');
 const Dbf = require('./dbf/Dbf');
 const extReg = /\.\w+$/;
+const FEATURE_TYPE = 'Feature';
 
 /**
  * The Shapefile class.
@@ -117,7 +118,9 @@ module.exports = class Shapefile extends Openable {
         
         fields = this._normalizeFields(fields);
         const fieldValues = await this._dbf.get(id, fields);
-        return _.merge(geom, { properties: fieldValues, type: 'Feature' });
+        geom.properties = fieldValues;
+        geom.type = FEATURE_TYPE;
+        return geom;
     }
 
     /**
