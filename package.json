@@ -1,6 +1,6 @@
 {
   "name": "ginkgoch-shapefile-reader",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "This is a NodeJs library to help to read shapefiles from your disk.",
   "main": "./index.js",
   "keywords": [
@@ -23,8 +23,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "ginkgoch-buffer-reader": "^1.0.1",
-    "ginkgoch-stream-reader": "^1.0.0",
+    "ginkgoch-buffer-reader": "1.0.2",
+    "ginkgoch-stream-reader": "1.0.1",
     "lodash": "^4.17.10"
   },
   "devDependencies": {
