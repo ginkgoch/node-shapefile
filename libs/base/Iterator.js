@@ -10,6 +10,7 @@ module.exports = class Iteractor {
     }
 
     _continue(obj) {
-        return _.merge({ done: false }, obj);
+        obj.done = false;
+        return obj;
     }
 }

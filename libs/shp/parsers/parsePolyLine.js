@@ -1,20 +1,22 @@
 const _ = require('lodash');
 const Validators = require('../../Validators');
-const ShpReader = require('../ShpReader');
 
-module.exports = function (buffer) {
-    const br = new ShpReader(buffer);
+module.exports = function (br) {
     const type = br.nextInt32LE(); 
     Validators.checkIsValidShapeType(type, 3, 'polyline');
 
     const envelope = br.nextEnvelope();
-    const numParts = br.nextInt32LE(); 
-    const numPoints = br.nextInt32LE(); 
-    const parts = _.range(numParts).map(i => br.nextInt32LE());
-    const points = br.nextPointsByParts(numPoints, parts); 
+    const readGeom = function() {
+        const numParts = br.nextInt32LE(); 
+        const numPoints = br.nextInt32LE(); 
+        const parts = _.range(numParts).map(i => br.nextInt32LE());
+        let points = br.nextPointsByParts(numPoints, parts); 
 
-    return {
-        envelope,
-        geom: points
+        if (points.length === 1) {
+            points = _.first(points);
+        }
+        return { type: 'LineString', coordinates: points };
     };
+    
+    return { envelope, readGeom };
 }
