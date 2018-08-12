@@ -29,10 +29,13 @@ module.exports = class ShpReader extends BufferReader {
     nextPointsByParts(numPoints, parts) {
         const points = [];
         let currentPart = undefined;
+
+        let nextPartIndex = parts.shift();
         for (let i = 0; i < numPoints; i++) {
-            if (_.includes(parts, i)) {
+            if (i === nextPartIndex) {
                 currentPart = [];
                 points.push(currentPart);
+                nextPartIndex = parts.shift();
             }
 
             const p = this.nextPoint();

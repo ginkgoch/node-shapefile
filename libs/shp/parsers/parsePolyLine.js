@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const Validators = require('../../Validators');
+const GEOM_TYPE_LINE = 'LineString';
 
 module.exports = function (br) {
     const type = br.nextInt32LE(); 
@@ -15,7 +16,7 @@ module.exports = function (br) {
         if (points.length === 1) {
             points = _.first(points);
         }
-        return { type: 'LineString', coordinates: points };
+        return { type: GEOM_TYPE_LINE, coordinates: points };
     };
     
     return { envelope, readGeom };
