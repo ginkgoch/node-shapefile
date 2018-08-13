@@ -23,8 +23,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "ginkgoch-buffer-reader": "1.0.2",
-    "ginkgoch-stream-reader": "1.0.1",
+    "ginkgoch-buffer-reader": "^1.0.3",
+    "ginkgoch-stream-reader": "^1.0.1",
     "lodash": "^4.17.10"
   },
   "devDependencies": {
