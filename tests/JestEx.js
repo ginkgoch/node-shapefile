@@ -5,10 +5,10 @@ expect.extend({
         expect(record).not.toBeNull();
         expect(record).not.toBeUndefined();
         expect(record.done).toBeFalsy();
-        expect(record.id).toBe(id);
-        expect(record.geometry).not.toBeNullOrUndefined();
+        expect(record.result.id).toBe(id);
+        expect(record.result.geometry).not.toBeNullOrUndefined();
 
-        if(_.has(record, 'envelope')) {
+        if(_.has(record.result, 'envelope')) {
             expect(record.envelope).not.toBeNullOrUndefined();
         }
 

@@ -71,7 +71,7 @@ describe('shapefile test', () => {
             let record1 = await shapefileIt.next();
             let count = 0;
             while(!record1.done) {
-                record1 = _.omit(record1, ['done']);
+                record1 =  record1.result;
                 const record2 = await shapefile.get(count);
                 expect(record2).toHaveProperty('geometry');
                 expect(record2).toHaveProperty('properties');
@@ -91,7 +91,7 @@ describe('shapefile test', () => {
             let record1 = await shapefileIt.next();
             let count = 0;
             while(!record1.done) {
-                record1 = _.omit(record1, ['done']);
+                record1 =  record1.result;
                 const record2 = await shapefile.get(count, ['RECID']);
                 expect(record2).toHaveProperty('geometry');
                 expect(record2).toHaveProperty('properties');
@@ -113,7 +113,7 @@ describe('shapefile test', () => {
             let record1 = await shapefileIt.next();
             let count = 0;
             while(!record1.done) {
-                record1 = _.omit(record1, ['done']);
+                record1 = record1.result;
                 const record2 = await shapefile.get(count, []);
                 expect(record2).toHaveProperty('geometry');
                 expect(record2).toHaveProperty('properties');
