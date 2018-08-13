@@ -91,7 +91,7 @@ module.exports = class Dbf extends Openable {
         records.fields = fields;
 
         const record = await records.next();
-        return _.omit(record, ['done']);
+        return record.result;
     }
 
     async iterator(fields) {

@@ -47,7 +47,7 @@ module.exports = class ShapefileIterator extends Iterator {
      */
     async next() {
         let record = await this._next();
-        while(!record.done && record.geometry === null) {
+        while(!record.done && record.result && record.result.geometry === null) {
             record = await this._next();
         }
 
@@ -61,9 +61,8 @@ module.exports = class ShapefileIterator extends Iterator {
         let shpRecord = await this._shpIt.next();
         let dbfRecord = await this._dbfIt.next();
         if (!shpRecord.done && !dbfRecord.done) {
-            shpRecord = _.omit(shpRecord, ['done']);
-            dbfRecord = _.omit(dbfRecord, ['done']);
-            shpRecord.properties = dbfRecord;
+            shpRecord = shpRecord.result;
+            shpRecord.properties = dbfRecord.result;
             shpRecord.type = FEATURE_TYPE;
             return this._continue(shpRecord);
         } else if (shpRecord.done && dbfRecord.done) {

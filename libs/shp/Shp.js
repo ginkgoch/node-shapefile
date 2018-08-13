@@ -89,8 +89,7 @@ module.exports = class Shp extends Openable {
         const rshx = this._shx.get(id);
         const iterator = await this._getRecordIteractor(rshx.offset, rshx.offset + 8 + rshx.length);
         const result = await iterator.next();
-
-        return _.omit(result, ['done']);
+        return result.result;
     }
 
     async _getRecordIteractor(start, end) { 
