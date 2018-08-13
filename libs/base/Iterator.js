@@ -10,7 +10,6 @@ module.exports = class Iteractor {
     }
 
     _continue(obj) {
-        obj.done = false;
-        return obj;
+        return { done: false, result: obj };
     }
 }

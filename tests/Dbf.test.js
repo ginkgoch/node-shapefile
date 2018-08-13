@@ -25,7 +25,7 @@ describe('Dbf tests', () => {
             expect(JSON.stringify(record)).toBe(JSON.stringify(dbf_usstates_record1));
         });
     });
-
+    
     test('read record - second', async () => {
         const dbf = new Dbf(filePath);
         await dbf.openWith(async () => {
@@ -35,7 +35,7 @@ describe('Dbf tests', () => {
             expect(JSON.stringify(record)).toBe(JSON.stringify(dbf_usstates_record2));
         });
     });
-
+    
     test('read record - final', async () => {
         const dbf = new Dbf(filePath);
         await dbf.openWith(async () => {
@@ -48,7 +48,7 @@ describe('Dbf tests', () => {
                 count++;
                 temp = await records.next();
             }
-
+            
             expect(count).toBe(51);
             expect(JSON.stringify(record)).toBe(JSON.stringify(dbf_usstates_record51));
         });
@@ -62,8 +62,8 @@ describe('Dbf tests', () => {
             let count = 0;
             while (!record1.done) {
                 const record2 = await dbf.get(count); 
-                expect(record2).toEqual(_.omit(record1, ['done']));
-                
+                expect(record2).toEqual(record1.result);
+
                 count++;
                 record1 = await records.next();
             }

@@ -97,7 +97,7 @@ describe('shapefile test - polyline', () => {
         let record = await records.next();
 
         expect(record).toBeGeneralRecord();
-        expect(record.geometry).toBeClosePolyLineTo([-97.731192, 30.349088, -97.731584, 30.349305]);
+        expect(record.result.geometry).toBeClosePolyLineTo([-97.731192, 30.349088, -97.731584, 30.349305]);
 
         await lineShp.close();
     });
@@ -113,7 +113,7 @@ describe('shapefile test - point', () => {
     test('read records test - point read first record', async () => {
         const record = await getFirstRecord(citiesPath);
         expect(record).toBeGeneralRecord();
-        expect(record.geometry).toBeClosePointTo([-122.2065, 48.7168]);
+        expect(record.result.geometry).toBeClosePointTo([-122.2065, 48.7168]);
     });
 });
 
@@ -127,9 +127,10 @@ describe('shapefile test - polygon', () => {
     });
 
     test('read records test - polygon read first record', async () => {
-        const record = await getFirstRecord(shpPath);
+        let record = await getFirstRecord(shpPath);
         expect(record).toBeGeneralRecord();
 
+        record = record.result;
         expect(record.geometry.type).toEqual('Polygon');
         expect(record.geometry.coordinates.length).toBe(3);
         expect(record.geometry.coordinates[0].length).toBe(244);
@@ -150,7 +151,7 @@ describe('read by id tests', () => {
 
             let index = 0, ri = undefined;
             while((ri = await recordIterator.next()) && !ri.done) {
-                ri = _.omit(ri, ['done']);
+                ri =  ri.result;
                 const r = await shp.get(index);
                 expect(r).toEqual(ri);
                 index++;
