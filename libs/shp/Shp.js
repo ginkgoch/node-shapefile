@@ -5,6 +5,7 @@ const _ = require('lodash');
 const StreamReader = require('ginkgoch-stream-reader');
 const Validators = require('../Validators');
 const ShpParser = require('./ShpParser');
+const ShpReader = require('./ShpReader');
 const ShpIterator = require('./ShpIterator');
 const Openable = require('../base/StreamOpenable');
 const Shx = require('../shx/Shx');
@@ -98,6 +99,38 @@ module.exports = class Shp extends Openable {
         const records = [];
 
         filter = this._normalizeFilter(filter);
+        const to = filter.from + filter.limit;
+
+        return new Promise(resolve => {
+            stream.on('readable', () => {
+                let buffer = null, index = -1;
+
+                while (null != (buffer = stream.read(8))) {
+                    index++;
+                    const id = buffer.readInt32BE(0);
+                    const length = buffer.readInt32BE(4) * 2;
+                    const contentBuffer = stream.read(length);
+
+                    if (contentBuffer === null || contentBuffer.length === 0) {
+                        break;
+                    }
+
+                    let reader = new ShpReader(contentBuffer);
+                    let content = this._shpParser(reader);
+                    if (_.isUndefined(filter.envelope) || (filter.envelope && !content.envelope.disjoined(filter.envelope))) {
+                        content = { geometry: content.readGeom() };
+                    } else {
+                        content = { geometry: null };
+                    }
+
+                    content.id = id;
+                    records.push(record);
+                }
+
+            }).on('end', () => {
+                resolve(records);
+            });
+        });
     }
 
     async _getRecordIteractor(start, end) { 
