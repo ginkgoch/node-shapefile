@@ -8,7 +8,7 @@ module.exports = class StreamOpenable extends Openable {
 
     _normalizeFilter(filter) {
         filter = _.defaultTo(filter, { });
-        filter = _.defaults(filter, { from: 0, limit: Number.MAX_SAFE_INTEGER, fields: undefined });
+        filter = _.defaults(filter, { from: 0, limit: Number.MAX_SAFE_INTEGER });
         return filter;
     }
 }

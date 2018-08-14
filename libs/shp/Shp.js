@@ -101,30 +101,36 @@ module.exports = class Shp extends Openable {
         filter = this._normalizeFilter(filter);
         const to = filter.from + filter.limit;
 
-        return new Promise(resolve => {
+        return await new Promise(resolve => {
+            let index = -1, readableTemp = null;
             stream.on('readable', () => {
-                let buffer = null, index = -1;
+                let buffer = readableTemp || stream.read(8);
+                while (null !== buffer) {
+                    if(readableTemp === null) { index++; }
 
-                while (null != (buffer = stream.read(8))) {
-                    index++;
                     const id = buffer.readInt32BE(0);
                     const length = buffer.readInt32BE(4) * 2;
+
                     const contentBuffer = stream.read(length);
-
-                    if (contentBuffer === null || contentBuffer.length === 0) {
-                        break;
+                    if (contentBuffer === null || contentBuffer.length === 0) { 
+                        readableTemp = buffer;
+                        break; 
+                    } 
+                    else {
+                        readableTemp = null;
                     }
 
-                    let reader = new ShpReader(contentBuffer);
-                    let content = this._shpParser(reader);
-                    if (_.isUndefined(filter.envelope) || (filter.envelope && !content.envelope.disjoined(filter.envelope))) {
-                        content = { geometry: content.readGeom() };
-                    } else {
-                        content = { geometry: null };
+                    if (index >= filter.from && index < to) { 
+                        let reader = new ShpReader(contentBuffer);
+                        let record = this._shpParser(reader);
+                        if (_.isUndefined(filter.envelope) || (filter.envelope && !record.envelope.disjoined(filter.envelope))) {
+                            record = { geometry: record.readGeom() };
+                            record.id = id;
+                            records.push(record);
+                        }
                     }
 
-                    content.id = id;
-                    records.push(record);
+                    buffer = stream.read(8);
                 }
 
             }).on('end', () => {

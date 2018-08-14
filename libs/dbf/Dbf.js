@@ -123,8 +123,9 @@ module.exports = class Dbf extends Openable {
         const to = filter.from + filter.limit;
 
         return new Promise(resolve => {
+            let index = -1;
             stream.on('readable', () => {
-                let buffer = null, index = -1;
+                let buffer = null;
                 const recordLength = this._header.recordLength;
                 while(null !== (buffer = stream.read(recordLength))) {
                     index++;
