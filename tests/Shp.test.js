@@ -2,6 +2,7 @@ require('./JestEx');
 const _ = require('lodash');
 const path = require('path');
 const Shp = require('../libs/shp/Shp');
+const Envelope = require('../libs/shp/Envelope');
 const citiesPath = path.join(__dirname, 'data/cities_e.shp');
 
 describe('shapefile general tests', () => {
@@ -181,3 +182,103 @@ async function getFirstRecord(path) {
 
     return await Promise.resolve(record);
 }
+
+describe('Read shp records tests', () => {
+    test('read shp records - all', async () => {
+        const shpPath = path.join(__dirname, 'data/USStates.shp');
+        const shp = new Shp(shpPath);
+        await shp.openWith(async () => {
+            const features = await shp.records();
+            expect(features.length).toBe(51);
+
+            const recordIterator = await shp.iterator();
+
+            let index = 0, ri = undefined;
+            while((ri = await recordIterator.next()) && !ri.done) {
+                ri =  ri.result;
+                const r = features[index];
+                expect(r.id).toBe(index + 1);
+                expect(r).toEqual(ri);
+                index++;
+            }
+        });
+
+    });
+
+    test('read shp records - from', async () => {
+        const shpPath = path.join(__dirname, 'data/USStates.shp');
+        const shp = new Shp(shpPath);
+        await shp.openWith(async () => {
+            const features = await shp.records({ from: 20 });
+            expect(features.length).toBe(31);
+
+            const recordIterator = await shp.iterator();
+
+            let index = 0, ri = undefined;
+            while((ri = await recordIterator.next()) && !ri.done) {
+                ri =  ri.result;
+
+                if (index >= 20) {
+                    const r = features[index - 20];
+                    expect(r.id).toEqual(index + 1);
+                    expect(r).toEqual(ri);
+                    index++;
+                }
+            }
+        });
+    });
+
+    test('read shp records - limit', async () => {
+        const shpPath = path.join(__dirname, 'data/USStates.shp');
+        const shp = new Shp(shpPath);
+        await shp.openWith(async () => {
+            const features = await shp.records({ limit: 20 });
+            expect(features.length).toBe(20);
+
+            const recordIterator = await shp.iterator();
+
+            let index = 0, ri = undefined;
+            while((ri = await recordIterator.next()) && !ri.done) {
+                ri =  ri.result;
+
+                if (index < 20) {
+                    const r = features[index];
+                    expect(r).toEqual(ri);
+                    index++;
+                }
+            }
+        });
+    });
+
+    test('read shp records - from + limit', async () => {
+        const shpPath = path.join(__dirname, 'data/USStates.shp');
+        const shp = new Shp(shpPath);
+        await shp.openWith(async () => {
+            const features = await shp.records({ from: 10, limit: 20 });
+            expect(features.length).toBe(20);
+
+            const recordIterator = await shp.iterator();
+
+            let index = 0, ri = undefined;
+            while((ri = await recordIterator.next()) && !ri.done) {
+                ri =  ri.result;
+
+                if (index >= 10 && index < 30) {
+                    const r = features[index - 10];
+                    expect(r.id).toEqual(index + 1);
+                    expect(r).toEqual(ri);
+                    index++;
+                }
+            }
+        });
+    });
+
+    test('read shp records - envelope', async () => {
+        const shpPath = path.join(__dirname, 'data/USStates.shp');
+        const shp = new Shp(shpPath);
+        await shp.openWith(async () => {
+            const features = await shp.records({ envelope: new Envelope(-1, -1, 1, 1) });
+            expect(features.length).toBe(0);
+        });
+    });
+});

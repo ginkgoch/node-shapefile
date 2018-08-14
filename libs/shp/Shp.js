@@ -5,6 +5,7 @@ const _ = require('lodash');
 const StreamReader = require('ginkgoch-stream-reader');
 const Validators = require('../Validators');
 const ShpParser = require('./ShpParser');
+const ShpReader = require('./ShpReader');
 const ShpIterator = require('./ShpIterator');
 const Openable = require('../base/StreamOpenable');
 const Shx = require('../shx/Shx');
@@ -90,6 +91,52 @@ module.exports = class Shp extends Openable {
         const iterator = await this._getRecordIteractor(rshx.offset, rshx.offset + 8 + rshx.length);
         const result = await iterator.next();
         return result.result;
+    }
+
+    async records(filter) {
+        const option = this._getStreamOption(100);
+        const stream = fs.createReadStream(this.filePath, option);
+        const records = [];
+
+        filter = this._normalizeFilter(filter);
+        const to = filter.from + filter.limit;
+
+        return await new Promise(resolve => {
+            let index = -1, readableTemp = null;
+            stream.on('readable', () => {
+                let buffer = readableTemp || stream.read(8);
+                while (null !== buffer) {
+                    if(readableTemp === null) { index++; }
+
+                    const id = buffer.readInt32BE(0);
+                    const length = buffer.readInt32BE(4) * 2;
+
+                    const contentBuffer = stream.read(length);
+                    if (contentBuffer === null || contentBuffer.length === 0) { 
+                        readableTemp = buffer;
+                        break; 
+                    } 
+                    else {
+                        readableTemp = null;
+                    }
+
+                    if (index >= filter.from && index < to) { 
+                        let reader = new ShpReader(contentBuffer);
+                        let record = this._shpParser(reader);
+                        if (_.isUndefined(filter.envelope) || (filter.envelope && !record.envelope.disjoined(filter.envelope))) {
+                            record = { geometry: record.readGeom() };
+                            record.id = id;
+                            records.push(record);
+                        }
+                    }
+
+                    buffer = stream.read(8);
+                }
+
+            }).on('end', () => {
+                resolve(records);
+            });
+        });
     }
 
     async _getRecordIteractor(start, end) { 

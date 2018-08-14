@@ -123,6 +123,17 @@ module.exports = class Shapefile extends Openable {
         return geom;
     }
 
+    async records(filter) {
+        Validators.checkIsOpened(this.isOpened);
+        const shapeRecords = await this._shp.records(filter);
+        const fieldRecords = await this._dbf.records(filter);
+        const records = _.zipWith(shapeRecords, fieldRecords, (s, f) => { 
+            _.assign(s, { properties: f, type: FEATURE_TYPE });
+            return s;
+        });
+        return records;
+    }
+
     /**
      * @private
      * @param {*} fields The fields filter could be 'all', 'none', Array.<string> - field names. Default value is 'all' which means returns all fields.

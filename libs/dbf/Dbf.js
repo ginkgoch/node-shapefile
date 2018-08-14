@@ -109,4 +109,35 @@ module.exports = class Dbf extends Openable {
         await sr.open();
         return new DbfIterator(sr, this._header);
     }
+
+    /**
+     * @param {Object.<{ from: number|undefined, limit: number|undefined, fileds: Array.<string>|undefined }>} filter 
+     * @returns {Array.{Object}}
+     */
+    async records(filter) {
+        const option = this._getStreamOption(this._header.headerLength + 1);
+        const stream = fs.createReadStream(this.filePath, option);
+        const records = [];
+
+        filter = this._normalizeFilter(filter);
+        const to = filter.from + filter.limit;
+
+        return new Promise(resolve => {
+            let index = -1;
+            stream.on('readable', () => {
+                let buffer = null;
+                const recordLength = this._header.recordLength;
+                while(null !== (buffer = stream.read(recordLength))) {
+                    index++;
+                    if (index < filter.from || index >= to) { continue; }
+
+                    const br = new BufferReader(buffer);
+                    const record = DbfIterator._readRecord(br, this._header.fields, filter.fields);
+                    records.push(record);
+                }
+            }).on('end', () => {
+                resolve(records);
+            });
+        });
+    }
 }
