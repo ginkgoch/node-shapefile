@@ -1,5 +1,6 @@
 const Shapefile = require('../libs/Shapefile');
 const _ = require('lodash');
+const { EventEmitter } = require('events');
 
 describe('cli-support-tests', () => {
     const statesPath = './tests/data/USStates.shp';
@@ -233,6 +234,26 @@ describe('shapefile read records tests', () => {
                 expect(records[index]).toEqual(rec.result);
                 index++;
             }
+        });
+    });
+
+    test('shapefile read records - progress', async () => {
+        const filePath = './tests/data/USStates.shp';
+        const shapefile = new Shapefile(filePath);
+        await shapefile.openWith(async () => {
+            const progressChanged = jest.fn();
+            const eventEmitter = new EventEmitter();
+            shapefile.eventEmitter = eventEmitter;
+            shapefile.eventEmitter.on('progress', progressChanged); 
+            await shapefile.records();
+            shapefile.eventEmitter.removeAllListeners();
+            shapefile.eventEmitter = null;
+
+            expect(progressChanged.mock.calls.length).toBe(51);
+            expect(progressChanged.mock.calls[0][0]).toBe(1);
+            expect(progressChanged.mock.calls[0][1]).toBe(51);
+            expect(progressChanged.mock.calls[50][0]).toBe(51);
+            expect(progressChanged.mock.calls[50][1]).toBe(51);
         });
     });
 });
