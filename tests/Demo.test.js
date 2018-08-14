@@ -30,4 +30,17 @@ describe('demos tests', () => {
         expect(record).not.toBeNull();
         expect(record).not.toBeUndefined();
     });
+
+    async function getAllRecords() {
+        const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
+        const record = await statesShp.records();
+        await statesShp.close();
+
+        return record;
+    }
+
+    test('demo 3 - get all record one time', async () => {
+        const records = await getAllRecords();
+        expect(records.length).toBe(51);
+    });
 });

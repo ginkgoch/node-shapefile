@@ -218,3 +218,21 @@ describe('shapefile filters', () => {
         });
     });
 });
+
+describe('shapefile read records tests', () => {
+    test('shapefile read records - read all', async () => {
+        const filePath = './tests/data/USStates.shp';
+        const shapefile = new Shapefile(filePath);
+        await shapefile.openWith(async () => {
+            const records = await shapefile.records();
+            expect(records.length).toBe(51);
+
+            let iterator = await shapefile.iterator();
+            let index = 0, rec;
+            while((rec = await iterator.next()) && !rec.done) {
+                expect(records[index]).toEqual(rec.result);
+                index++;
+            }
+        });
+    });
+});

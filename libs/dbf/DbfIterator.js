@@ -19,18 +19,23 @@ module.exports = class DbfIterator extends Iterator {
         }
         
         const br = new BufferReader(buffer);
-        const fieldValues = {};
-        for (let i = 0; i < this._header.fields.length; i++) {
-            const field = this._header.fields[i];
+        const fieldValues = DbfIterator._readRecord(br, this._header.fields, this.fields);
+        return this._continue(fieldValues);
+    }
+
+    static _readRecord(br, fieldAll, fieldRequired) {
+        const record = {};
+        for (let i = 0; i < fieldAll.length; i++) {
+            const field = fieldAll[i];
             const buffer = br.nextBuffer(field.length);
 
-            if(this.fields && !_.includes(this.fields, field.name)) continue;
+            if(fieldRequired && !_.includes(fieldRequired, field.name)) continue;
 
             const text = buffer.toString().replace(/\0/g, '').trim();
-            fieldValues[field.name] = DbfIterator._parseFieldValue(text, field);
+            record[field.name] = DbfIterator._parseFieldValue(text, field);
         }
 
-        return this._continue(fieldValues);
+        return record;
     }
 
     static _parseFieldValue(text, fieldInfo) {
