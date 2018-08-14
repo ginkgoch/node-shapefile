@@ -90,3 +90,86 @@ describe('Field type tests', () => {
         _testLowerAndUpperCase('f', 'float');
     });
 });
+
+describe('Dbf records test', () => {
+    const filePath = './tests/data/USStates.dbf';
+
+    test('read test', async () => {
+        const dbf = new Dbf(filePath);
+        await dbf.openWith(async () => {
+            const records = await dbf.records();
+            expect(records.length).toBe(51);
+
+            const it = await dbf.iterator();
+            let record1 = await it.next();
+            let count = 0;
+            while (!record1.done) {
+                const record2 = records[count]; 
+                expect(record2).toEqual(record1.result);
+
+                count++;
+                record1 = await it.next();
+            }
+        });
+    });
+
+    test('read test - fields', async () => {
+        const dbf = new Dbf(filePath);
+        await dbf.openWith(async () => {
+            const records = await dbf.records({ fields: ['RECID'] });
+            expect(records.length).toBe(51);
+
+            records.forEach(r => {
+                expect(_.keys(r).length).toEqual(1);
+                expect(_.keys(r)).toEqual(['RECID']);
+            });
+        });
+    });
+
+    test('read test - limit', async () => {
+        const dbf = new Dbf(filePath);
+        await dbf.openWith(async () => {
+            const records = await dbf.records({ limit: 1 });
+            expect(records.length).toBe(1);
+
+            const it = await dbf.iterator();
+            let record1 = await it.next();
+
+            const record2 = records[0]; 
+            expect(record2).toEqual(record1.result);
+        });
+    });
+
+    test('read test - limit + from', async () => {
+        const dbf = new Dbf(filePath);
+        await dbf.openWith(async () => {
+            const records = await dbf.records({ limit: 2, from: 2 });
+            expect(records.length).toBe(2);
+
+            const it = await dbf.iterator();
+            let record1 = await it.next(); // 0
+            record1 = await it.next(); // 1
+            
+            record1 = await it.next(); // 2
+            let record2 = records[0]; 
+            expect(record2).toEqual(record1.result);
+            
+            record1 = await it.next(); // 3
+            record2 = records[1]; 
+            expect(record2).toEqual(record1.result);
+        });
+    });
+
+    test('read test - limit + from + fields', async () => {
+        const dbf = new Dbf(filePath);
+        await dbf.openWith(async () => {
+            const records = await dbf.records({ limit: 2, from: 2, fields: ['RECID'] });
+            expect(records.length).toBe(2);
+
+            records.forEach(r => {
+                expect(_.keys(r).length).toEqual(1);
+                expect(_.keys(r)).toEqual(['RECID']);
+            });
+        });
+    });
+})
