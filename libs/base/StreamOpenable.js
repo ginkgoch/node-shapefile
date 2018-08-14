@@ -6,7 +6,7 @@ module.exports = class StreamOpenable extends Openable {
         return _.pickBy({ autoClose: true, start, end }, i => !_.isUndefined(i));
     }
 
-    _normalizeReadFilter(filter) {
+    _normalizeFilter(filter) {
         filter = _.defaultTo(filter, { });
         filter = _.defaults(filter, { from: 0, limit: Number.MAX_SAFE_INTEGER, fields: undefined });
         return filter;

@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const StreamOpenable = require('../libs/base/StreamOpenable');
-const defaultFilter = { from: 0, limit: Number.MAX_SAFE_INTEGER, fields: undefined };
+const defaultFilter = { from: 0, limit: Number.MAX_SAFE_INTEGER };
 
 describe('StreamOpenable tests', () => {
 
@@ -9,7 +9,7 @@ describe('StreamOpenable tests', () => {
         let expectedFilter = _.clone(defaultFilter);
 
         let filter = undefined;
-        let r = so._normalizeReadFilter(filter);
+        let r = so._normalizeFilter(filter);
         expect(r).toEqual(expectedFilter);
 
         testFilter({ from: 20 }, so);
@@ -29,6 +29,6 @@ describe('StreamOpenable tests', () => {
 function testFilter(filter, so) {
     let expectedFilter = _.clone(defaultFilter);
     expectedFilter = _.assign(expectedFilter, filter);
-    let r = so._normalizeReadFilter(filter);
+    let r = so._normalizeFilter(filter);
     expect(r).toEqual(expectedFilter);
 }

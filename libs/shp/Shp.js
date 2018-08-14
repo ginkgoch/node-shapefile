@@ -92,6 +92,14 @@ module.exports = class Shp extends Openable {
         return result.result;
     }
 
+    async records(filter) {
+        const option = this._getStreamOption(100);
+        const stream = fs.createReadStream(this.filePath, option);
+        const records = [];
+
+        filter = this._normalizeFilter(filter);
+    }
+
     async _getRecordIteractor(start, end) { 
         const option = this._getStreamOption(start, end);
         const stream = fs.createReadStream(this.filePath, option);

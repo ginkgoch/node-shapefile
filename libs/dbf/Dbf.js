@@ -119,7 +119,7 @@ module.exports = class Dbf extends Openable {
         const stream = fs.createReadStream(this.filePath, option);
         const records = [];
 
-        filter = this._normalizeReadFilter(filter);
+        filter = this._normalizeFilter(filter);
         const to = filter.from + filter.limit;
 
         return new Promise(resolve => {
