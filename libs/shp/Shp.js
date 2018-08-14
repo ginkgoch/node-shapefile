@@ -16,6 +16,7 @@ module.exports = class Shp extends Openable {
     constructor(filePath) {
         super();
         this.filePath = filePath;
+        this._eventEmitter = null;
     }
 
     /**
@@ -94,9 +95,12 @@ module.exports = class Shp extends Openable {
     }
 
     async records(filter) {
+        Validators.checkIsOpened(this.isOpened);
+
         const option = this._getStreamOption(100);
         const stream = fs.createReadStream(this.filePath, option);
         const records = [];
+        const total = this.count();
 
         filter = this._normalizeFilter(filter);
         const to = filter.from + filter.limit;
@@ -106,7 +110,12 @@ module.exports = class Shp extends Openable {
             stream.on('readable', () => {
                 let buffer = readableTemp || stream.read(8);
                 while (null !== buffer) {
-                    if(readableTemp === null) { index++; }
+                    if (readableTemp === null) { 
+                        index++; 
+                        if (this._eventEmitter !== null) {
+                            this._eventEmitter.emit('progress', index + 1, total);
+                        }
+                    }
 
                     const id = buffer.readInt32BE(0);
                     const length = buffer.readInt32BE(4) * 2;

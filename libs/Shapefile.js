@@ -20,6 +20,16 @@ module.exports = class Shapefile extends Openable {
     constructor(filePath) {
         super();
         this.filePath = filePath;
+        this._eventEmitter = null;
+    }
+
+    get eventEmitter() {
+        return this._eventEmitter;
+    }
+
+    set eventEmitter(v) {
+        this._eventEmitter = v;
+        this._shp && (this._shp._eventEmitter = v);
     }
 
     /**
@@ -30,6 +40,7 @@ module.exports = class Shapefile extends Openable {
         Validators.checkFileExists(this.filePath, ['.shp', '.shx', '.dbf']);
 
         this._shp = new Shp(this.filePath);
+        this._shp._eventEmitter = this._eventEmitter;
         await this._shp.open();
 
         const filePathDbf = this.filePath.replace(extReg, '.dbf');
