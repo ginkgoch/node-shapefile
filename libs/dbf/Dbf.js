@@ -105,8 +105,7 @@ module.exports = class Dbf extends Openable {
                     index++;
                     if (index < filter.from || index >= to) { continue; }
 
-                    const br = new BufferReader(buffer);
-                    const record = DbfIterator._readRecord(br, this._header.fields, filter.fields);
+                    const record = DbfIterator._readRecord(buffer, this._header, filter.fields);
                     records.push(record);
                 }
             }).on('end', () => {

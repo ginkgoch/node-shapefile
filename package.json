@@ -28,6 +28,7 @@
     "lodash": "^4.17.14"
   },
   "devDependencies": {
+    "@types/jest": "^24.0.15",
     "jest": "^24.8.0",
     "jest-cli": "^24.8.0"
   },
