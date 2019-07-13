@@ -5,6 +5,7 @@ const { BufferReader } = require('ginkgoch-buffer-io');
 const Openable = require('../base/StreamOpenable');
 const Validators = require('../Validators');
 const DbfIterator = require('./DbfIterator');
+const DbfHeader = require('./DbfHeader')
 
 module.exports = class Dbf extends Openable {
     constructor(filePath) {
@@ -44,43 +45,16 @@ module.exports = class Dbf extends Openable {
     async _readHeader() {
         Validators.checkIsOpened(this.isOpened);
 
-        const headerBuffer = Buffer.alloc(32);
-        fs.readSync(this._fd, headerBuffer, 0, headerBuffer.length, 0);
-        const headerBr = new BufferReader(headerBuffer);
-
-        const fileType = headerBr.nextInt8();
-        const year = await headerBr.nextInt8();
-        const month = await headerBr.nextInt8();
-        const day = await headerBr.nextInt8();
-        const date = new Date(year + 1900, month, day);
-        
-        const numRecords = headerBr.nextUInt32LE();
-        const headerLength = headerBr.nextUInt16LE();
-        const recordLength = headerBr.nextUInt16LE();
-
-        let position = headerBuffer.length;
-        const fields = [];
-        while(position < headerLength - 1) {
-            const columnBuffer = Buffer.alloc(32);
-            fs.readSync(this._fd, columnBuffer, 0, columnBuffer.length, position);
-
-            const field = { };
-            field.name = columnBuffer.slice(0, 11).toString().replace(/\0/g, '').trim();
-            field.type = String.fromCharCode(columnBuffer.readUInt8(11));
-            if(field.type.toUpperCase() === 'C') {
-                field.length = columnBuffer.readUInt16LE(16);
-            } else {
-                field.length = columnBuffer.readUInt8(16);
-                field.decimal = columnBuffer.readUInt8(17);
-            }
-
-            fields.push(field);
-            position += columnBuffer.length;
-        }
-
+        const header = new DbfHeader();
+        header.read(this._fd);
         return {
-            fileType, date, numRecords, headerLength, recordLength, fields
-        };
+            fileType: header.fileType,
+            date: new Date(header.year + 1900, header.month, header.day),
+            numRecords: header.recordCount,
+            headerLength: header.headerLength,
+            recordLength: header.recordLength,
+            fields: header.fields
+        }
     }
 
     async get(id, fields) {
