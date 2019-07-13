@@ -1,5 +1,7 @@
+const {BufferReader, BufferWriter} = require("ginkgoch-buffer-io");
+
 const DbfHeader = require('./DbfHeader');
-const {BufferReader} = require("ginkgoch-buffer-io");
+const DbfFieldType = require('./DbfFieldType');
 
 module.exports = class DbfRecord {
     /**
@@ -21,6 +23,39 @@ module.exports = class DbfRecord {
             this.values[field.name] = DbfRecord._parseFieldValue(fieldText, field);
         }
 
+        return this;
+    }
+
+    write(buffer) {
+        const bw = new BufferWriter(buffer);
+        for(let i = 0; i < this.header.fields.length; i++) {
+            let field = this.header.fields[i];
+            let value = this.values[field.name];
+            let fieldBuff = Buffer.alloc(field.length);
+
+            //TODO: implement this...
+            switch(field.type) {
+                case DbfFieldType.number:
+                    break;
+                case DbfFieldType.float:
+                    break;
+                case DbfFieldType.integer:
+                    break;
+                case DbfFieldType.boolean:
+                    break;
+                case DbfFieldType.date:
+                    break;
+                case DbfFieldType.binary:
+                    break;
+                case DbfFieldType.memo:
+                    throw new Error("Memo is not supported.");
+                default:
+                    fieldBuff.write(value);
+                    break;
+            }
+
+            bw.writeBuffer(fieldBuff);
+        }
         return this;
     }
 
