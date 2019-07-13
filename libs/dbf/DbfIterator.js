@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const Iterator = require('../base/Iterator');
-const BufferReader = require('ginkgoch-buffer-reader');
+const { BufferReader } = require('ginkgoch-buffer-io');
 
 module.exports = class DbfIterator extends Iterator {
     constructor(streamReader, header) {

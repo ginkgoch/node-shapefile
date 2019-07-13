@@ -1,9 +1,9 @@
 const fs = require('fs');
 const _ = require('lodash');
-const StreamReader = require('ginkgoch-stream-reader');
+const { StreamReader } = require('ginkgoch-stream-io');
+const { BufferReader } = require('ginkgoch-buffer-io');
 const Openable = require('../base/StreamOpenable');
 const Validators = require('../Validators');
-const BufferReader = require('ginkgoch-buffer-reader');
 const DbfIterator = require('./DbfIterator');
 
 module.exports = class Dbf extends Openable {

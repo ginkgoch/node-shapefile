@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const StreamReader = require('ginkgoch-stream-reader');
+const { StreamReader } = require('ginkgoch-stream-io');
 const ShpParser = require('./ShpParser');
 const ShpReader = require('./ShpReader');
 const Iterator = require('../base/Iterator');
