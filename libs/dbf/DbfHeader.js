@@ -19,17 +19,16 @@ module.exports = class DbfHeader {
         this.day = 0;
     }
 
-    update() {
-        const today = new Date();
-        this.year = today.getFullYear();
-        this.month = today.getMonth() + 1;
-        this.day = today.getDate();
-
-        if (this.fields.length > 0) {
-            this.recordLength = _.sum(this.fields.map(f => f.length));
-        }
-
-        this.headerLength = HEADER_GENERAL_SIZE + FIELD_SIZE * this.fields.length;
+    /**
+     *
+     * @param fields
+     * @returns {DbfHeader}
+     * @static
+     */
+    static createEmptyHeader(fields = null) {
+        const header = new DbfHeader(fields);
+        header._init();
+        return header;
     }
 
     read(fileDescriptor) {
@@ -38,7 +37,7 @@ module.exports = class DbfHeader {
         const headerBr = new BufferReader(headerBuffer);
 
         this.fileType = headerBr.nextInt8();
-        this.year = headerBr.nextInt8();
+        this.year = headerBr.nextInt8() + 1900;
         this.month = headerBr.nextInt8();
         this.day = headerBr.nextInt8();
         
@@ -71,7 +70,7 @@ module.exports = class DbfHeader {
         const headerBuffer = Buffer.alloc(HEADER_GENERAL_SIZE);
         const headerWriter = new BufferWriter(headerBuffer);
         headerWriter.writeInt8(this.fileType);
-        headerWriter.writeInt8(this.year);
+        headerWriter.writeInt8(this.year - 1900);
         headerWriter.writeInt8(this.month);
         headerWriter.writeInt8(this.day);
         headerWriter.writeUInt32(this.recordCount);
@@ -100,8 +99,20 @@ module.exports = class DbfHeader {
 
             fs.writeSync(fileDescriptor, fieldBuffer, 0, fieldBuffer.length, position);
             position += fieldBuffer.length
-
         }
+    }
+
+    _init() {
+        const today = new Date();
+        this.year = today.getFullYear();
+        this.month = today.getMonth() + 1;
+        this.day = today.getDate();
+
+        if (this.fields.length > 0) {
+            this.recordLength = _.sum(this.fields.map(f => f.length));
+        }
+
+        this.headerLength = HEADER_GENERAL_SIZE + FIELD_SIZE * this.fields.length;
     }
 
     static _chunkFieldNameBuffer(fieldName) {

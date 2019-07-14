@@ -1,23 +1,29 @@
 const fs = require('fs');
 const _ = require('lodash');
 const { StreamReader } = require('ginkgoch-stream-io');
+
 const Openable = require('../base/StreamOpenable');
 const Validators = require('../Validators');
 const DbfIterator = require('./DbfIterator');
 const DbfHeader = require('./DbfHeader');
+const DbfField = require('./DbfField');
+const DbfRecord = require('./DbfRecord');
 
 module.exports = class Dbf extends Openable {
-    constructor(filePath) {
+    constructor(filePath, flag = 'rs') {
         super();
         this.filePath = filePath;
+        this._flag = flag;
+        this._recordsCache = [];
     }
 
     /**
      * @override
      */
     async _open() {
-        this._fd = fs.openSync(this.filePath, 'rs');
-        this._header = await this._readHeader();
+        this._fd = fs.openSync(this.filePath, this._flag);
+        this._header = this._readHeader();
+        await Promise.resolve();
     }
 
     /**
@@ -41,14 +47,12 @@ module.exports = class Dbf extends Openable {
         this._fd = undefined;
     }
 
-    async _readHeader() {
-        Validators.checkIsOpened(this.isOpened);
-
+    _readHeader() {
         const header = new DbfHeader();
         header.read(this._fd);
         return {
             fileType: header.fileType,
-            date: new Date(header.year + 1900, header.month, header.day),
+            date: new Date(header.year, header.month, header.day),
             numRecords: header.recordCount,
             headerLength: header.headerLength,
             recordLength: header.recordLength,
@@ -117,5 +121,69 @@ module.exports = class Dbf extends Openable {
                 resolve(records);
             });
         });
+    }
+
+    /**
+     *
+     * @param {string} filePath
+     * @param {Array<DbfField>} fields
+     * @param options Options to create the writable stream.
+     * @returns {Dbf}
+     * @static
+     */
+    static createEmptyDbf(filePath, fields, options = null) {
+        const dbfFile = new Dbf(filePath, 'rs+');
+        dbfFile._header = DbfHeader.createEmptyHeader(fields);
+
+        const fd = fs.openSync(filePath, 'w');
+        dbfFile._header.write(fd);
+        fs.closeSync(fd);
+
+        return dbfFile;
+    }
+
+    /**
+     *
+     * @param {DbfRecord} record
+     */
+    pushRecord(record) {
+        this._recordsCache.push(record);
+    }
+
+    /**
+     *
+     * @param {Array<DbfRecord>} records
+     */
+    pushRecords(records) {
+        records.forEach(r => this._recordsCache.push(r));
+    }
+
+    flush() {
+        Validators.checkIsOpened(this.isOpened);
+
+        if (this._recordsCache.length === 0) {
+            return;
+        }
+
+        for(let record of this._recordsCache) {
+            this._flush(record);
+        }
+
+        this._header.write(this._fd);
+    }
+
+    /**
+     *
+     * @param {DbfRecord} record
+     * @private
+     */
+    _flush(record) {
+        const buff = Buffer.alloc(this._header.recordLength);
+        record.write(buff);
+
+        let position = this._header.headerLength + this._header.recordLength * this._header.recordCount;
+
+        fs.writeSync(this._fd, buff, 0, buff.length, position);
+        this._header.recordCount++;
     }
 };

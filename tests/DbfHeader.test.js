@@ -49,7 +49,7 @@ describe('DbfHeader tests', () => {
     test('write header', () => {
         const header = new DbfHeader();
         header.fileType = 3;
-        header.year = 105;
+        header.year = 2019;
         header.month = 2;
         header.day = 6;
         header.recordCount = 51;
@@ -72,13 +72,12 @@ describe('DbfHeader tests', () => {
         fs.unlinkSync(filePath)
     });
 
-    test('update header', () => {
-        const header = new DbfHeader([
+    test('init header', () => {
+        const fields = [
             { name: 'REC', length: 10,  type: DbfFieldType.character, decimal: 0},
             { name: 'POP', length: 4,  type: DbfFieldType.integer, decimal: 0}
-            ]);
-
-        header.update();
+        ];
+        const header = DbfHeader.createEmptyHeader(fields);
 
         const today = new Date();
         expect(header.year).toBe(today.getFullYear());

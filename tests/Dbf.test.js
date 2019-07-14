@@ -1,4 +1,6 @@
+const fs = require('fs');
 const _ = require('lodash');
+
 const Dbf = require('../libs/dbf/Dbf');
 const DbfFieldType = require('../libs/dbf/DbfFieldType');
 const dbf_usstates_header = require('./data/dbf_usstates_header.json');
@@ -171,6 +173,25 @@ describe('Dbf records test', () => {
                 expect(_.keys(r)).toEqual(['RECID']);
             });
         });
+    });
+});
+
+describe('create dbf', () => {
+    const filePathSrc = './tests/data/USStates.dbf';
+    const filePathTgt = './tests/data/USStates_create_test.dbf';
+
+    it('create empty', async () => {
+        const dbfSrc = new Dbf(filePathSrc);
+        await dbfSrc.open();
+
+        const fieldsSrc = dbfSrc.fields(true);
+        const dbfTgt = Dbf.createEmptyDbf(filePathTgt, fieldsSrc);
+        await dbfTgt.open();
+
+        expect(dbfTgt._header.fields.length).not.toBe(0);
+        expect(dbfTgt._header.fields).toStrictEqual(dbfSrc._header.fields);
+
+        fs.unlinkSync(filePathTgt);
     });
 });
 
