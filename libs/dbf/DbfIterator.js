@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const Iterator = require('../base/Iterator');
-const BufferReader = require('ginkgoch-buffer-reader');
+const DbfRecord = require('./DbfRecord');
+const DbfHeader = require('./DbfHeader');
 
 module.exports = class DbfIterator extends Iterator {
     constructor(streamReader, header) {
@@ -18,44 +19,23 @@ module.exports = class DbfIterator extends Iterator {
             return this._done();
         }
         
-        const br = new BufferReader(buffer);
-        const fieldValues = DbfIterator._readRecord(br, this._header.fields, this.fields);
+        const fieldValues = DbfIterator._readRecord(buffer, this._header, this.fields);
         return this._continue(fieldValues);
     }
 
-    static _readRecord(br, fieldAll, fieldRequired) {
-        const record = {};
-        for (let i = 0; i < fieldAll.length; i++) {
-            const field = fieldAll[i];
-            const buffer = br.nextBuffer(field.length);
-
-            if(fieldRequired && !_.includes(fieldRequired, field.name)) continue;
-
-            const text = buffer.toString().replace(/\0/g, '').trim();
-            record[field.name] = DbfIterator._parseFieldValue(text, field);
+    /**
+     *
+     * @param {Buffer} buffer
+     * @param {DbfHeader} header
+     * @param {Array<string>} requiredFieldNames
+     * @returns {Object}
+     */
+    static _readRecord(buffer, header, requiredFieldNames) {
+        const record = new DbfRecord(header).read(buffer);
+        let values = record.values;
+        if(requiredFieldNames) {
+            values = _.pick(values, requiredFieldNames);
         }
-
-        return record;
+        return values;
     }
-
-    static _parseFieldValue(text, fieldInfo) {
-        let value = text;
-        switch (fieldInfo.type) {
-            case 'N':
-            case 'F':
-            case 'O':
-                value = parseFloat(text, 10);
-                break;
-            case 'D':
-                value = new Date(text.slice(0, 4), parseInt(text.slice(4, 6), 10) - 1, text.slice(6, 8));
-                break;
-            case 'L':
-                value = text.toLowerCase() === 'y' || text.toLowerCase() === 't';
-                break;
-            default:
-                break;
-        }
-
-        return value;
-    }
-}
+};

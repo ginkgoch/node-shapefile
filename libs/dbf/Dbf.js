@@ -1,23 +1,29 @@
 const fs = require('fs');
 const _ = require('lodash');
-const StreamReader = require('ginkgoch-stream-reader');
+const { StreamReader } = require('ginkgoch-stream-io');
+
 const Openable = require('../base/StreamOpenable');
 const Validators = require('../Validators');
-const BufferReader = require('ginkgoch-buffer-reader');
 const DbfIterator = require('./DbfIterator');
+const DbfHeader = require('./DbfHeader');
+const DbfField = require('./DbfField');
+const DbfRecord = require('./DbfRecord');
 
 module.exports = class Dbf extends Openable {
-    constructor(filePath) {
+    constructor(filePath, flag = 'rs') {
         super();
         this.filePath = filePath;
+        this._flag = flag;
+        this._newRowCache = [];
     }
 
     /**
      * @override
      */
     async _open() {
-        this._fd = fs.openSync(this.filePath, 'rs');
-        this._header = await this._readHeader();
+        this._fd = fs.openSync(this.filePath, this._flag);
+        this._header = this._readHeader();
+        await Promise.resolve();
     }
 
     /**
@@ -41,46 +47,10 @@ module.exports = class Dbf extends Openable {
         this._fd = undefined;
     }
 
-    async _readHeader() {
-        Validators.checkIsOpened(this.isOpened);
-
-        const headerBuffer = Buffer.alloc(32);
-        fs.readSync(this._fd, headerBuffer, 0, headerBuffer.length, 0);
-        const headerBr = new BufferReader(headerBuffer);
-
-        const fileType = headerBr.nextInt8();
-        const year = await headerBr.nextInt8();
-        const month = await headerBr.nextInt8();
-        const day = await headerBr.nextInt8();
-        const date = new Date(year + 1900, month, day);
-        
-        const numRecords = headerBr.nextUInt32LE();
-        const headerLength = headerBr.nextUInt16LE();
-        const recordLength = headerBr.nextUInt16LE();
-
-        let position = headerBuffer.length;
-        const fields = [];
-        while(position < headerLength - 1) {
-            const columnBuffer = Buffer.alloc(32);
-            fs.readSync(this._fd, columnBuffer, 0, columnBuffer.length, position);
-
-            const field = { };
-            field.name = columnBuffer.slice(0, 11).toString().replace(/\0/g, '').trim();
-            field.type = String.fromCharCode(columnBuffer.readUInt8(11));
-            if(field.type.toUpperCase() === 'C') {
-                field.length = columnBuffer.readUInt16LE(16);
-            } else {
-                field.length = columnBuffer.readUInt8(16);
-                field.decimal = columnBuffer.readUInt8(17);
-            }
-
-            fields.push(field);
-            position += columnBuffer.length;
-        }
-
-        return {
-            fileType, date, numRecords, headerLength, recordLength, fields
-        };
+    _readHeader() {
+        const header = new DbfHeader();
+        header.read(this._fd);
+        return header;
     }
 
     async get(id, fields) {
@@ -111,10 +81,10 @@ module.exports = class Dbf extends Openable {
     }
 
     /**
-     * @param {Object.<{ from: number|undefined, limit: number|undefined, fileds: Array.<string>|undefined }>} filter 
-     * @returns {Array.{Object}}
+     * @param {Object.<{ from: number|undefined, limit: number|undefined, fields: Array.<string>|undefined }>} filter
+     * @returns {Array.<Object>}}
      */
-    async records(filter) {
+    async records(filter = null) {
         const option = this._getStreamOption(this._header.headerLength + 1);
         const stream = fs.createReadStream(this.filePath, option);
         const records = [];
@@ -125,14 +95,19 @@ module.exports = class Dbf extends Openable {
         return new Promise(resolve => {
             let index = -1;
             stream.on('readable', () => {
-                let buffer = null;
                 const recordLength = this._header.recordLength;
-                while(null !== (buffer = stream.read(recordLength))) {
-                    index++;
-                    if (index < filter.from || index >= to) { continue; }
 
-                    const br = new BufferReader(buffer);
-                    const record = DbfIterator._readRecord(br, this._header.fields, filter.fields);
+                let buffer = stream.read(recordLength);
+                while(null !== buffer) {
+                    index++;
+                    const currentBuff = buffer;
+                    buffer = stream.read(recordLength);
+
+                    if (index < filter.from || index >= to) {
+                        continue;
+                    }
+
+                    const record = DbfIterator._readRecord(currentBuff, this._header, filter.fields);
                     records.push(record);
                 }
             }).on('end', () => {
@@ -140,4 +115,70 @@ module.exports = class Dbf extends Openable {
             });
         });
     }
-}
+
+    /**
+     *
+     * @param {string} filePath
+     * @param {Array<DbfField>} fields
+     * @param options Options to create the writable stream.
+     * @returns {Dbf}
+     * @static
+     */
+    static createEmptyDbf(filePath, fields, options = null) {
+        const dbfFile = new Dbf(filePath, 'rs+');
+        dbfFile._header = DbfHeader.createEmptyHeader(fields);
+
+        const fd = fs.openSync(filePath, 'w');
+        dbfFile._header.write(fd);
+        fs.closeSync(fd);
+
+        return dbfFile;
+    }
+
+    /**
+     *
+     * @param {Object} row
+     */
+    pushRow(row) {
+        this._newRowCache.push(row);
+    }
+
+    /**
+     *
+     * @param {Array<DbfRecord>} rows
+     */
+    pushRows(rows) {
+        rows.forEach(r => this.pushRow(r));
+    }
+
+    flush() {
+        Validators.checkIsOpened(this.isOpened);
+
+        if (this._newRowCache.length === 0) {
+            return;
+        }
+
+        for(let row of this._newRowCache) {
+            const record = new DbfRecord(this._header);
+            record.values = row;
+            this._flush(record);
+        }
+
+        this._header.write(this._fd);
+        this._newRowCache = [];
+    }
+
+    /**
+     *
+     * @param {DbfRecord} record
+     * @private
+     */
+    _flush(record) {
+        const buff = Buffer.alloc(this._header.recordLength);
+        record.write(buff);
+
+        let position = this._header.headerLength + this._header.recordLength * this._header.recordCount;
+        fs.writeSync(this._fd, buff, 0, buff.length, position);
+        this._header.recordCount++;
+    }
+};

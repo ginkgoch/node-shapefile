@@ -1,10 +1,14 @@
+const fs = require('fs');
 const _ = require('lodash');
+
 const Dbf = require('../libs/dbf/Dbf');
 const DbfFieldType = require('../libs/dbf/DbfFieldType');
 const dbf_usstates_header = require('./data/dbf_usstates_header.json');
 const dbf_usstates_record1 = require('./data/dbf_usstates_record1.json');
 const dbf_usstates_record2 = require('./data/dbf_usstates_record2.json');
 const dbf_usstates_record51 = require('./data/dbf_usstates_record51.json');
+const dbf_create_fields = require('./data/dbf-create-fields.json');
+const dbf_create_records = require('./data/dbf_create_records.json');
 
 describe('Dbf tests', () => {
     const filePath = './tests/data/USStates.dbf';
@@ -171,6 +175,43 @@ describe('Dbf records test', () => {
                 expect(_.keys(r)).toEqual(['RECID']);
             });
         });
+    });
+});
+
+describe('create dbf', () => {
+    const filePathSrc = './tests/data/USStates.dbf';
+
+    it('create empty', async () => {
+        const filePathTgt = './tests/data/USStates_create_test.dbf';
+        const dbfSrc = new Dbf(filePathSrc);
+        await dbfSrc.open();
+
+        const fieldsSrc = dbfSrc.fields(true);
+        const dbfTgt = Dbf.createEmptyDbf(filePathTgt, fieldsSrc);
+        await dbfTgt.open();
+
+        expect(dbfTgt._header.fields.length).not.toBe(0);
+        expect(dbfTgt._header.fields).toStrictEqual(dbfSrc._header.fields);
+
+        fs.unlinkSync(filePathTgt);
+    });
+
+    it('create dbf with records', async () => {
+        const filePath = './tests/data/USStates_create_test1.dbf';
+        const dbf = Dbf.createEmptyDbf(filePath, dbf_create_fields);
+        await dbf.open();
+
+        dbf.pushRows(dbf_create_records);
+        dbf.flush();
+        dbf.close();
+
+        const dbfNew = new Dbf(filePath);
+        await dbfNew.open();
+
+        const records = await dbfNew.records();
+        expect(records.length).toBe(51);
+
+        fs.unlinkSync(filePath);
     });
 });
 

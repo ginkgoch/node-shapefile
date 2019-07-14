@@ -1,4 +1,4 @@
-const BufferReader = require('ginkgoch-buffer-reader');
+const { BufferReader } = require('ginkgoch-buffer-io');
 const Envelope = require('./Envelope');
 
 module.exports = class ShpReader extends BufferReader {
