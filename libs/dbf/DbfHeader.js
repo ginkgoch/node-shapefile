@@ -1,4 +1,5 @@
 const fs = require('fs');
+const _ = require('lodash');
 const { BufferReader, BufferWriter } = require('ginkgoch-buffer-io');
 
 const FILE_TYPE = 0x03;
@@ -7,15 +8,28 @@ const FIELD_NAME_SIZE = 11;
 const HEADER_GENERAL_SIZE = 32;
 
 module.exports = class DbfHeader {
-    constructor() {
+    constructor(fields = null) {
         this.fileType = FILE_TYPE;
-        this.year = 0;
-        this.month = 0;
-        this.day = 0;
         this.recordCount = 0;
         this.headerLength = 0;
         this.recordLength = 0;
-        this.fields = []
+        this.fields = fields || [];
+        this.year = 0;
+        this.month = 0;
+        this.day = 0;
+    }
+
+    update() {
+        const today = new Date();
+        this.year = today.getFullYear();
+        this.month = today.getMonth() + 1;
+        this.day = today.getDate();
+
+        if (this.fields.length > 0) {
+            this.recordLength = _.sum(this.fields.map(f => f.length));
+        }
+
+        this.headerLength = HEADER_GENERAL_SIZE + FIELD_SIZE * this.fields.length;
     }
 
     read(fileDescriptor) {

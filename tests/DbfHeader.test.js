@@ -1,4 +1,5 @@
 const fs = require('fs');
+const DbfFieldType = require('../libs/dbf/DbfFieldType');
 const DbfHeader = require('../libs/dbf/DbfHeader');
 
 describe('DbfHeader tests', () => {
@@ -13,8 +14,6 @@ describe('DbfHeader tests', () => {
     });
 
     test('test chunk field name buffer', () => {
-        const header = new DbfHeader();
-
         // length equal to 10
         let fieldName = 'HelloWorld';
         let buffer1 = DbfHeader._chunkFieldNameBuffer(fieldName);
@@ -71,5 +70,23 @@ describe('DbfHeader tests', () => {
         expect(header1).toStrictEqual(header);
 
         fs.unlinkSync(filePath)
-    })
+    });
+
+    test('update header', () => {
+        const header = new DbfHeader([
+            { name: 'REC', length: 10,  type: DbfFieldType.character, decimal: 0},
+            { name: 'POP', length: 4,  type: DbfFieldType.integer, decimal: 0}
+            ]);
+
+        header.update();
+
+        const today = new Date();
+        expect(header.year).toBe(today.getFullYear());
+        expect(header.month).toBe(today.getMonth() + 1);
+        expect(header.day).toBe(today.getDate());
+        expect(header.fields.length).toBe(2);
+        expect(header.recordCount).toBe(0);
+        expect(header.recordLength).toBe(14);
+        expect(header.headerLength).toBe(96);
+    });
 });
