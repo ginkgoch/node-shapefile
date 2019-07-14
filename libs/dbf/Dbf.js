@@ -57,7 +57,7 @@ module.exports = class Dbf extends Openable {
         Validators.checkIsOpened(this.isOpened);
 
         const offset = this._header.headerLength + 1 + this._header.recordLength * id;
-        const records = await this._getRecordIteractor(offset, offset + this._header.recordLength);
+        const records = await this._getRecordIterator(offset, offset + this._header.recordLength);
         records.fields = fields;
 
         const record = await records.next();
@@ -67,12 +67,12 @@ module.exports = class Dbf extends Openable {
     async iterator(fields) {
         Validators.checkIsOpened(this.isOpened);
     
-        const records = await this._getRecordIteractor(this._header.headerLength + 1);
+        const records = await this._getRecordIterator(this._header.headerLength + 1);
         records.filter = fields;
         return records;
     }
 
-    async _getRecordIteractor(start, end) { 
+    async _getRecordIterator(start, end) {
         const option = this._getStreamOption(start, end);
         const stream = fs.createReadStream(this.filePath, option);
         const sr = new StreamReader(stream);

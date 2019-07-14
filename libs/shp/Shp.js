@@ -81,7 +81,7 @@ module.exports = class Shp extends Openable {
 
     async iterator() {
         Validators.checkIsOpened(this.isOpened);
-        return await this._getRecordIteractor(100);
+        return await this._getRecordIterator(100);
     }
 
     async get(id) {
@@ -89,7 +89,7 @@ module.exports = class Shp extends Openable {
         assert(!_.isUndefined(this._shx), `${path.basename(shxPath)} doesn't exist.`)
 
         const rshx = this._shx.get(id);
-        const iterator = await this._getRecordIteractor(rshx.offset, rshx.offset + 8 + rshx.length);
+        const iterator = await this._getRecordIterator(rshx.offset, rshx.offset + 8 + rshx.length);
         const result = await iterator.next();
         return result.result;
     }
@@ -148,7 +148,7 @@ module.exports = class Shp extends Openable {
         });
     }
 
-    async _getRecordIteractor(start, end) { 
+    async _getRecordIterator(start, end) {
         const option = this._getStreamOption(start, end);
         const stream = fs.createReadStream(this.filePath, option);
         const sr = new StreamReader(stream);

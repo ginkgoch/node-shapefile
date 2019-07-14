@@ -12,13 +12,17 @@ module.exports = class DbfIterator extends Iterator {
         this._streamReader = streamReader;
     }
 
+    /**
+     * @override
+     * @returns {Promise<{result, done}|{done}|*>}
+     */
     async next() {
         const recordLength = this._header.recordLength;
         const buffer = await this._streamReader.read(recordLength);
         if(buffer === null || buffer.length === 0) {
             return this._done();
         }
-        
+
         const fieldValues = DbfIterator._readRecord(buffer, this._header, this.fields);
         return this._continue(fieldValues);
     }
