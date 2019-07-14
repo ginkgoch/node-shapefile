@@ -9,7 +9,7 @@ module.exports = class DbfRecord {
      *
      * @param {DbfHeader} header
      */
-    constructor(header) {
+    constructor(header = null) {
         this.header = header;
         this.id = -1;
         this.values = {};
@@ -17,8 +17,10 @@ module.exports = class DbfRecord {
 
     read(buffer) {
         const br = new BufferReader(buffer);
+        // br.nextString(1);
         for(let i = 0; i < this.header.fields.length; i++) {
             let field = this.header.fields[i];
+
             let fieldBuff = br.nextBuffer(field.length);
             let fieldText = fieldBuff.toString().replace(/\0/g, '').trim();
             this.values[field.name] = DbfRecord._parseFieldValue(fieldText, field);
@@ -27,28 +29,32 @@ module.exports = class DbfRecord {
         return this;
     }
 
+    //TODO: why the write has an extra space?
     write(buffer) {
         const bw = new BufferWriter(buffer);
+        bw.writeString(' ');
         for(let i = 0; i < this.header.fields.length; i++) {
             let field = this.header.fields[i];
             let value = this.values[field.name];
-            let fieldBuff = Buffer.alloc(field.length);
 
+            //TODO: can improve...
+            let fieldBuff = Buffer.alloc(field.length);
+            let fieldBuffWr = new BufferWriter(fieldBuff);
             switch(field.type) {
                 case DbfFieldType.number:
-                    DbfRecord._writeNumberValue(bw, value, field);
+                    DbfRecord._writeNumberValue(fieldBuffWr, value, field);
                     break;
                 case DbfFieldType.float:
-                    bw.writeFloat(parseFloat(value));
+                    fieldBuffWr.writeFloat(parseFloat(value));
                     break;
                 case DbfFieldType.integer:
-                    DbfRecord._writeIntegerValue(bw, value);
+                    DbfRecord._writeIntegerValue(fieldBuffWr, value);
                     break;
                 case DbfFieldType.boolean:
-                    DbfRecord._writeBooleanValue(bw, value);
+                    DbfRecord._writeBooleanValue(fieldBuffWr, value);
                     break;
                 case DbfFieldType.date:
-                    DbfRecord._writeDateValue(bw, value);
+                    DbfRecord._writeDateValue(fieldBuffWr, value);
                     break;
                 case DbfFieldType.binary:
                     throw new Error("Binary is not supported.");

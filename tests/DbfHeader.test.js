@@ -85,7 +85,7 @@ describe('DbfHeader tests', () => {
         expect(header.day).toBe(today.getDate());
         expect(header.fields.length).toBe(2);
         expect(header.recordCount).toBe(0);
-        expect(header.recordLength).toBe(14);
+        expect(header.recordLength).toBe(15);
         expect(header.headerLength).toBe(96);
     });
 });

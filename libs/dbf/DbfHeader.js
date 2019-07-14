@@ -10,13 +10,13 @@ const HEADER_GENERAL_SIZE = 32;
 module.exports = class DbfHeader {
     constructor(fields = null) {
         this.fileType = FILE_TYPE;
+        this.year = 0;
+        this.month = 0;
+        this.day = 0;
         this.recordCount = 0;
         this.headerLength = 0;
         this.recordLength = 0;
         this.fields = fields || [];
-        this.year = 0;
-        this.month = 0;
-        this.day = 0;
     }
 
     /**
@@ -47,6 +47,7 @@ module.exports = class DbfHeader {
 
         this.fields = [];
         let position = headerBuffer.length;
+        //TODO: can improve...
         while(position < this.headerLength - 1) { 
             const fieldBuffer = Buffer.alloc(FIELD_SIZE);
             fs.readSync(fileDescriptor, fieldBuffer, 0, fieldBuffer.length, position);
@@ -78,6 +79,7 @@ module.exports = class DbfHeader {
         headerWriter.writeUInt16(this.recordLength);
         fs.writeSync(fileDescriptor, headerBuffer, 0, headerBuffer.length, 0);
 
+        //TODO: can improve...
         let position = headerBuffer.length;
         for (let field of this.fields ) {
             let fieldBuffer = Buffer.alloc(FIELD_SIZE);
@@ -100,6 +102,8 @@ module.exports = class DbfHeader {
             fs.writeSync(fileDescriptor, fieldBuffer, 0, fieldBuffer.length, position);
             position += fieldBuffer.length
         }
+
+        fs.writeSync(fileDescriptor, Buffer.alloc(1), 0, 1, position);
     }
 
     _init() {
@@ -109,10 +113,10 @@ module.exports = class DbfHeader {
         this.day = today.getDate();
 
         if (this.fields.length > 0) {
-            this.recordLength = _.sum(this.fields.map(f => f.length));
+            this.recordLength = _.sum(this.fields.map(f => f.length)) + 1;
         }
 
-        this.headerLength = HEADER_GENERAL_SIZE + FIELD_SIZE * this.fields.length;
+        this.headerLength = HEADER_GENERAL_SIZE + FIELD_SIZE * this.fields.length + 1;
     }
 
     static _chunkFieldNameBuffer(fieldName) {

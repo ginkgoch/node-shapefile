@@ -14,7 +14,7 @@ module.exports = class Dbf extends Openable {
         super();
         this.filePath = filePath;
         this._flag = flag;
-        this._recordsCache = [];
+        this._newRowCache = [];
     }
 
     /**
@@ -50,14 +50,7 @@ module.exports = class Dbf extends Openable {
     _readHeader() {
         const header = new DbfHeader();
         header.read(this._fd);
-        return {
-            fileType: header.fileType,
-            date: new Date(header.year, header.month, header.day),
-            numRecords: header.recordCount,
-            headerLength: header.headerLength,
-            recordLength: header.recordLength,
-            fields: header.fields
-        }
+        return header;
     }
 
     async get(id, fields) {
@@ -91,7 +84,7 @@ module.exports = class Dbf extends Openable {
      * @param {Object.<{ from: number|undefined, limit: number|undefined, fields: Array.<string>|undefined }>} filter
      * @returns {Array.<Object>}}
      */
-    async records(filter) {
+    async records(filter = null) {
         const option = this._getStreamOption(this._header.headerLength + 1);
         const stream = fs.createReadStream(this.filePath, option);
         const records = [];
@@ -144,32 +137,35 @@ module.exports = class Dbf extends Openable {
 
     /**
      *
-     * @param {DbfRecord} record
+     * @param {Object} row
      */
-    pushRecord(record) {
-        this._recordsCache.push(record);
+    pushRow(row) {
+        this._newRowCache.push(row);
     }
 
     /**
      *
-     * @param {Array<DbfRecord>} records
+     * @param {Array<DbfRecord>} rows
      */
-    pushRecords(records) {
-        records.forEach(r => this._recordsCache.push(r));
+    pushRows(rows) {
+        rows.forEach(r => this.pushRow(r));
     }
 
     flush() {
         Validators.checkIsOpened(this.isOpened);
 
-        if (this._recordsCache.length === 0) {
+        if (this._newRowCache.length === 0) {
             return;
         }
 
-        for(let record of this._recordsCache) {
+        for(let row of this._newRowCache) {
+            const record = new DbfRecord(this._header);
+            record.values = row;
             this._flush(record);
         }
 
         this._header.write(this._fd);
+        this._newRowCache = [];
     }
 
     /**
@@ -182,7 +178,6 @@ module.exports = class Dbf extends Openable {
         record.write(buff);
 
         let position = this._header.headerLength + this._header.recordLength * this._header.recordCount;
-
         fs.writeSync(this._fd, buff, 0, buff.length, position);
         this._header.recordCount++;
     }
