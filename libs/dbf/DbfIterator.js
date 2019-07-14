@@ -19,7 +19,7 @@ module.exports = class DbfIterator extends Iterator {
     async next() {
         const recordLength = this._header.recordLength;
         const buffer = await this._streamReader.read(recordLength);
-        if(buffer === null || buffer.length === 0) {
+        if(buffer === null || buffer.length < recordLength) {
             return this._done();
         }
 

@@ -17,7 +17,7 @@ module.exports = class DbfRecord {
 
     read(buffer) {
         const br = new BufferReader(buffer);
-        // br.nextString(1);
+        br.nextString(1);
         for(let i = 0; i < this.header.fields.length; i++) {
             let field = this.header.fields[i];
 

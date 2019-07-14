@@ -100,7 +100,7 @@ module.exports = class DbfHeader {
             }
 
             fs.writeSync(fileDescriptor, fieldBuffer, 0, fieldBuffer.length, position);
-            position += fieldBuffer.length
+            position += fieldBuffer.length;
         }
 
         fs.writeSync(fileDescriptor, Buffer.alloc(1), 0, 1, position);

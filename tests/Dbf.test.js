@@ -75,6 +75,35 @@ describe('Dbf tests', () => {
             expect(count).toBe(51);
         });
     });
+
+    test('read austin dbf - 1', async () => {
+        const dbf = new Dbf('./tests/data/Austinstreets.dbf');
+        await dbf.openWith(async () => {
+            const records = await dbf.records();
+            expect(records.length).toBe(13843);
+        });
+    });
+
+    test('read austin dbf - 2', async () => {
+        const dbf = new Dbf('./tests/data/Austinstreets.dbf');
+        await dbf.openWith(async () => {
+            const records = await dbf.iterator();
+            let record1 = await records.next();
+            let count = 0;
+            while (!record1.done) {
+                const record2 = await dbf.get(count);
+
+                if (count % 50 === 0) {
+                    expect(record1.result).toStrictEqual(record2);
+                }
+
+                count++;
+                record1 = await records.next();
+            }
+
+            expect(count).toBe(13843);
+        });
+    });
 });
 
 describe('Field type tests', () => {
@@ -211,7 +240,34 @@ describe('create dbf', () => {
         const records = await dbfNew.records();
         expect(records.length).toBe(51);
 
-        fs.unlinkSync(filePath);
+        // fs.unlinkSync(filePath);
+    });
+
+    it('create dbf with records 1', async () => {
+        const filePath1 = './tests/data/USStates_create_test1.dbf';
+        const filePath2 = './tests/data/USStates.dbf';
+
+        const dbf1 = new Dbf(filePath1);
+        await dbf1.open();
+
+        const dbf2 = new Dbf(filePath2);
+        await dbf2.open();
+
+        let buffer1 = fs.readFileSync(filePath1);
+        let buffer2 = fs.readFileSync(filePath2);
+
+        let length = buffer1.length;
+        let offset = 1697;
+        let seg = 467;
+
+        while(offset < length - 1) {
+            let segBuff1 = buffer1.slice(offset, offset + seg);
+            let segBuff2 = buffer2.slice(offset, offset + seg);
+            if (!segBuff1.equals(segBuff2)) {
+                break;
+            }
+            offset += seg;
+        }
     });
 });
 
