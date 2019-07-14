@@ -86,6 +86,6 @@ describe('DbfHeader tests', () => {
         expect(header.fields.length).toBe(2);
         expect(header.recordCount).toBe(0);
         expect(header.recordLength).toBe(15);
-        expect(header.headerLength).toBe(96);
+        expect(header.headerLength).toBe(97);
     });
 });
