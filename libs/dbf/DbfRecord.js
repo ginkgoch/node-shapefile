@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const {BufferReader, BufferWriter} = require("ginkgoch-buffer-io");
 
 const DbfHeader = require('./DbfHeader');
@@ -33,20 +34,24 @@ module.exports = class DbfRecord {
             let value = this.values[field.name];
             let fieldBuff = Buffer.alloc(field.length);
 
-            //TODO: implement this...
             switch(field.type) {
                 case DbfFieldType.number:
+                    DbfRecord._writeNumberValue(bw, value, field);
                     break;
                 case DbfFieldType.float:
+                    bw.writeFloat(parseFloat(value));
                     break;
                 case DbfFieldType.integer:
+                    DbfRecord._writeIntegerValue(bw, value);
                     break;
                 case DbfFieldType.boolean:
+                    DbfRecord._writeBooleanValue(bw, value);
                     break;
                 case DbfFieldType.date:
+                    DbfRecord._writeDateValue(bw, value);
                     break;
                 case DbfFieldType.binary:
-                    break;
+                    throw new Error("Binary is not supported.");
                 case DbfFieldType.memo:
                     throw new Error("Memo is not supported.");
                 default:
@@ -78,5 +83,83 @@ module.exports = class DbfRecord {
         }
 
         return value;
+    }
+
+    /**
+     *
+     * @param {BufferWriter} bufferWriter
+     * @param {string} value
+     */
+    static _writeBooleanValue(bufferWriter, value) {
+        switch (value.toUpperCase()) {
+            case 'TRUE':
+            case '1':
+            case 'T':
+            case 'YES':
+            case 'Y':
+                bufferWriter.writeString('T');
+                break;
+            case ' ':
+            case '?':
+                bufferWriter.writeString('?');
+                break;
+            default:
+                bufferWriter.writeString('F');
+                break;
+        }
+    }
+
+    static _writeIntegerValue(bufferWriter, value) {
+        if(!_.isInteger(value)) {
+            value = parseInt(value);
+        }
+        bufferWriter.writeInt32(value);
+    }
+
+    static _writeDateValue(bufferWriter, value) {
+        if(!_.isDate(value)) {
+            value = new Date(value)
+        }
+
+        const formattedDate = DbfRecord._formatDate(value);
+        bufferWriter.writeString(formattedDate);
+    }
+
+    static _formatDate(date) {
+        const year = _.padStart(date.getFullYear(), 4, '0');
+        const month = _.padStart(date.getMonth() + 1, 2, '0');
+        const day = _.padStart(date.getDate(), 2, '0');
+        return `${year}${month}${day}`;
+    }
+
+    static _writeNumberValue(bufferWriter, value, field) {
+        const buff = DbfRecord._getNumberBuffer(value, field);
+        bufferWriter.writeBuffer(buff);
+    }
+
+    static _getNumberBuffer(value, field) {
+        const buff = Buffer.alloc(field.length);
+        value = value.toString();
+        const dotIndex = value.indexOf('.');
+        if (field.decimal > 0 && dotIndex > -1) {
+            let decimalLength = field.decimal;
+            if (decimalLength > field.length - 2) {
+                decimalLength = field.length = 2;
+            }
+
+            let decimalStr = value.substr(dotIndex + 1);
+            if (decimalStr.length > decimalLength) {
+                decimalStr = decimalStr.substr(0, decimalLength);
+            }
+            let integerStr = value.substr(0, dotIndex);
+            if (integerStr.length > field.length - decimalLength - 1) {
+                throw new Error(`number length is larger than field length. value:${value}, field:${field.name}, length:${field.length}, decimal:${field.decimal}.`);
+            }
+            let numberStr = `${integerStr}.${decimalStr}`;
+            buff.write(numberStr);
+        } else {
+            buff.write(value);
+        }
+        return buff;
     }
 };
