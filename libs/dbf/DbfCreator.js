@@ -1,29 +1,28 @@
-const fs = require('fså')
-const { StreamWriter } = require('ginkgoch-stream-io')
+const fs = require('fs');
+const {StreamWriter} = require('ginkgoch-stream-io');
 
 module.exports = class DbfCreator {
     constructor(filePath, options = {}) {
-        this.filePath = filePath
-        this.options = options
+        this.filePath = filePath;
+        this.options = options;
         this.streamWriter = null
     }
 
     async create() {
         return await new Promise(res => {
             if (!this.streamWriter) {
-                const stream = fs.createWriteStream(this.filePath, this.options)
-                this.streamWriter = new StreamWriter(stream)
+                const stream = fs.createWriteStream(this.filePath, this.options);
+                this.streamWriter = new StreamWriter(stream);
             }
 
-            res()
+            res();
         })
-        
     }
 
     async end() {
         if (this.streamWriter) {
-            await this.streamWriter.end()
+            await this.streamWriter.end();
             this.streamWriter = null
         }
     }
-}
+};

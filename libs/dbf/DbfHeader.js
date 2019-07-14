@@ -1,9 +1,14 @@
 const fs = require('fs');
 const { BufferReader, BufferWriter } = require('ginkgoch-buffer-io');
 
+const FILE_TYPE = 0x03;
+const FIELD_SIZE = 32;
+const FIELD_NAME_SIZE = 11;
+const HEADER_GENERAL_SIZE = 32;
+
 module.exports = class DbfHeader {
     constructor() {
-        this.fileType = 0;
+        this.fileType = FILE_TYPE;
         this.year = 0;
         this.month = 0;
         this.day = 0;
@@ -14,7 +19,7 @@ module.exports = class DbfHeader {
     }
 
     read(fileDescriptor) {
-        const headerBuffer = Buffer.alloc(32);
+        const headerBuffer = Buffer.alloc(HEADER_GENERAL_SIZE);
         fs.readSync(fileDescriptor, headerBuffer, 0, headerBuffer.length, 0);
         const headerBr = new BufferReader(headerBuffer);
 
@@ -30,11 +35,11 @@ module.exports = class DbfHeader {
         this.fields = [];
         let position = headerBuffer.length;
         while(position < this.headerLength - 1) { 
-            const fieldBuffer = Buffer.alloc(32);
+            const fieldBuffer = Buffer.alloc(FIELD_SIZE);
             fs.readSync(fileDescriptor, fieldBuffer, 0, fieldBuffer.length, position);
 
             const field = { };
-            field.name = fieldBuffer.slice(0, 11).toString().replace(/\0/g, '').trim();
+            field.name = fieldBuffer.slice(0, FIELD_NAME_SIZE).toString().replace(/\0/g, '').trim();
             field.type = String.fromCharCode(fieldBuffer.readUInt8(11));
             if(field.type.toUpperCase() === 'C') {
                 field.length = fieldBuffer.readUInt16LE(16);
@@ -49,7 +54,7 @@ module.exports = class DbfHeader {
     }
 
     write(fileDescriptor) {
-        const headerBuffer = Buffer.alloc(32);
+        const headerBuffer = Buffer.alloc(HEADER_GENERAL_SIZE);
         const headerWriter = new BufferWriter(headerBuffer);
         headerWriter.writeInt8(this.fileType);
         headerWriter.writeInt8(this.year);
@@ -62,7 +67,7 @@ module.exports = class DbfHeader {
 
         let position = headerBuffer.length;
         for (let field of this.fields ) {
-            let fieldBuffer = Buffer.alloc(32);
+            let fieldBuffer = Buffer.alloc(FIELD_SIZE);
             const fieldWriter = new BufferWriter(fieldBuffer);
 
             const fieldNameBuffer = DbfHeader._chunkFieldNameBuffer(field.name);
@@ -86,9 +91,9 @@ module.exports = class DbfHeader {
     }
 
     static _chunkFieldNameBuffer(fieldName) {
-        const fieldNameBuffer = Buffer.alloc(11);
+        const fieldNameBuffer = Buffer.alloc(FIELD_NAME_SIZE);
         const sourceBuffer = Buffer.from(fieldName);
-        sourceBuffer.copy(fieldNameBuffer, 0, 0, sourceBuffer.length > 11 ? 11 : sourceBuffer.length);
+        sourceBuffer.copy(fieldNameBuffer, 0, 0, sourceBuffer.length > FIELD_NAME_SIZE ? FIELD_NAME_SIZE : sourceBuffer.length);
         return fieldNameBuffer;
     }
 };

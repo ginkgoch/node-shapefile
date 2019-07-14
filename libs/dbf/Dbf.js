@@ -1,11 +1,10 @@
 const fs = require('fs');
 const _ = require('lodash');
 const { StreamReader } = require('ginkgoch-stream-io');
-const { BufferReader } = require('ginkgoch-buffer-io');
 const Openable = require('../base/StreamOpenable');
 const Validators = require('../Validators');
 const DbfIterator = require('./DbfIterator');
-const DbfHeader = require('./DbfHeader')
+const DbfHeader = require('./DbfHeader');
 
 module.exports = class Dbf extends Openable {
     constructor(filePath) {
@@ -85,8 +84,8 @@ module.exports = class Dbf extends Openable {
     }
 
     /**
-     * @param {Object.<{ from: number|undefined, limit: number|undefined, fileds: Array.<string>|undefined }>} filter 
-     * @returns {Array.{Object}}
+     * @param {Object.<{ from: number|undefined, limit: number|undefined, fields: Array.<string>|undefined }>} filter
+     * @returns {Array.<Object>}}
      */
     async records(filter) {
         const option = this._getStreamOption(this._header.headerLength + 1);
@@ -99,13 +98,19 @@ module.exports = class Dbf extends Openable {
         return new Promise(resolve => {
             let index = -1;
             stream.on('readable', () => {
-                let buffer = null;
                 const recordLength = this._header.recordLength;
-                while(null !== (buffer = stream.read(recordLength))) {
-                    index++;
-                    if (index < filter.from || index >= to) { continue; }
 
-                    const record = DbfIterator._readRecord(buffer, this._header, filter.fields);
+                let buffer = stream.read(recordLength);
+                while(null !== buffer) {
+                    index++;
+                    const currentBuff = buffer;
+                    buffer = stream.read(recordLength);
+
+                    if (index < filter.from || index >= to) {
+                        continue;
+                    }
+
+                    const record = DbfIterator._readRecord(currentBuff, this._header, filter.fields);
                     records.push(record);
                 }
             }).on('end', () => {
@@ -113,4 +118,4 @@ module.exports = class Dbf extends Openable {
             });
         });
     }
-}
+};

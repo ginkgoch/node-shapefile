@@ -29,7 +29,6 @@ module.exports = class DbfIterator extends Iterator {
      * @param {DbfHeader} header
      * @param {Array<string>} requiredFieldNames
      * @returns {Object}
-     * @private
      */
     static _readRecord(buffer, header, requiredFieldNames) {
         const record = new DbfRecord(header).read(buffer);
