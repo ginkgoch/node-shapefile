@@ -11,4 +11,4 @@ module.exports = class StreamOpenable extends Openable {
         filter = _.defaults(filter, { from: 0, limit: Number.MAX_SAFE_INTEGER });
         return filter;
     }
-}
+};

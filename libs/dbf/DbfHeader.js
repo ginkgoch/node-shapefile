@@ -79,31 +79,31 @@ module.exports = class DbfHeader {
         headerWriter.writeUInt16(this.recordLength);
         fs.writeSync(fileDescriptor, headerBuffer, 0, headerBuffer.length, 0);
 
-        //TODO: can improve...
-        let position = headerBuffer.length;
-        for (let field of this.fields ) {
-            let fieldBuffer = Buffer.alloc(FIELD_SIZE);
-            const fieldWriter = new BufferWriter(fieldBuffer);
+        const fieldsBuffer = Buffer.alloc(FIELD_SIZE * this.fields.length + 1);
+        const fieldsWriter = new BufferWriter(fieldsBuffer);
 
+        let index = 0;
+        for (let field of this.fields ) {
+            const position = index * FIELD_SIZE;
+            fieldsWriter.seek(position);
             const fieldNameBuffer = DbfHeader._chunkFieldNameBuffer(field.name);
-            fieldWriter.writeBuffer(fieldNameBuffer);
+            fieldsWriter.writeBuffer(fieldNameBuffer);
 
             const fieldTypeCode = field.type.charCodeAt(0);
-            fieldWriter.writeUInt8(fieldTypeCode);
+            fieldsWriter.writeUInt8(fieldTypeCode);
 
-            fieldWriter.seek(16);
+            fieldsWriter.seek(position + 16);
             if (field.type.toUpperCase() === 'C') {
-                fieldWriter.writeUInt16(field.length)
+                fieldsWriter.writeUInt16(field.length);
             } else {
-                fieldWriter.writeUInt8(field.length);
-                fieldWriter.writeUInt8(field.decimal)
+                fieldsWriter.writeUInt8(field.length);
+                fieldsWriter.writeUInt8(field.decimal);
             }
 
-            fs.writeSync(fileDescriptor, fieldBuffer, 0, fieldBuffer.length, position);
-            position += fieldBuffer.length;
+            index++;
         }
 
-        fs.writeSync(fileDescriptor, Buffer.alloc(1), 0, 1, position);
+        fs.writeSync(fileDescriptor, fieldsBuffer, 0, fieldsBuffer.length, headerBuffer.length);
     }
 
     _init() {
