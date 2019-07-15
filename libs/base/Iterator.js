@@ -1,9 +1,7 @@
 const _ = require('lodash');
 
-module.exports = class Iteractor {
-    async next() {
-
-    }
+module.exports = class Iterator {
+    async next() { }
 
     _done() {
         return { done: true };
@@ -12,4 +10,4 @@ module.exports = class Iteractor {
     _continue(obj) {
         return { done: false, result: obj };
     }
-}
+};

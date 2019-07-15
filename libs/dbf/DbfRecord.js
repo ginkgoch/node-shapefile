@@ -17,7 +17,7 @@ module.exports = class DbfRecord {
 
     read(buffer) {
         const br = new BufferReader(buffer);
-        // br.nextString(1);
+        br.nextString(1);
         for(let i = 0; i < this.header.fields.length; i++) {
             let field = this.header.fields[i];
 
@@ -29,43 +29,44 @@ module.exports = class DbfRecord {
         return this;
     }
 
-    //TODO: why the write has an extra space?
     write(buffer) {
         const bw = new BufferWriter(buffer);
         bw.writeString(' ');
+
+        let position = 1;
         for(let i = 0; i < this.header.fields.length; i++) {
+            bw.seek(position);
             let field = this.header.fields[i];
             let value = this.values[field.name];
 
-            //TODO: can improve...
-            let fieldBuff = Buffer.alloc(field.length);
-            let fieldBuffWr = new BufferWriter(fieldBuff);
             switch(field.type) {
                 case DbfFieldType.number:
-                    DbfRecord._writeNumberValue(fieldBuffWr, value, field);
+                    DbfRecord._writeNumberValue(bw, value, field);
                     break;
                 case DbfFieldType.float:
-                    fieldBuffWr.writeFloat(parseFloat(value));
+                    bw.writeFloat(parseFloat(value));
                     break;
                 case DbfFieldType.integer:
-                    DbfRecord._writeIntegerValue(fieldBuffWr, value);
+                    DbfRecord._writeIntegerValue(bw, value);
                     break;
                 case DbfFieldType.boolean:
-                    DbfRecord._writeBooleanValue(fieldBuffWr, value);
+                    DbfRecord._writeBooleanValue(bw, value);
                     break;
                 case DbfFieldType.date:
-                    DbfRecord._writeDateValue(fieldBuffWr, value);
+                    DbfRecord._writeDateValue(bw, value);
                     break;
                 case DbfFieldType.binary:
                     throw new Error("Binary is not supported.");
                 case DbfFieldType.memo:
                     throw new Error("Memo is not supported.");
                 default:
+                    const fieldBuff = Buffer.alloc(field.length);
                     fieldBuff.write(value);
+                    bw.writeBuffer(fieldBuff);
                     break;
             }
 
-            bw.writeBuffer(fieldBuff);
+            position += field.length;
         }
         return this;
     }

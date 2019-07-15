@@ -48,7 +48,7 @@ async function getRecordById(id) {
 ```
 
 ### Gets matched features one time - Update v1.0.16
-If you don't like to use iteractor way, here is a normal way to get all features back.
+If you don't like to use iterator way, here is a normal way to get all features back.
 ```js
 async function getAllRecords() {
     const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
