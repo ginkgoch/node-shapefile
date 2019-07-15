@@ -185,4 +185,30 @@ module.exports = class Dbf extends Openable {
         fs.writeSync(this._fd, buff, 0, buff.length, position);
         this._header.recordCount++;
     }
+
+    /**
+     * Remove record at index.
+     * @param {number} index The record index to delete. Start from 0.
+     */
+    removeAt(index) {
+        Validators.checkIsOpened(this.isOpened);
+        Validators.checkIndexIsValid(index);
+
+        const position = this._header.headerLength + index * this._header.recordLength;
+        const buff = Buffer.from('*');
+        fs.writeSync(this._fd, buff, 0, 1, position);
+    }
+
+    /**
+     * Recover the deleted record at index. Edited record doesn't support.
+     * @param {number} index The record index to delete. Start from 0.
+     */
+    recoverAt(index) {
+        Validators.checkIsOpened(this.isOpened);
+        Validators.checkIndexIsValid(index);
+
+        const position = this._header.headerLength + index * this._header.recordLength;
+        const buff = Buffer.from(' ');
+        fs.writeSync(this._fd, buff, 0, 1, position);
+    }
 };

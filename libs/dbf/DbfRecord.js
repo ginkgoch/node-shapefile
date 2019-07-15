@@ -13,11 +13,12 @@ module.exports = class DbfRecord {
         this.header = header;
         this.id = -1;
         this.values = {};
+        this.isDeleted = false;
     }
 
     read(buffer) {
         const br = new BufferReader(buffer);
-        br.nextString(1);
+        this.isDeleted = br.nextString(1) === '*';
         for(let i = 0; i < this.header.fields.length; i++) {
             let field = this.header.fields[i];
 
