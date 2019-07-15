@@ -62,7 +62,7 @@ module.exports = class ShapefileIterator extends Iterator {
         let dbfRecord = await this._dbfIt.next();
         if (!shpRecord.done && !dbfRecord.done) {
             shpRecord = shpRecord.result;
-            shpRecord.properties = dbfRecord.result;
+            shpRecord.properties = dbfRecord.result.values;
             shpRecord.type = FEATURE_TYPE;
             return this._continue(shpRecord);
         } else if (shpRecord.done && dbfRecord.done) {

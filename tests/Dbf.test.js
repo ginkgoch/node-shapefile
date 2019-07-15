@@ -34,8 +34,8 @@ describe('Dbf tests', () => {
         const dbf = new Dbf(filePath);
         await dbf.openWith(async () => {
             const records = await dbf.iterator();
+            await records.next();
             let record = await records.next();
-            record = await records.next();
             expect(JSON.stringify(record)).toBe(JSON.stringify(dbf_usstates_record2));
         });
     });
@@ -153,8 +153,8 @@ describe('Dbf records test', () => {
             expect(records.length).toBe(51);
 
             records.forEach(r => {
-                expect(_.keys(r).length).toEqual(1);
-                expect(_.keys(r)).toEqual(['RECID']);
+                expect(_.keys(r.values).length).toEqual(1);
+                expect(_.keys(r.values)).toEqual(['RECID']);
             });
         });
     });
@@ -200,8 +200,8 @@ describe('Dbf records test', () => {
             expect(records.length).toBe(2);
 
             records.forEach(r => {
-                expect(_.keys(r).length).toEqual(1);
-                expect(_.keys(r)).toEqual(['RECID']);
+                expect(_.keys(r.values).length).toEqual(1);
+                expect(_.keys(r.values)).toEqual(['RECID']);
             });
         });
     });

@@ -128,8 +128,8 @@ module.exports = class Shapefile extends Openable {
         const geom = await this._shp.get(id);
         
         fields = this._normalizeFields(fields);
-        const fieldValues = await this._dbf.get(id, fields);
-        geom.properties = fieldValues;
+        const record = await this._dbf.get(id, fields);
+        geom.properties = record.values;
         geom.type = FEATURE_TYPE;
         return geom;
     }
@@ -138,7 +138,7 @@ module.exports = class Shapefile extends Openable {
         Validators.checkIsOpened(this.isOpened);
         const shapeRecords = await this._shp.records(filter);
         const fieldRecords = await this._dbf.records(filter);
-        const records = _.zipWith(shapeRecords, fieldRecords, (s, f) => { 
+        const records = _.zipWith(shapeRecords, fieldRecords.map(r => r.values), (s, f) => {
             _.assign(s, { properties: f, type: FEATURE_TYPE });
             return s;
         });
