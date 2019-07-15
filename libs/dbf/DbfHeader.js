@@ -68,7 +68,7 @@ module.exports = class DbfHeader {
     }
 
     write(fileDescriptor) {
-        const headerBuffer = Buffer.alloc(HEADER_GENERAL_SIZE);
+        const headerBuffer = Buffer.alloc(HEADER_GENERAL_SIZE + FIELD_SIZE * this.fields.length + 1);
         const headerWriter = new BufferWriter(headerBuffer);
         headerWriter.writeInt8(this.fileType);
         headerWriter.writeInt8(this.year - 1900);
@@ -77,33 +77,29 @@ module.exports = class DbfHeader {
         headerWriter.writeUInt32(this.recordCount);
         headerWriter.writeUInt16(this.headerLength);
         headerWriter.writeUInt16(this.recordLength);
-        fs.writeSync(fileDescriptor, headerBuffer, 0, headerBuffer.length, 0);
-
-        const fieldsBuffer = Buffer.alloc(FIELD_SIZE * this.fields.length + 1);
-        const fieldsWriter = new BufferWriter(fieldsBuffer);
 
         let index = 0;
         for (let field of this.fields ) {
-            const position = index * FIELD_SIZE;
-            fieldsWriter.seek(position);
+            const position = HEADER_GENERAL_SIZE + index * FIELD_SIZE;
+            headerWriter.seek(position);
             const fieldNameBuffer = DbfHeader._chunkFieldNameBuffer(field.name);
-            fieldsWriter.writeBuffer(fieldNameBuffer);
+            headerWriter.writeBuffer(fieldNameBuffer);
 
             const fieldTypeCode = field.type.charCodeAt(0);
-            fieldsWriter.writeUInt8(fieldTypeCode);
+            headerWriter.writeUInt8(fieldTypeCode);
 
-            fieldsWriter.seek(position + 16);
+            headerWriter.seek(position + 16);
             if (field.type.toUpperCase() === 'C') {
-                fieldsWriter.writeUInt16(field.length);
+                headerWriter.writeUInt16(field.length);
             } else {
-                fieldsWriter.writeUInt8(field.length);
-                fieldsWriter.writeUInt8(field.decimal);
+                headerWriter.writeUInt8(field.length);
+                headerWriter.writeUInt8(field.decimal);
             }
 
             index++;
         }
 
-        fs.writeSync(fileDescriptor, fieldsBuffer, 0, fieldsBuffer.length, headerBuffer.length);
+        fs.writeSync(fileDescriptor, headerBuffer, 0, headerBuffer.length, 0);
     }
 
     _init() {
