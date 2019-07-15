@@ -40,30 +40,28 @@ module.exports = class DbfHeader {
         this.year = headerBr.nextInt8() + 1900;
         this.month = headerBr.nextInt8();
         this.day = headerBr.nextInt8();
-        
         this.recordCount = headerBr.nextUInt32LE();
         this.headerLength = headerBr.nextUInt16LE();
         this.recordLength = headerBr.nextUInt16LE();
-
         this.fields = [];
-        let position = headerBuffer.length;
-        //TODO: can improve...
-        while(position < this.headerLength - 1) { 
-            const fieldBuffer = Buffer.alloc(FIELD_SIZE);
-            fs.readSync(fileDescriptor, fieldBuffer, 0, fieldBuffer.length, position);
 
+        let position = headerBuffer.length;
+        const fieldsBuffer = Buffer.alloc(this.headerLength - HEADER_GENERAL_SIZE);
+        fs.readSync(fileDescriptor, fieldsBuffer, 0, fieldsBuffer.length, position);
+        while(position < this.headerLength - 1) {
             const field = { };
-            field.name = fieldBuffer.slice(0, FIELD_NAME_SIZE).toString().replace(/\0/g, '').trim();
-            field.type = String.fromCharCode(fieldBuffer.readUInt8(11));
+            const fieldStart = position - HEADER_GENERAL_SIZE;
+            field.name = fieldsBuffer.slice(fieldStart, fieldStart + FIELD_NAME_SIZE).toString().replace(/\0/g, '').trim();
+            field.type = String.fromCharCode(fieldsBuffer.readUInt8(fieldStart + 11));
             if(field.type.toUpperCase() === 'C') {
-                field.length = fieldBuffer.readUInt16LE(16);
+                field.length = fieldsBuffer.readUInt16LE(fieldStart + 16);
             } else {
-                field.length = fieldBuffer.readUInt8(16);
-                field.decimal = fieldBuffer.readUInt8(17);
+                field.length = fieldsBuffer.readUInt8(fieldStart + 16);
+                field.decimal = fieldsBuffer.readUInt8(fieldStart + 17);
             }
 
             this.fields.push(field);
-            position += fieldBuffer.length;
+            position += FIELD_SIZE;
         }
     }
 
