@@ -13,11 +13,12 @@ module.exports = class DbfRecord {
         this.header = header;
         this.id = -1;
         this.values = {};
+        this.deleted = false;
     }
 
     read(buffer) {
         const br = new BufferReader(buffer);
-        br.nextString(1);
+        this.deleted = br.nextString(1) === '*';
         for(let i = 0; i < this.header.fields.length; i++) {
             let field = this.header.fields[i];
 
@@ -168,5 +169,21 @@ module.exports = class DbfRecord {
             buff.write(value);
         }
         return buff;
+    }
+
+    /**
+     * Gets current record raw data.
+     */
+    raw() {
+        const rawData = {
+            id: this.id,
+            values: this.values
+        };
+
+        if (this.deleted) {
+            rawData.deleted = true;
+        }
+
+        return rawData;
     }
 };

@@ -55,10 +55,12 @@ module.exports = class Dbf extends Openable {
 
     async get(id, fields) {
         Validators.checkIsOpened(this.isOpened);
+        Validators.checkIndexIsValid(id);
 
         const offset = this._header.headerLength + this._header.recordLength * id;
         const records = await this._getRecordIterator(offset, offset + this._header.recordLength);
         records.fields = fields;
+        records._index = id - 1;
 
         const record = await records.next();
         return record.result;
@@ -67,11 +69,18 @@ module.exports = class Dbf extends Openable {
     async iterator(fields) {
         Validators.checkIsOpened(this.isOpened);
     
-        const records = await this._getRecordIterator(this._header.headerLength);
-        records.filter = fields;
-        return records;
+        const iterator = await this._getRecordIterator(this._header.headerLength);
+        iterator.filter = fields;
+        return iterator;
     }
 
+    /**
+     *
+     * @param start
+     * @param end
+     * @returns {Promise<DbfIterator|*>}
+     * @private
+     */
     async _getRecordIterator(start, end) {
         const option = this._getStreamOption(start, end);
         const stream = fs.createReadStream(this.filePath, option);
@@ -112,7 +121,8 @@ module.exports = class Dbf extends Openable {
                     }
 
                     const record = DbfIterator._readRecord(currentBuff, this._header, filter.fields);
-                    records.push(record);
+                    record.id = index;
+                    records.push(record.raw());
                 }
             }).on('end', () => {
                 resolve(records);
@@ -184,5 +194,33 @@ module.exports = class Dbf extends Openable {
         let position = this._header.headerLength + this._header.recordLength * this._header.recordCount;
         fs.writeSync(this._fd, buff, 0, buff.length, position);
         this._header.recordCount++;
+    }
+
+    //TODO: test...
+    /**
+     * Remove record at index.
+     * @param {number} index The record index to delete. Start from 0.
+     */
+    removeAt(index) {
+        Validators.checkIsOpened(this.isOpened);
+        Validators.checkIndexIsValid(index);
+
+        const position = this._header.headerLength + index * this._header.recordLength;
+        const buff = Buffer.from('*');
+        fs.writeSync(this._fd, buff, 0, 1, position);
+    }
+
+    //TODO: test...
+    /**
+     * Recover the deleted record at index. Edited record doesn't support.
+     * @param {number} index The record index to delete. Start from 0.
+     */
+    recoverAt(index) {
+        Validators.checkIsOpened(this.isOpened);
+        Validators.checkIndexIsValid(index);
+
+        const position = this._header.headerLength + index * this._header.recordLength;
+        const buff = Buffer.from(' ');
+        fs.writeSync(this._fd, buff, 0, 1, position);
     }
 };

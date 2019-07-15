@@ -10,6 +10,10 @@ module.exports = class Validators {
         }
     }
 
+    static checkIndexIsValid(index) {
+        assert(index >= 0, 'Index must greater than or equal to 0.')
+    }
+
     static checkIsValidShapeType(actual, expected, expectedName) {
         if(actual !== expected) {
             throw `Not a ${expectedName} record.`;
