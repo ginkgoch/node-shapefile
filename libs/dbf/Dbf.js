@@ -196,7 +196,6 @@ module.exports = class Dbf extends Openable {
         this._header.recordCount++;
     }
 
-    //TODO: test...
     /**
      * Remove record at index.
      * @param {number} index The record index to delete. Start from 0.
@@ -210,7 +209,6 @@ module.exports = class Dbf extends Openable {
         fs.writeSync(this._fd, buff, 0, 1, position);
     }
 
-    //TODO: test...
     /**
      * Recover the deleted record at index. Edited record doesn't support.
      * @param {number} index The record index to delete. Start from 0.
@@ -222,5 +220,16 @@ module.exports = class Dbf extends Openable {
         const position = this._header.headerLength + index * this._header.recordLength;
         const buff = Buffer.from(' ');
         fs.writeSync(this._fd, buff, 0, 1, position);
+    }
+
+    /**
+     * Open file for editing. If it is opened, it will be closed and reopen with rs+ flag.
+     */
+    openForEdit() {
+        if (!this._fd) {
+            fs.closeSync(this._fd);
+        }
+
+        this._fd = fs.openSync(this.filePath, 'rs+');
     }
 };
