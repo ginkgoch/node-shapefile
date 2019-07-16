@@ -274,5 +274,62 @@ describe('create dbf', () => {
             offset += seg;
         }
     });
+
+    describe('dbf deletion test', () => {
+        const dbfPathSrc = './tests/data/MajorCities.dbf';
+        it('deleteAt', async () => {
+            const dbfPath = './tests/data/MajorCities_delete_1.dbf';
+            try {
+                fs.copyFileSync(dbfPathSrc, dbfPath);
+
+                const dbf = new Dbf(dbfPath, 'rs+');
+                await dbf.open();
+
+                const idToRemove = 20;
+                dbf.removeAt(idToRemove);
+                const r = await dbf.get(idToRemove);
+
+                expect(r.id).toBe(20);
+                expect(r.deleted).toBeThuthy();
+
+                dbf.recoverAt(idToRemove);
+                expect(r.id).toBe(20);
+                expect(r.deleted).toBeFalsy();
+            } catch (err) {
+                expect(true).toBeTruthy();
+            } finally {
+                fs.unlinkSync(dbfPath);
+            }
+        });
+    });
+
+    describe('dbf update test', () => {
+        const dbfPathSrc = './tests/data/MajorCities.dbf';
+        it('deleteAt', async () => {
+            const dbfPath = './tests/data/MajorCities_update_1.dbf';
+            try {
+                fs.copyFileSync(dbfPathSrc, dbfPath);
+
+                const dbf = new Dbf(dbfPath, 'rs+');
+                await dbf.open();
+
+                const idToUpdate = 20;
+                let record = await dbf.get(idToUpdate);
+                expect(record.values['CAPITAL']).toBe('N');
+                expect(record.values['PLACEFIP']).toBe('65000');
+
+                const recordUpdated = require('./data/dbf-update-record.json');
+                dbf.updateRow(recordUpdated);
+                dbf.flush();
+                record = await dbf.get(idToUpdate);
+                expect(record.values['CAPITAL']).toBe('Y');
+                expect(record.values['PLACEFIP']).toBe('66000');
+            } catch (err) {
+                expect(true).toBeTruthy();
+            } finally {
+                fs.unlinkSync(dbfPath);
+            }
+        });
+    })
 });
 

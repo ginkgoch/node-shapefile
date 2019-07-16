@@ -1,6 +1,6 @@
 const fs = require('fs');
 const _ = require('lodash');
-const { StreamReader } = require('ginkgoch-stream-io');
+const {StreamReader} = require('ginkgoch-stream-io');
 
 const Openable = require('../base/StreamOpenable');
 const Validators = require('../Validators');
@@ -14,7 +14,8 @@ module.exports = class Dbf extends Openable {
         super();
         this.filePath = filePath;
         this._flag = flag;
-        this._newRowCache = [];
+        this._pushRowCache = [];
+        this._updateRowCache = [];
     }
 
     /**
@@ -27,12 +28,12 @@ module.exports = class Dbf extends Openable {
     }
 
     /**
-     * 
+     *
      * @param {boolean} detail Indicates whether to show field details (name, type, length, decimal) or not.
      */
     fields(detail = false) {
         let fields = _.cloneDeep(this._header.fields);
-        if(!detail) {
+        if (!detail) {
             fields = fields.map(f => f.name);
         }
 
@@ -68,7 +69,7 @@ module.exports = class Dbf extends Openable {
 
     async iterator(fields) {
         Validators.checkIsOpened(this.isOpened);
-    
+
         const iterator = await this._getRecordIterator(this._header.headerLength);
         iterator.filter = fields;
         return iterator;
@@ -107,7 +108,7 @@ module.exports = class Dbf extends Openable {
                 const recordLength = this._header.recordLength;
 
                 let buffer = stream.read(recordLength);
-                while(null !== buffer) {
+                while (null !== buffer) {
                     index++;
                     if (buffer.length < recordLength) {
                         break;
@@ -150,36 +151,67 @@ module.exports = class Dbf extends Openable {
     }
 
     /**
-     *
-     * @param {Object} row
+     * Push single row values into memory. Call flush() to persistent into file.
+     * @param {Object} record The field values of one record.
+     * @example
+     * dbf.pushRow({ rec:1, name:'china' });
      */
-    pushRow(row) {
-        this._newRowCache.push(row);
+    pushRow(record) {
+        this._pushRowCache.push(record);
     }
 
     /**
-     *
-     * @param {Array<DbfRecord>} rows
+     * Push multiple rows' values into memory. Call flush() to persistent into file.
+     * @param {Array<Object>} records The field values array.
+     * @example
+     * dbf.pushRows([{ rec:1, name:'china'}, {rec:2, name:'usa'}]);
      */
-    pushRows(rows) {
-        rows.forEach(r => this.pushRow(r));
+    pushRows(records) {
+        records.forEach(r => this.pushRow(r));
+    }
+
+    /**
+     * Update a specific row values. Call flush() to persistent into file.
+     * @param {Object} record Record to update.
+     * @example
+     * const record = {id: 0, values: {rec: 1, name: 'usa'}};
+     * dbf.updateRow(record);
+     */
+    updateRow(record) {
+
+    }
+
+    /**
+     * Update a specific row values. Call flush() to persistent into file.
+     * @param {Array.<Object>} records Records to update.
+     * @example
+     * const records = [{id: 0, values: {rec: 1, name: 'usa'}}];
+     * dbf.updateRows(records);
+     */
+    updateRows(records) {
+        records.forEach(r => this.updateRow(r));
     }
 
     flush() {
         Validators.checkIsOpened(this.isOpened);
 
-        if (this._newRowCache.length === 0) {
-            return;
+        for (let row of this._updateRowCache) {
+            const record = new DbfRecord(this._header);
+            record.id = row.id;
+            record.values = row.values;
+            this._flush(record);
         }
 
-        for(let row of this._newRowCache) {
+        for (let row of this._pushRowCache) {
             const record = new DbfRecord(this._header);
             record.values = row;
             this._flush(record);
         }
 
-        this._header.write(this._fd);
-        this._newRowCache = [];
+        if (this._pushRowCache.length > 0) {
+            this._header.write(this._fd);
+            this._pushRowCache = [];
+        }
     }
 
     /**
@@ -191,9 +223,13 @@ module.exports = class Dbf extends Openable {
         const buff = Buffer.alloc(this._header.recordLength);
         record.write(buff);
 
-        let position = this._header.headerLength + this._header.recordLength * this._header.recordCount;
+        let recordId = record.id === -1 ? this._header.recordCount : record.id;
+        let position = this._header.headerLength + this._header.recordLength * recordId;
         fs.writeSync(this._fd, buff, 0, buff.length, position);
-        this._header.recordCount++;
+
+        if (record.id === -1) {
+            this._header.recordCount++;
+        }
     }
 
     /**
