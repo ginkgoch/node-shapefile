@@ -287,16 +287,18 @@ describe('create dbf', () => {
 
                 const idToRemove = 20;
                 dbf.removeAt(idToRemove);
-                const r = await dbf.get(idToRemove);
+                let r = await dbf.get(idToRemove);
 
                 expect(r.id).toBe(20);
-                expect(r.deleted).toBeThuthy();
+                expect(r.deleted).toBeTruthy();
 
                 dbf.recoverAt(idToRemove);
+                r = await dbf.get(idToRemove);
                 expect(r.id).toBe(20);
                 expect(r.deleted).toBeFalsy();
             } catch (err) {
-                expect(true).toBeTruthy();
+                console.log(err);
+                expect(true).toBeFalsy();
             } finally {
                 fs.unlinkSync(dbfPath);
             }
@@ -321,11 +323,13 @@ describe('create dbf', () => {
                 const recordUpdated = require('./data/dbf-update-record.json');
                 dbf.updateRow(recordUpdated);
                 dbf.flush();
+
                 record = await dbf.get(idToUpdate);
                 expect(record.values['CAPITAL']).toBe('Y');
                 expect(record.values['PLACEFIP']).toBe('66000');
             } catch (err) {
-                expect(true).toBeTruthy();
+                console.log(err);
+                expect(true).toBeFalsy();
             } finally {
                 fs.unlinkSync(dbfPath);
             }
