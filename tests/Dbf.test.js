@@ -27,6 +27,7 @@ describe('Dbf tests', () => {
             const records = await dbf.iterator();
             const record = await records.next();
             expect(JSON.stringify(record)).toBe(JSON.stringify(dbf_usstates_record1));
+            expect(record.result.id).toBe(0);
         });
     });
     
@@ -37,6 +38,7 @@ describe('Dbf tests', () => {
             await records.next();
             let record = await records.next();
             expect(JSON.stringify(record)).toBe(JSON.stringify(dbf_usstates_record2));
+            expect(record.result.id).toBe(1);
         });
     });
     
@@ -55,6 +57,7 @@ describe('Dbf tests', () => {
             
             expect(count).toBe(51);
             expect(JSON.stringify(record)).toBe(JSON.stringify(dbf_usstates_record51));
+            expect(record.result.id).toBe(50);
         });
     });
 
@@ -67,6 +70,7 @@ describe('Dbf tests', () => {
             while (!record1.done) {
                 const record2 = await dbf.get(count); 
                 expect(record2).toEqual(record1.result);
+                expect(record2.id).toBe(count);
 
                 count++;
                 record1 = await records.next();
@@ -139,6 +143,7 @@ describe('Dbf records test', () => {
             while (!record1.done) {
                 const record2 = records[count]; 
                 expect(record2).toEqual(record1.result);
+                expect(record2.id).toBe(count);
 
                 count++;
                 record1 = await it.next();
