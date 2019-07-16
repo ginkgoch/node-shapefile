@@ -178,7 +178,7 @@ module.exports = class Dbf extends Openable {
      * dbf.updateRow(record);
      */
     updateRow(record) {
-
+        this._updateRowCache.push(record)
     }
 
     /**
