@@ -1,3 +1,4 @@
+const fs = require('fs');
 const Shx = require('../libs/shx/Shx');
 
 describe('shx tests', () => {
@@ -20,6 +21,26 @@ describe('shx tests', () => {
                 const currentRec = shx.get(i);
                 expect(currentRec.offset).toBe(previousRec.offset + previousRec.length + 8);
                 previousRec = currentRec;
+            }
+        });
+    });
+
+    test('remove record test', async () => {
+        const filePathToDelete = './tests/data/USStates_delete_test.shx';
+        fs.copyFileSync(filePath, filePathToDelete);
+
+        const shx = new Shx(filePathToDelete, 'rs+');
+        await shx.openWith(() => {
+            try {
+                const count = shx.count();
+                expect(count).toBe(51);
+
+                const id = 30;
+                shx.removeAt(id);
+                const record = shx.get(id);
+                expect(record.length).toBe(0);
+            } finally {
+                fs.unlinkSync(filePathToDelete);
             }
         });
     });

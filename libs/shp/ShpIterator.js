@@ -36,6 +36,10 @@ module.exports = class ShpIterator extends Iterator {
 
         let reader = new ShpReader(contentBuffer);
         let content = this._shpParser(reader);
+        if (content === null) {
+            return this._continue(content);
+        }
+
         if (_.isUndefined(this.envelope) || (this.envelope && !content.envelope.disjoined(this.envelope))) {
             content = { geometry: content.readGeom() };
         } else {
@@ -45,4 +49,4 @@ module.exports = class ShpIterator extends Iterator {
         content.id = id;
         return this._continue(content); 
     }
-}
+};

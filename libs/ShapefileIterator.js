@@ -71,4 +71,4 @@ module.exports = class ShapefileIterator extends Iterator {
             throw 'Record count not matched.';
         }
     }
-}
+};

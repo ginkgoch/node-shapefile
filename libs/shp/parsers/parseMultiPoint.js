@@ -3,6 +3,11 @@ const GEOM_TYPE_MULTIPOINT = 'MultiPoint';
 
 module.exports = function (br) {
     const type = br.readInt32LE();
+    if (type === 0) {
+        // null shape type, means this record is deleted.
+        return null;
+    }
+
     Validators.checkIsValidShapeType(type, 8, 'multipoint');
 
     const envelope = br.nextEnvelope();

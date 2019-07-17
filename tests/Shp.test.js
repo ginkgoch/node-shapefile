@@ -1,4 +1,5 @@
 require('./JestEx');
+
 const _ = require('lodash');
 const path = require('path');
 const Shp = require('../libs/shp/Shp');
@@ -279,6 +280,29 @@ describe('Read shp records tests', () => {
         await shp.openWith(async () => {
             const features = await shp.records({ envelope: new Envelope(-1, -1, 1, 1) });
             expect(features.length).toBe(0);
+        });
+    });
+
+    const fs = require('fs');
+    const path = require('path');
+    test('delete shp record', async () => {
+        const shpPathSrc = path.join(__dirname, 'data/USStates.shp');
+        const shpPath = path.join(__dirname, 'data/USStates_delete_test.shp');
+
+        //TODO: copy all the other files.
+        fs.copyFileSync(shpPathSrc, shpPath);
+
+        const shp = new Shp(shpPath, 'rs+');
+        await shp.openWith(async () => {
+            const id = 30;
+
+            try {
+                shp.removeAt(id);
+                const record = await shp.get(id);
+                expect(record).toBeNull();
+            } finally {
+                fs.unlinkSync(shpPath);
+            }
         });
     });
 });
