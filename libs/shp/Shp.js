@@ -32,7 +32,7 @@ module.exports = class Shp extends Openable {
 
         const filePathShx = this.filePath.replace(extReg, '.shx');
         if(fs.existsSync(filePathShx)) {
-            this._shx = new Shx(filePathShx);
+            this._shx = new Shx(filePathShx, this._flag);
             await this._shx.open();
         }
     }
@@ -89,8 +89,12 @@ module.exports = class Shp extends Openable {
         const shxPath = this.filePath.replace(extReg, '.shx');
         assert(!_.isUndefined(this._shx), `${path.basename(shxPath)} doesn't exist.`);
 
-        const rshx = this._shx.get(id);
-        const iterator = await this._getRecordIterator(rshx.offset, rshx.offset + 8 + rshx.length);
+        const shxRecord = this._shx.get(id);
+        if (shxRecord.length === 0) {
+            return null;
+        }
+
+        const iterator = await this._getRecordIterator(shxRecord.offset, shxRecord.offset + 8 + shxRecord.length);
         const result = await iterator.next();
         return result.result;
     }
@@ -176,5 +180,31 @@ module.exports = class Shp extends Openable {
             const position = recordShx.offset + 8;
             fs.writeSync(this._fd, buff, 0, buff.length, position);
         }
+    }
+
+    /**
+     * Copy the shp, shx and dbf files as another filename.
+     */
+    static copyFiles(sourceFilename, targetFilename, overwrite = false) {
+        let extensions = ['.shp', '.shx', '.dbf'];
+
+        extensions.forEach(ext => {
+            const sourceFilePath = sourceFilename.replace(/\.shp$/, ext);
+            const targetFilePath = targetFilename.replace(/\.shp$/, ext);
+            if (fs.existsSync(targetFilePath)) {
+                if (!fs.existsSync(sourceFilePath)) {
+                    return;
+                }
+
+                if (overwrite) {
+                    fs.unlinkSync(targetFilePath);
+                    fs.copyFileSync(sourceFilePath, targetFilePath);
+                } else {
+                    console.warn(`${sourceFilePath} exists. Copy ignored.`);
+                }
+            } else {
+                fs.copyFileSync(sourceFilePath, targetFilePath);
+            }
+        })
     }
 };

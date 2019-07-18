@@ -288,9 +288,7 @@ describe('Read shp records tests', () => {
     test('delete shp record', async () => {
         const shpPathSrc = path.join(__dirname, 'data/USStates.shp');
         const shpPath = path.join(__dirname, 'data/USStates_delete_test.shp');
-
-        //TODO: copy all the other files.
-        fs.copyFileSync(shpPathSrc, shpPath);
+        Shp.copyFiles(shpPathSrc, shpPath, true);
 
         const shp = new Shp(shpPath, 'rs+');
         await shp.openWith(async () => {
@@ -301,7 +299,12 @@ describe('Read shp records tests', () => {
                 const record = await shp.get(id);
                 expect(record).toBeNull();
             } finally {
-                fs.unlinkSync(shpPath);
+                ['.shp', '.shx', '.dbf'].forEach(ext => {
+                    const temp = shpPath.replace(/\.shp/g, ext);
+                    if (fs.existsSync(temp)) {
+                        fs.unlinkSync(temp);
+                    }
+                });
             }
         });
     });
