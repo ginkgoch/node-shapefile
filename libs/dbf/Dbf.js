@@ -192,6 +192,9 @@ module.exports = class Dbf extends Openable {
         records.forEach(r => this.updateRow(r));
     }
 
+    /**
+     * Flush updated and added records cache into dbf file.
+     */
     flush() {
         Validators.checkIsOpened(this.isOpened);
 

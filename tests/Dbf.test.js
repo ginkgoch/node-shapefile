@@ -185,8 +185,8 @@ describe('Dbf records test', () => {
             expect(records.length).toBe(2);
 
             const it = await dbf.iterator();
-            let record1 = await it.next(); // 0
-            record1 = await it.next(); // 1
+            await it.next(); // 0
+            let record1 = await it.next(); // 1
             
             record1 = await it.next(); // 2
             let record2 = records[0]; 
@@ -232,26 +232,29 @@ describe('create dbf', () => {
 
     it('create dbf with records', async () => {
         const filePath = './tests/data/USStates_create_test1.dbf';
-        const dbf = Dbf.createEmptyDbf(filePath, dbf_create_fields);
-        await dbf.open();
 
-        dbf.pushRows(dbf_create_records);
-        dbf.flush();
-        dbf.close();
+        try {
+            const dbf = Dbf.createEmptyDbf(filePath, dbf_create_fields);
+            await dbf.open();
 
-        const dbfNew = new Dbf(filePath);
-        await dbfNew.open();
+            dbf.pushRows(dbf_create_records);
+            dbf.flush();
+            dbf.close();
 
-        const records = await dbfNew.records();
-        expect(records.length).toBe(51);
+            const dbfNew = new Dbf(filePath);
+            await dbfNew.open();
 
-        // fs.unlinkSync(filePath);
+            const records = await dbfNew.records();
+            expect(records.length).toBe(51);
+
+            await _compare('./tests/data/USStates.dbf', filePath);
+        }
+        finally {
+            fs.unlinkSync(filePath);
+        }
     });
 
-    it('create dbf with records 1', async () => {
-        const filePath1 = './tests/data/USStates_create_test1.dbf';
-        const filePath2 = './tests/data/USStates.dbf';
-
+    async function _compare (filePath1, filePath2) {
         const dbf1 = new Dbf(filePath1);
         await dbf1.open();
 
@@ -273,7 +276,7 @@ describe('create dbf', () => {
             }
             offset += seg;
         }
-    });
+    }
 
     describe('dbf deletion test', () => {
         const dbfPathSrc = './tests/data/MajorCities.dbf';

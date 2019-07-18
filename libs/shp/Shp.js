@@ -13,10 +13,11 @@ const Envelope = require('./Envelope');
 const extReg = /\.\w+$/;
 
 module.exports = class Shp extends Openable {
-    constructor(filePath) {
+    constructor(filePath, flag = 'rs') {
         super();
         this.filePath = filePath;
         this._eventEmitter = null;
+        this._flag = flag;
     }
 
     /**
@@ -25,13 +26,13 @@ module.exports = class Shp extends Openable {
     async _open() {
         Validators.checkFileExists(this.filePath);
 
-        this._fd = fs.openSync(this.filePath, 'rs');
+        this._fd = fs.openSync(this.filePath, this._flag);
         this._header = await this._readHeader();
         this._shpParser = ShpParser.getParser(this._header.fileType);
 
         const filePathShx = this.filePath.replace(extReg, '.shx');
         if(fs.existsSync(filePathShx)) {
-            this._shx = new Shx(filePathShx);
+            this._shx = new Shx(filePathShx, this._flag);
             await this._shx.open();
         }
     }
@@ -86,10 +87,14 @@ module.exports = class Shp extends Openable {
 
     async get(id) {
         const shxPath = this.filePath.replace(extReg, '.shx');
-        assert(!_.isUndefined(this._shx), `${path.basename(shxPath)} doesn't exist.`)
+        assert(!_.isUndefined(this._shx), `${path.basename(shxPath)} doesn't exist.`);
 
-        const rshx = this._shx.get(id);
-        const iterator = await this._getRecordIterator(rshx.offset, rshx.offset + 8 + rshx.length);
+        const shxRecord = this._shx.get(id);
+        if (shxRecord.length === 0) {
+            return null;
+        }
+
+        const iterator = await this._getRecordIterator(shxRecord.offset, shxRecord.offset + 8 + shxRecord.length);
         const result = await iterator.next();
         return result.result;
     }
@@ -132,6 +137,10 @@ module.exports = class Shp extends Openable {
                     if (index >= filter.from && index < to) { 
                         let reader = new ShpReader(contentBuffer);
                         let record = this._shpParser(reader);
+                        if (record === null) {
+                            continue;
+                        }
+
                         if (_.isUndefined(filter.envelope) || (filter.envelope && !record.envelope.disjoined(filter.envelope))) {
                             record = { geometry: record.readGeom() };
                             record.id = id;
@@ -155,4 +164,47 @@ module.exports = class Shp extends Openable {
         await sr.open();
         return new ShpIterator(sr, this._shpParser);
     }
-}
+
+    /**
+     * Remove record at a specific index.
+     * @param {number} index
+     */
+    removeAt(index) {
+        const recordShx = this._shx.get(index);
+        if (recordShx && recordShx.length > 0) {
+            this._shx.removeAt(index);
+
+            const buff = Buffer.alloc(4);
+            buff.writeInt32LE(0, 0);
+
+            const position = recordShx.offset + 8;
+            fs.writeSync(this._fd, buff, 0, buff.length, position);
+        }
+    }
+
+    /**
+     * Copy the shp, shx and dbf files as another filename.
+     */
+    static copyFiles(sourceFilename, targetFilename, overwrite = false) {
+        let extensions = ['.shp', '.shx', '.dbf'];
+
+        extensions.forEach(ext => {
+            const sourceFilePath = sourceFilename.replace(/\.shp$/, ext);
+            const targetFilePath = targetFilename.replace(/\.shp$/, ext);
+            if (fs.existsSync(targetFilePath)) {
+                if (!fs.existsSync(sourceFilePath)) {
+                    return;
+                }
+
+                if (overwrite) {
+                    fs.unlinkSync(targetFilePath);
+                    fs.copyFileSync(sourceFilePath, targetFilePath);
+                } else {
+                    console.warn(`${sourceFilePath} exists. Copy ignored.`);
+                }
+            } else {
+                fs.copyFileSync(sourceFilePath, targetFilePath);
+            }
+        })
+    }
+};
