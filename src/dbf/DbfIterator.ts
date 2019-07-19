@@ -1,8 +1,3 @@
-// const _ = require('lodash');
-// const Iterator = require('../base/Iterator');
-// const DbfRecord = require('./DbfRecord');
-// const DbfHeader = require('./DbfHeader');
-
 import _ from 'lodash'
 import {StreamReader} from 'ginkgoch-stream-io'
 import Iterator from "../../src/base/Iterator"
@@ -51,15 +46,7 @@ export default class DbfIterator extends Iterator<DbfRecord> {
     static _readRecord(buffer: Buffer, header: DbfHeader, fieldNames?: string[]): DbfRecord {
         const record = new DbfRecord(header).read(buffer);
         if(fieldNames) {
-
-            //TODO: need test
-            record.values.clear();
-            const fieldValues = _.pick(record.values, fieldNames);
-            if (fieldValues) {
-                (fieldValues as Map<string, any>).forEach((v, k, m) => {
-                    record.values.set(k, v)
-                });
-            }
+            record.filter(fieldNames);
         }
         return record;
     }

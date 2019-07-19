@@ -77,6 +77,25 @@ export default class DbfRecord {
         return this;
     }
 
+    filter(fieldNames: string[]) {
+        DbfRecord._pickFieldValues(this, fieldNames);
+    }
+
+    static _pickFieldValues(record: DbfRecord, fieldNames?: string[]) {
+        if (!fieldNames) {
+            return;
+        }
+
+        const fieldValues = new Map;
+        fieldNames.forEach(v => {
+            if (record.values.has(v)) {
+                fieldValues.set(v, record.values.get(v));
+            }
+        });
+
+        record.values = fieldValues;
+    }
+
     static _parseFieldValue(text: string, field: DbfField): any {
         let value: any = text;
         switch (field.type) {

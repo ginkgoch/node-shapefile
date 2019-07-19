@@ -1,4 +1,5 @@
 import { DbfFieldType } from './DbfFieldType'
+import DbfRecord from './DbfRecord';
 
 export default class DbfField {
     name: string;
@@ -14,6 +15,11 @@ export default class DbfField {
         if(this.length === -1) {
             this.length = DbfField._getFieldLength(this.type);
         }
+    }
+
+    static fromJson(json: { length?: number, type: DbfFieldType, decimal?: number, name?: string }): DbfField {
+        const field = new DbfField(json.name, json.type, json.length, json.decimal);
+        return field;
     }
 
     static _getFieldLength(type: DbfFieldType): number {

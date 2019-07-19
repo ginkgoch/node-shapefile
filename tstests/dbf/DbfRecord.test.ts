@@ -1,33 +1,32 @@
-// const { BufferWriter } = require('ginkgoch-buffer-io');
-// const DbfRecord = require('../libs/dbf/DbfRecord');
-
-import {BufferWriter} from 'ginkgoch-buffer-io'
+import { BufferWriter } from 'ginkgoch-buffer-io'
 import DbfRecord from '../../src/dbf/DbfRecord'
+import DbfField from '../../src/dbf/DbfField';
+import { DbfFieldType } from '../../src/dbf/DbfFieldType';
 
 describe('dbf record tests', () => {
-   it('bool string length', () => {
-      let buff = Buffer.from('F');
-      expect(buff.length).toBe(1);
-   });
+    it('bool string length', () => {
+        let buff = Buffer.from('F');
+        expect(buff.length).toBe(1);
+    });
 
-   it('write bool value', () => {
-       ['true', '1', 't', 'yes', 'y'].forEach(key => _testWriteBoolean(key,'T'));
-       [' ', '?'].forEach(key => _testWriteBoolean(key,'?'));
-       ['F', 'FALSE', 'ABC'].forEach(key => _testWriteBoolean(key,'F'));
-   });
+    it('write bool value', () => {
+        ['true', '1', 't', 'yes', 'y'].forEach(key => _testWriteBoolean(key, 'T'));
+        [' ', '?'].forEach(key => _testWriteBoolean(key, '?'));
+        ['F', 'FALSE', 'ABC'].forEach(key => _testWriteBoolean(key, 'F'));
+    });
 
     it('write int value', () => {
-        ['129', 418, 't', ''].forEach(key => {
+        ['129', 418, 't', ''].forEach((v, k, arr) => {
             const buff = Buffer.alloc(4);
             const buffWr = new BufferWriter(buff);
-            DbfRecord._writeIntegerValue(buffWr, key);
+            DbfRecord._writeIntegerValue(buffWr, v);
 
-            const v = buff.readInt32LE(0);
-            let exp = parseInt(key);
-            if(isNaN(exp)) {
+            const v1 = buff.readInt32LE(0);
+            let exp = parseInt(v.toString());
+            if (isNaN(exp)) {
                 exp = 0;
             }
-            expect(v).toBe(exp);
+            expect(v1).toBe(exp);
         });
     });
 
@@ -58,33 +57,67 @@ describe('dbf record tests', () => {
     });
 
     it('get number buffer', () => {
-        let field = { length: 10, type: 'N', decimal: 2, name: 'REC' };
+        let field = DbfField.fromJson({ length: 10, type: DbfFieldType.number, decimal: 2, name: 'REC' });
+
         let num = 2888900.435666;
         let outSrc = DbfRecord._getNumberBuffer(num, field);
         let outTar = outSrc.toString();
         expect(outTar).toBe('2888900.43');
 
-        field = { length: 10, type: 'N', decimal: 2, name: 'REC' };
+        field = { length: 10, type: DbfFieldType.number, decimal: 2, name: 'REC' };
         num = 2888900;
         outSrc = DbfRecord._getNumberBuffer(num, field);
         outTar = outSrc.toString().replace(/\0/g, '').trim();
         expect(outTar).toBe('2888900');
 
-        field = { length: 10, type: 'N', decimal: 1, name: 'REC' };
+        field = { length: 10, type: DbfFieldType.number, decimal: 1, name: 'REC' };
         num = 2888900.022;
         outSrc = DbfRecord._getNumberBuffer(num, field);
         outTar = outSrc.toString().replace(/\0/g, '').trim();
         expect(outTar).toBe('2888900.0');
 
-        field = { length: 5, type: 'N', decimal: 1, name: 'REC' };
+        field = { length: 5, type: DbfFieldType.number, decimal: 1, name: 'REC' };
         num = 28889.022;
         expect(() => {
             outSrc = DbfRecord._getNumberBuffer(num, field);
         }).toThrow(new Error(`number length is larger than field length. value:${num}, field:${field.name}, length:${field.length}, decimal:${field.decimal}.`));
     });
+
+    it('_pickFieldValues - 1', () => {
+        let record = new DbfRecord();
+        record.values.set('A', 1);
+        record.values.set('B', 2);
+        record.values.set('C', 3);
+        
+        DbfRecord._pickFieldValues(record, ['A']);
+        expect(record.values.size).toBe(1);
+        expect(record.values.get('A')).toBe(1);
+    });
+
+    it('_pickFieldValues - 2', () => {
+        let record = new DbfRecord();
+        record.values.set('A', 1);
+        record.values.set('B', 2);
+        record.values.set('C', 3);
+        
+        DbfRecord._pickFieldValues(record, undefined);
+        expect(record.values.size).toBe(3);
+        expect(record.values.get('A')).toBe(1);
+    });
+
+    it('_pickFieldValues - 3', () => {
+        let record = new DbfRecord();
+        record.values.set('A', 1);
+        record.values.set('B', 2);
+        record.values.set('C', 3);
+        
+        DbfRecord._pickFieldValues(record, ['A', 'B']);
+        expect(record.values.size).toBe(2);
+        expect(record.values.get('A')).toBe(1);
+    });
 });
 
-function _testWriteBoolean(key, expected) {
+function _testWriteBoolean(key: string, expected: string) {
     const buff = Buffer.alloc(1);
     const buffWr = new BufferWriter(buff);
     DbfRecord._writeBooleanValue(buffWr, key);
