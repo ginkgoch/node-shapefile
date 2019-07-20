@@ -39,7 +39,7 @@ export default class Dbf extends Openable {
      * @override
      */
     async _open() {
-        this._fd = fs.openSync(this.filePath, this._flag);
+        this._fd = fs.openSync(this.filePath, this._flag, fs.constants.S_IROTH);
         this._header = this._readHeader();
         await Promise.resolve();
     }
@@ -67,7 +67,7 @@ export default class Dbf extends Openable {
         return header;
     }
 
-    async get(id: number, fields:string[]): Promise<DbfRecord> {
+    async get(id: number, fields?: string[]): Promise<DbfRecord> {
         Validators.checkIsOpened(this.isOpened);
         Validators.checkIndexIsValid(id);
 
@@ -77,7 +77,7 @@ export default class Dbf extends Openable {
         records._index = id - 1;
 
         const record = await records.next();
-        return (<any>record).result;
+        return record.value;
     }
 
     async iterator(fields?: string[]) {

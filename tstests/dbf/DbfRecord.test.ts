@@ -115,6 +115,29 @@ describe('dbf record tests', () => {
         expect(record.values.size).toBe(2);
         expect(record.values.get('A')).toBe(1);
     });
+
+    it('from json', () => {
+        let json: any = {
+            id: 34,
+            values: { name: 'name1', rec: 'abc' },
+            deleted: true
+        }
+
+        let record = DbfRecord.fromJson(json);
+        expect(record.id).toBe(34);
+        expect(record.deleted).toBe(true);
+        expect(record.values.get('name')).toEqual('name1');
+        expect(record.values.get('rec')).toEqual('abc');
+
+        json = {
+            values: { },
+        }
+
+        record = DbfRecord.fromJson(json);
+        expect(record.id).toBe(-1);
+        expect(record.deleted).toBe(false);
+        expect(record.values.size).toBe(0);
+    });
 });
 
 function _testWriteBoolean(key: string, expected: string) {

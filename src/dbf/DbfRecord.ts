@@ -215,4 +215,24 @@ export default class DbfRecord {
 
         return rawData;
     }
+
+    static fromJson(json: any): DbfRecord {
+        const record = new DbfRecord();
+
+        if (_.has(json, 'id')) {
+            record.id = _.get(json, 'id');
+        }
+
+        if (_.has(json, 'values')) {
+            _.forOwn(_.get(json, 'values'), (v, k) => {
+                record.values.set(k, v);
+            });
+        }
+
+        if (_.has(json, 'deleted')) {
+            record.deleted = _.get(json, 'deleted');
+        }
+
+        return record;
+    }
 };

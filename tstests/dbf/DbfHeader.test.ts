@@ -11,7 +11,7 @@ describe('DbfHeader tests', () => {
     const filePath = './tests/data/USStates.dbf';
 
     test('read header test', async () => {
-        const _fd = fs.openSync(filePath, 'rs');
+        const _fd = fs.openSync(filePath, 'rs', fs.constants.S_IROTH);
         const header = new DbfHeader();
         header.read(_fd);
 
