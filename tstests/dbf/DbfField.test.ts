@@ -10,6 +10,25 @@ describe('DbfField', () => {
 
         field2.length = 6;
         expect(field2).not.toEqual(field1);
+    })
 
+    it('fromJson', () => {
+        let field = DbfField.fromJson({})
+        expect(field.name).toEqual('')
+        expect(field.type).toEqual(DbfFieldType.character)
+        expect(field.length).toEqual(10)
+        expect(field.decimal).toEqual(0)
+
+        field = DbfField.fromJson({name: 'REC_ID'})
+        expect(field.name).toEqual('REC_ID')
+        expect(field.type).toEqual(DbfFieldType.character)
+        expect(field.length).toEqual(10)
+        expect(field.decimal).toEqual(0)
+
+        field = DbfField.fromJson({type: DbfFieldType.number})
+        expect(field.name).toEqual('')
+        expect(field.type).toEqual(DbfFieldType.number)
+        expect(field.length).toEqual(8)
+        expect(field.decimal).toEqual(0)
     })
 })

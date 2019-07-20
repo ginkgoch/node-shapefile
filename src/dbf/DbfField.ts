@@ -16,12 +16,14 @@ export default class DbfField {
         }
     }
 
-    static fromJson(json: { length?: number, type: DbfFieldType, decimal?: number, name?: string }): DbfField {
+    static fromJson(json: any): DbfField {
+        json = _.pickBy(json, i => !_.isUndefined(i));
+        json = _.defaults(json, { name:'', type: DbfFieldType.character, length: -1, decimal: 0 });
         const field = new DbfField(json.name, json.type, json.length, json.decimal);
         return field;
     }
 
-    toJson(): { length?: number, type: DbfFieldType, decimal?: number, name?: string } {
+    json(): { length: number, type: DbfFieldType, decimal: number, name: string } {
         const json = { 
             name: this.name,
             type: this.type,
