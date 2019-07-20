@@ -1,16 +1,12 @@
 import _ from 'lodash';
-import fs from 'fs';
 import Dbf from '../../src/dbf/Dbf';
 import DbfRecord from '../../src/dbf/DbfRecord';
 import Optional from '../../src/base/Optional';
-import DbfField from '../../src/dbf/DbfField';
 
 import dbf_usstates_header from '../data/dbf_usstates_header.json'
 import dbf_usstates_record1 from '../data/dbf_usstates_record1.json'
 import dbf_usstates_record2 from '../data/dbf_usstates_record2.json'
 import dbf_usstates_record51 from '../data/dbf_usstates_record51.json'
-import dbf_create_fields from '../data/dbf_create_fields.json'
-import dbf_create_records from '../data/dbf_create_records.json'
 
 describe('Dbf tests', () => {
     const filePath = './tests/data/USStates.dbf';
@@ -105,15 +101,15 @@ describe('Dbf tests', () => {
             while (!records.done) {
                 const record2 = await dbf.get(count);
 
-                if (count % 500 === 0) {
+                if (count % 100 === 0) {
                     expect(record1.value).toStrictEqual(record2);
                 }
+
+                if (count === 500) break;
 
                 count++;
                 record1 = await records.next();
             }
-
-            expect(count).toBe(13843);
         });
     });
 });
