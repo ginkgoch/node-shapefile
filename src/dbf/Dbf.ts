@@ -105,12 +105,12 @@ export default class Dbf extends Openable {
 
     /**
      * @param {Object.<{ from: number|undefined, limit: number|undefined, fields: Array.<string>|undefined }>} filter
-     * @returns {Array.<Object>}}
+     * @returns {Array<DbfRecord>}}
      */
-    async records(filter?: {from?: number, limit?: number, fields?: string[]}): Promise<Array<{id: number, values: Map<string, any>, deleted?: boolean}>> {
+    async records(filter?: {from?: number, limit?: number, fields?: string[]}): Promise<Array<DbfRecord>> {
         const option = this._getStreamOption(this.__header.headerLength);
         const stream = fs.createReadStream(this.filePath, option);
-        const records = new Array<{id: number, values: Map<string, any>, deleted?: boolean}>();
+        const records = new Array<DbfRecord>();
 
         const filterFields = filter && filter.fields;
         const filterStream = this._normalizeFilter(filter);
@@ -137,7 +137,7 @@ export default class Dbf extends Openable {
 
                     const record = DbfIterator._readRecord(currentBuff, this.__header, filterFields);
                     record.id = index;
-                    records.push(record.raw());
+                    records.push(record);
                 }
             }).on('end', () => {
                 resolve(records);

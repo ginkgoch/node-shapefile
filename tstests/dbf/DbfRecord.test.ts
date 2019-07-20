@@ -64,19 +64,19 @@ describe('dbf record tests', () => {
         let outTar = outSrc.toString();
         expect(outTar).toBe('2888900.43');
 
-        field = { length: 10, type: DbfFieldType.number, decimal: 2, name: 'REC' };
+        field = DbfField.fromJson({ length: 10, type: DbfFieldType.number, decimal: 2, name: 'REC' });
         num = 2888900;
         outSrc = DbfRecord._getNumberBuffer(num, field);
         outTar = outSrc.toString().replace(/\0/g, '').trim();
         expect(outTar).toBe('2888900');
 
-        field = { length: 10, type: DbfFieldType.number, decimal: 1, name: 'REC' };
+        field = DbfField.fromJson({ length: 10, type: DbfFieldType.number, decimal: 1, name: 'REC' });
         num = 2888900.022;
         outSrc = DbfRecord._getNumberBuffer(num, field);
         outTar = outSrc.toString().replace(/\0/g, '').trim();
         expect(outTar).toBe('2888900.0');
 
-        field = { length: 5, type: DbfFieldType.number, decimal: 1, name: 'REC' };
+        field = DbfField.fromJson({ length: 5, type: DbfFieldType.number, decimal: 1, name: 'REC' });
         num = 28889.022;
         expect(() => {
             outSrc = DbfRecord._getNumberBuffer(num, field);

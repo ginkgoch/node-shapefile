@@ -81,7 +81,8 @@ describe('DbfHeader tests', () => {
         const fields = [
             { name: 'REC', length: 10,  type: DbfFieldType.character, decimal: 0},
             { name: 'POP', length: 4,  type: DbfFieldType.integer, decimal: 0}
-        ];
+        ].map(json => DbfField.fromJson(json));
+        
         const header = DbfHeader.createEmptyHeader(fields);
 
         const today = new Date();
