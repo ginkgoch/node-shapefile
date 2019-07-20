@@ -10,7 +10,8 @@
     "gis"
   ],
   "scripts": {
-    "test": "jest"
+    "test": "./node_modules/.bin/jest",
+    "build": "./node_modules/.bin/tsc"
   },
   "author": {
     "name": "Ginkgoch",

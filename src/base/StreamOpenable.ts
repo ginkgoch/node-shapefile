@@ -1,6 +1,3 @@
-// const _ = require('lodash');
-// const Openable = require('./Openable');
-
 import _ from 'lodash';
 import Openable from './Openable';
 

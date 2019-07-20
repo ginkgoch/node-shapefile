@@ -1,6 +1,5 @@
 import { DbfFieldType } from './DbfFieldType'
-import DbfRecord from './DbfRecord';
-
+import _ from 'lodash'
 export default class DbfField {
     name: string;
     type: DbfFieldType;
@@ -20,6 +19,21 @@ export default class DbfField {
     static fromJson(json: { length?: number, type: DbfFieldType, decimal?: number, name?: string }): DbfField {
         const field = new DbfField(json.name, json.type, json.length, json.decimal);
         return field;
+    }
+
+    toJson(): { length?: number, type: DbfFieldType, decimal?: number, name?: string } {
+        const json = { 
+            name: this.name,
+            type: this.type,
+            length: this.length,
+            decimal: this.decimal
+        };
+
+        return json;
+    }
+
+    cloneDeep(): DbfField {
+        return _.cloneDeep(this);
     }
 
     static _getFieldLength(type: DbfFieldType): number {
