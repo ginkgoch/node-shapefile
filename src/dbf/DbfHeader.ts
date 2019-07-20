@@ -106,6 +106,37 @@ export default class DbfHeader {
         fs.writeSync(fd, headerBuffer, 0, headerBuffer.length, 0);
     }
 
+    json(): any {
+        const json = {
+            fileType: this.fileType,
+            year: this.year,
+            month: this.month,
+            day: this.day,
+            recordCount: this.recordCount,
+            headerLength: this.headerLength,
+            recordLength: this.recordLength,
+            fields: this.fields.map((v, i, arr) => {  
+                return DbfHeader._omitDefaultDecimal(v)
+            })
+        }
+
+        return json
+    }
+
+    static _omitDefaultDecimal(v: DbfField): any {
+        const json: any = {
+            'name': v.name,
+            'type': v.type,
+            'length': v.length,
+        }
+
+        if (v.type !== DbfFieldType.character) {
+            json.decimal = v.decimal
+        }
+
+        return json
+    }
+
     _init() {
         const today = new Date();
         this.year = today.getFullYear();

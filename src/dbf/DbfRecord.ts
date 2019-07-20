@@ -198,10 +198,15 @@ export default class DbfRecord {
     /**
      * Gets current record raw data.
      */
-    raw(): {id: number, values: Map<string, any>, deleted?: boolean} {
+    json(): any {
+        const fieldValues: any = {}
+        this.values.forEach((v, k, m) => {
+            fieldValues[k] = v
+        })
+
         const rawData = {
             id: this.id,
-            values: this.values
+            values: fieldValues
         };
 
         if (this.deleted) {

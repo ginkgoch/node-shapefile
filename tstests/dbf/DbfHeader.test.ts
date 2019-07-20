@@ -100,4 +100,26 @@ describe('DbfHeader tests', () => {
         let fieldType = DbfHeader._getFieldType(str);
         expect(fieldType).toBe(DbfFieldType.character);
     });
+
+    test('omit default decimal', () => {
+        let json = DbfField.fromJson({
+            name: 'REC_ID',
+            type: 'N',
+            length: 8,
+            decimal: 0
+        })
+
+        let json1 = DbfHeader._omitDefaultDecimal(json)
+        expect(Object.keys(json1)).toContain('decimal')
+
+        json.decimal = 9
+        json1 = DbfHeader._omitDefaultDecimal(json)
+        expect(Object.keys(json1)).toContain('decimal')
+        expect(json1.decimal).toBe(9)
+
+        json.type = DbfFieldType.character
+        json.decimal = 2
+        json1 = DbfHeader._omitDefaultDecimal(json)
+        expect(Object.keys(json1)).not.toContain('decimal')
+    })
 });

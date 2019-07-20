@@ -9,10 +9,12 @@ export default class DbfIterator extends Iterator<DbfRecord> {
     _index: number
     _header: DbfHeader
     _streamReader: StreamReader
+    done: boolean
 
     constructor(streamReader: StreamReader, header: DbfHeader) {
         super();
 
+        this.done = false;
         this.fields = undefined;
         this._index = -1;
         this._header = header;
@@ -23,7 +25,7 @@ export default class DbfIterator extends Iterator<DbfRecord> {
      * @override
      * @returns {Promise<{result, done}|{done}|*>}
      */
-    async next(): Promise<{result: DbfRecord, done: boolean}|{done: boolean}> {
+    async next(): Promise<DbfRecord|undefined> {
         this._index++;
         const recordLength = this._header.recordLength;
         const buffer = <Buffer>(await this._streamReader.read(recordLength));

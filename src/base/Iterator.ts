@@ -1,11 +1,18 @@
 export default abstract class Iterator<T> {
-    abstract async next(): Promise<{ done: boolean, result: T }|{ done: boolean }>;
-
-    protected _done(): { done: boolean } {
-        return { done: true };
+    done: boolean;
+    constructor() {
+        this.done = false;
     }
 
-    _continue(obj: T): { done: boolean, result: T } {
-        return { done: false, result: obj };
+    abstract async next(): Promise<T|undefined>;
+
+    protected _done(): undefined {
+        this.done = true
+        return undefined
+    }
+
+    _continue(obj: T): T {
+        this.done = false
+        return obj;
     }
 };

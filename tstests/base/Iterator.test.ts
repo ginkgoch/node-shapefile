@@ -4,8 +4,8 @@ describe('base.Iterator', () => {
     it('implementation', async () => {
         const t = new TestArray();
         const r = await t.next();
-        expect(r.done).toBeFalsy();
-        expect(r.result).toBe('continue...');
+        expect(t.done).toBeFalsy();
+        expect(r).toBe('continue...');
     });
 });
 

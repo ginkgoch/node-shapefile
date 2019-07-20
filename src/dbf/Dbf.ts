@@ -283,11 +283,11 @@ export default class Dbf extends Openable {
         this._fd = fs.openSync(this.filePath, 'rs+');
     }
 
-    private get __fd() {
+    get __fd() {
         return <number>this._fd;
     }
 
-    private get __header() {
+    get __header() {
         return <DbfHeader>this._header;
     }
 };
