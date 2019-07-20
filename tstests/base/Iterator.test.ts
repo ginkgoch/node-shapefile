@@ -5,7 +5,7 @@ describe('base.Iterator', () => {
         const t = new TestArray();
         const r = await t.next();
         expect(t.done).toBeFalsy();
-        expect(r).toBe('continue...');
+        expect(r.value).toBe('continue...');
     });
 });
 

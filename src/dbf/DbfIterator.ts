@@ -3,6 +3,7 @@ import {StreamReader} from 'ginkgoch-stream-io'
 import Iterator from "../../src/base/Iterator"
 import DbfRecord from '../../src/dbf/DbfRecord'
 import DbfHeader from '../../src/dbf/DbfHeader'
+import Optional from '../base/Optional';
 
 export default class DbfIterator extends Iterator<DbfRecord> {
     fields?: string[]
@@ -23,9 +24,9 @@ export default class DbfIterator extends Iterator<DbfRecord> {
 
     /**
      * @override
-     * @returns {Promise<{result, done}|{done}|*>}
+     * @returns {Promise<Optional<DbfRecord>}
      */
-    async next(): Promise<DbfRecord|undefined> {
+    async next(): Promise<Optional<DbfRecord>> {
         this._index++;
         const recordLength = this._header.recordLength;
         const buffer = <Buffer>(await this._streamReader.read(recordLength));

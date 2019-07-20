@@ -15,6 +15,9 @@ import DbfRecord from '../../src/dbf/DbfRecord';
 
 import dbf_usstates_header from '../data/dbf_usstates_header.json'
 import dbf_usstates_record1 from '../data/dbf_usstates_record1.json'
+import dbf_usstates_record2 from '../data/dbf_usstates_record2.json'
+import dbf_usstates_record51 from '../data/dbf_usstates_record51.json'
+import Optional from '../../src/base/Optional';
 
 describe('Dbf tests', () => {
     const filePath = './tests/data/USStates.dbf';
@@ -34,44 +37,44 @@ describe('Dbf tests', () => {
         const dbf = new Dbf(filePath);
         await dbf.openWith(async () => {
             const records = await dbf.iterator();
-            const record = <DbfRecord>(await records.next());
+            const record = await records.next();
 
-            const actualJson = JSON.stringify(record.json());
+            const actualJson = JSON.stringify(record.value.json());
             const expectJson = JSON.stringify(dbf_usstates_record1)
             expect(actualJson).toBe(expectJson);
-            expect(record.id).toBe(0);
+            expect(record.value.id).toBe(0);
         });
     });
     
-    // test('read record - second', async () => {
-    //     const dbf = new Dbf(filePath);
-    //     await dbf.openWith(async () => {
-    //         const records = await dbf.iterator();
-    //         await records.next();
-    //         let record = await records.next();
-    //         expect(JSON.stringify(record)).toBe(JSON.stringify(dbf_usstates_record2));
-    //         expect(record.result.id).toBe(1);
-    //     });
-    // });
+    test('read record - second', async () => {
+        const dbf = new Dbf(filePath);
+        await dbf.openWith(async () => {
+            const records = await dbf.iterator();
+            await records.next();
+            let record = await records.next();
+            expect(JSON.stringify(record.value.json())).toBe(JSON.stringify(dbf_usstates_record2));
+            expect(record.value.id).toBe(1);
+        });
+    });
     
-    // test('read record - final', async () => {
-    //     const dbf = new Dbf(filePath);
-    //     await dbf.openWith(async () => {
-    //         const records = await dbf.iterator();
-    //         let temp = await records.next();
-    //         let record = undefined;
-    //         let count = 0;
-    //         while (!temp.done) {
-    //             record = temp;
-    //             count++;
-    //             temp = await records.next();
-    //         }
+    test('read record - final', async () => {
+        const dbf = new Dbf(filePath);
+        await dbf.openWith(async () => {
+            const records = await dbf.iterator();
+            let temp = await records.next();
+            let record = new Optional<DbfRecord>(undefined);
+            let count = 0;
+            while (!records.done) {
+                record = temp;
+                count++;
+                temp = await records.next();
+            }
             
-    //         expect(count).toBe(51);
-    //         expect(JSON.stringify(record)).toBe(JSON.stringify(dbf_usstates_record51));
-    //         expect(record.result.id).toBe(50);
-    //     });
-    // });
+            expect(count).toBe(51);
+            expect(JSON.stringify(record.value.json())).toBe(JSON.stringify(dbf_usstates_record51));
+            expect(record.value.id).toBe(50);
+        });
+    });
 
     // test('read record - by id', async () => {
     //     const dbf = new Dbf(filePath);
