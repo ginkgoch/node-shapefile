@@ -125,7 +125,7 @@ export default class Shp extends StreamOpenable {
         return result.value;
     }
 
-    async records(filter: { from?: number, limit?: number, envelope?: IEnvelope } | null | undefined) {
+    async records(filter: { from?: number, limit?: number, fields?: string[], envelope?: IEnvelope } | null | undefined) {
         Validators.checkIsOpened(this.isOpened);
 
         const option = this._getStreamOption(100);

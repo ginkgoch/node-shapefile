@@ -1,4 +1,7 @@
 import StreamOpenable from '../../src/base/StreamOpenable';
+import _ from 'lodash';
+
+const defaultFilter = { from: 0, limit: Number.MAX_SAFE_INTEGER };
 
 class TestStream extends StreamOpenable {
     normalizeFilter(filter: { from?: number, limit?: number } | null | undefined) {
@@ -38,4 +41,32 @@ describe('base.StreamOpenable', () => {
         expect(opt.start).toBe(30);
         expect(opt.end).toBe(50);
     });
+
+    test('filter normalize test', () => {
+        const so = new TestStream();
+        let expectedFilter = _.clone(defaultFilter);
+
+        let filter = undefined;
+        let r = so.normalizeFilter(filter);
+        expect(r).toEqual(expectedFilter);
+
+        testFilter({ from: 20 }, so);
+
+        testFilter({ limit: 20 }, so);
+
+        testFilter({ from: 15, limit: 20 }, so);
+
+        testFilter({ fields: [] }, so);
+
+        testFilter({ fields: ['RECID'] }, so);
+
+        testFilter({ from: 10, limit: 20, fields: ['RECID'] }, so);
+    }); 
 });
+
+function testFilter(filter: any, so: TestStream) {
+    let expectedFilter = _.clone(defaultFilter);
+    expectedFilter = _.assign(expectedFilter, filter);
+    let r = so.normalizeFilter(filter);
+    expect(r).toEqual(expectedFilter);
+}
