@@ -10,7 +10,8 @@
     "gis"
   ],
   "scripts": {
-    "test": "./node_modules/.bin/jest"
+    "test": "./node_modules/.bin/jest",
+    "build": "./node_modules/.bin/tsc"
   },
   "author": {
     "name": "Ginkgoch",
@@ -23,16 +24,18 @@
   },
   "license": "MIT",
   "dependencies": {
-    "ginkgoch-buffer-io": "^1.0.2",
-    "ginkgoch-stream-io": "^1.1.0",
+    "ginkgoch-buffer-io": "^1.1.0",
+    "ginkgoch-stream-io": "^1.2.0-beta",
     "lodash": "^4.17.14"
   },
   "devDependencies": {
     "@types/jest": "^24.0.15",
+    "@types/lodash": "^4.14.136",
+    "@types/node": "^12.6.8",
+    "dts-gen": "^0.5.8",
     "jest": "^24.8.0",
-    "jest-cli": "^24.8.0"
-  },
-  "jest": {
-    "testEnvironment": "node"
+    "jest-cli": "^24.8.0",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.5.3"
   }
 }
