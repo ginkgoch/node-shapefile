@@ -29,7 +29,7 @@ export default abstract class GeomParser {
 
     protected _prepare(): {envelope: IEnvelope, readGeom: ()=>{type: ShapefileType, coordinates: any}} {
         this.envelope = this._reader.nextEnvelope();
-        return { envelope: this.envelope, readGeom: this.readGeom };
+        return { envelope: this.envelope, readGeom: this.readGeom.bind(this) };
     }
 
     abstract get expectedType(): ShapefileType;

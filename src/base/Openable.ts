@@ -10,7 +10,7 @@ export default class Openable {
 
         this.isOpened = true;
         await this._open();
-        return await Promise.resolve(this);
+        return this;
     }
 
     protected async _open() { }
