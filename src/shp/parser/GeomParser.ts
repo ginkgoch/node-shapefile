@@ -3,7 +3,7 @@ import IEnvelope from "../IEnvelope";
 import Validators from "../../shared/Validators";
 import { ShapefileType } from "../../shared/ShapefileType";
 
-export default abstract class Parser {
+export default abstract class GeomParser {
     type: number
     reader: ShpReader
     envelope: IEnvelope|undefined

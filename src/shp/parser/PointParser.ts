@@ -1,9 +1,9 @@
-import Parser from "./Parser";
+import GeomParser from "./GeomParser";
 import IEnvelope from "../IEnvelope";
 import Envelope from "../Envelope";
 import { ShapefileType } from "../../shared/ShapefileType";
 
-export default class PointParser extends Parser {
+export default class PointParser extends GeomParser {
     //TODO: test constructor
 
     get expectedType(): ShapefileType {

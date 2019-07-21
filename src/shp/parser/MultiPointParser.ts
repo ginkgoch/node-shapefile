@@ -1,7 +1,7 @@
-import Parser from "./Parser";
+import GeomParser from "./GeomParser";
 import { ShapefileType } from "../../shared/ShapefileType";
 
-export default class MultiPointParser extends Parser {
+export default class MultiPointParser extends GeomParser {
     get expectedType(): ShapefileType {
         return ShapefileType.multiPoint;
     } 
