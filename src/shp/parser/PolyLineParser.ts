@@ -1,11 +1,10 @@
 import _ from "lodash";
 import GeomParser from "./GeomParser";
-import { ShapefileType } from "../../shared/ShapefileType";
-import constants from '../../shared/Constants';
+import * as shared from "../../shared";
 
 export default class PolyLineParser extends GeomParser {
-    get expectedType(): ShapefileType {
-        return ShapefileType.polyLine;
+    get expectedType(): shared.ShapefileType {
+        return shared.ShapefileType.polyLine;
     }  
     
     protected _readGeom(): any {
@@ -22,6 +21,6 @@ export default class PolyLineParser extends GeomParser {
     }
 
     get expectedTypeName(): string {
-        return constants.GEOM_TYPE_POLYLINE;
+        return shared.Constants.GEOM_TYPE_POLYLINE;
     }
 }

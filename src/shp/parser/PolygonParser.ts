@@ -1,10 +1,9 @@
 import GeomParser from "./GeomParser";
-import { ShapefileType } from "../../shared/ShapefileType";
-import constants from '../../shared/Constants';
+import * as shared from "../../shared";
 
 export default class PolygonParser extends GeomParser {
-    get expectedType(): ShapefileType {
-        return ShapefileType.polygon
+    get expectedType(): shared.ShapefileType {
+        return shared.ShapefileType.polygon
     }  
     
     protected _readGeom(): any {
@@ -16,6 +15,6 @@ export default class PolygonParser extends GeomParser {
     }
 
     get expectedTypeName(): string {
-        return constants.GEOM_TYPE_POLYGON;
+        return shared.Constants.GEOM_TYPE_POLYGON;
     }
 }

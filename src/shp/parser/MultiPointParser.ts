@@ -1,10 +1,9 @@
 import GeomParser from "./GeomParser";
-import { ShapefileType } from "../../shared/ShapefileType";
-import constants from '../../shared/Constants';
+import * as shared from '../../shared';
 
 export default class MultiPointParser extends GeomParser {
-    get expectedType(): ShapefileType {
-        return ShapefileType.multiPoint;
+    get expectedType(): shared.ShapefileType {
+        return shared.ShapefileType.multiPoint;
     } 
 
     _readGeom(): any {
@@ -19,6 +18,6 @@ export default class MultiPointParser extends GeomParser {
     }
 
     get expectedTypeName(): string {
-        return constants.GEOM_TYPE_MULTIPOINT;
+        return shared.Constants.GEOM_TYPE_MULTIPOINT;
     }
 }

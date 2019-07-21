@@ -1,23 +1,19 @@
 import GeomParserFactory from "../../../src/shp/parser/GeomParserFactory";
-import { ShapefileType } from "../../../src/shared/ShapefileType";
 import ShpReader from "../../../src/shp/ShpReader";
-
-// const Parser = require('../libs/shp/ShpParser');
-// const ShapefileType = require('../libs/ShapefileType');
-// const ShpReader = require('../libs/shp/ShpReader');
+import * as shared from '../../../src/shared';
 
 describe('parser tests', () => {
     test('get parsers test', () => {
-        let pointParser = GeomParserFactory.getParser(ShapefileType.point);
+        let pointParser = GeomParserFactory.getParser(shared.ShapefileType.point);
         expect(pointParser).not.toBeNull();
 
-        let polyLineParser = GeomParserFactory.getParser(ShapefileType.polyLine);
+        let polyLineParser = GeomParserFactory.getParser(shared.ShapefileType.polyLine);
         expect(polyLineParser).not.toBeNull();
 
-        let multiPointParser = GeomParserFactory.getParser(ShapefileType.multiPoint);
+        let multiPointParser = GeomParserFactory.getParser(shared.ShapefileType.multiPoint);
         expect(multiPointParser).not.toBeNull();
 
-        let polygonParser = GeomParserFactory.getParser(ShapefileType.polygon);
+        let polygonParser = GeomParserFactory.getParser(shared.ShapefileType.polygon);
         expect(polygonParser).not.toBeNull();
     });
 
@@ -27,7 +23,7 @@ describe('parser tests', () => {
     });
 
     test('null shape parser test', () => {
-        let parser = GeomParserFactory.getParser(ShapefileType.nullShape);
+        let parser = GeomParserFactory.getParser(shared.ShapefileType.nullShape);
         expect(parser.hasValue).toBeFalsy();
     });
 
@@ -38,12 +34,12 @@ describe('parser tests', () => {
         buffer.writeInt32LE(type, 0);
         buffer.writeDoubleLE(x, 4);
         buffer.writeDoubleLE(y, 12);
-        let obj = GeomParserFactory.getParser(ShapefileType.point);
+        let obj = GeomParserFactory.getParser(shared.ShapefileType.point);
         expect(obj.hasValue).toBeTruthy();
 
         obj.value.prepare(new ShpReader(buffer));
         let geom = obj.value.readGeom();
-        expect(geom).toEqual({ type: ShapefileType.point, coordinates: [x, y] });
+        expect(geom).toEqual({ type: shared.ShapefileType.point, coordinates: [x, y] });
     });
 
     test('point shape parser test - incorrect buffer', () => {
@@ -55,7 +51,7 @@ describe('parser tests', () => {
         buffer.writeDoubleLE(y, 12);
 
         function parsePointBuffer() {
-            let parser = GeomParserFactory.getParser(ShapefileType.point);
+            let parser = GeomParserFactory.getParser(shared.ShapefileType.point);
             parser.value.prepare(new ShpReader(buffer));
         }
         expect(parsePointBuffer).toThrow(/Not a point record/);
