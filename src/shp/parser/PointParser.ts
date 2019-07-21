@@ -1,16 +1,16 @@
 import GeomParser from "./GeomParser";
 import IEnvelope from "../IEnvelope";
 import Envelope from "../Envelope";
-import * as shared from '../../shared';
+import { ShapefileType, Constants } from "../../shared";
 
 export default class PointParser extends GeomParser {
     //TODO: test constructor
 
-    get expectedType(): shared.ShapefileType {
-        return shared.ShapefileType.point;
+    get expectedType(): ShapefileType {
+        return ShapefileType.point;
     }
 
-    protected _prepare(): {envelope: IEnvelope, readGeom: () => {type: shared.ShapefileType, coordinates: any}} {
+    protected _prepare(): {envelope: IEnvelope, readGeom: () => {type: ShapefileType, coordinates: any}} {
         const geom = this._reader.nextPoint();
         this.envelope = new Envelope(geom[0], geom[1], geom[0], geom[1]);
 
@@ -24,6 +24,6 @@ export default class PointParser extends GeomParser {
     }
 
     get expectedTypeName(): string {
-        return shared.Constants.GEOM_TYPE_POINT;
+        return Constants.GEOM_TYPE_POINT;
     }
 }

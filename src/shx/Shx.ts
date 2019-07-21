@@ -1,5 +1,3 @@
-// const fs = require('fs');
-// const Openable = require('../base/Openable');
 import fs from 'fs';
 import Openable from '../base/Openable';
 
@@ -16,13 +14,9 @@ export default class Shx extends Openable {
 
     constructor(filePath: string, flag = 'rs') {
         super();
-        this.filePath = filePath;
         this._flag = flag;
         this._totalSize = 0;
-    }
-
-    private get __fd() {
-        return <number>this._fd;
+        this.filePath = filePath;
     }
 
     async _open() {
@@ -58,5 +52,9 @@ export default class Shx extends Openable {
         const buff = Buffer.alloc(CONTENT_LENGTH);
         buff.writeInt32BE(0, 0);
         fs.writeSync(this.__fd, buff, 0, buff.length, position);
+    }
+
+    private get __fd() {
+        return <number>this._fd;
     }
 };

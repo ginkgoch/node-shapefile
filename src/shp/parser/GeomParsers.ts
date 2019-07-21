@@ -1,8 +1,8 @@
-import MultiPointParser from "./MultiPointParser";
+import GeomParser from "./GeomParser";
 import PointParser from "./PointParser";
 import PolygonParser from "./PolygonParser";
 import PolyLineParser from "./PolyLineParser";
-import GeomParser from "./GeomParser";
+import MultiPointParser from "./MultiPointParser";
 
 export const point = function(): GeomParser {
     return new PointParser();

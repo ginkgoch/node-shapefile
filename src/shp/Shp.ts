@@ -1,22 +1,21 @@
 import fs from 'fs';
+import _ from 'lodash';
 import path from 'path';
 import assert = require('assert');
 import { EventEmitter } from "events";
-
-import _ from 'lodash';
 import { StreamReader } from 'ginkgoch-stream-io';
 
-import { Validators } from "../shared";
-import ShpHeader from './ShpHeader';
-import GeomParser from './parser/GeomParser';
-import GeomParserFactory from './parser/GeomParserFactory';
-import Optional from '../base/Optional';
 import Shx from '../shx/Shx';
 import Envelope from './Envelope';
-import StreamOpenable from '../base/StreamOpenable';
-import ShpIterator from './ShpIterator';
-import ShpReader from './ShpReader';
 import IEnvelope from './IEnvelope';
+import ShpHeader from './ShpHeader';
+import ShpReader from './ShpReader';
+import { Validators } from "../shared";
+import ShpIterator from './ShpIterator';
+import Optional from '../base/Optional';
+import GeomParser from './parser/GeomParser';
+import StreamOpenable from '../base/StreamOpenable';
+import GeomParserFactory from './parser/GeomParserFactory';
 
 const extReg = /\.\w+$/;
 

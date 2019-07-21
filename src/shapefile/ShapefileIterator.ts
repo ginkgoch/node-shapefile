@@ -1,9 +1,9 @@
-import ShpIterator from "../shp/ShpIterator";
-import DbfIterator from "../dbf/DbfIterator";
-import IEnvelope from "../shp/IEnvelope";
 import IFeature from "./IFeature";
-import Iterator from '../base/Iterator'
 import { Constants } from "../shared";
+import Iterator from '../base/Iterator';
+import IEnvelope from "../shp/IEnvelope";
+import DbfIterator from "../dbf/DbfIterator";
+import ShpIterator from "../shp/ShpIterator";
 
 /**
  * The Shapefile iterator.

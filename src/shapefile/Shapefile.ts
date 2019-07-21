@@ -1,22 +1,16 @@
-import StreamOpenable from "../base/StreamOpenable";
+import _ from "lodash";
 import { EventEmitter } from "events";
+
 import Shp from "../shp/Shp";
+import Dbf from "../dbf/Dbf";
+import IFeature from "./IFeature";
 import Optional from "../base/Optional";
 import { Validators, Constants } from "../shared";
-import Dbf from "../dbf/Dbf";
 import ShapefileIterator from "./ShapefileIterator";
+import StreamOpenable from "../base/StreamOpenable";
 import IQueryFilter from "../shared/IQueryFilter";
-import IFeature from "./IFeature";
-import _ from "lodash";
 
-// const _ = require('lodash');
-// const Validators = require('./Validators');
-// const Openable = require('./base/StreamOpenable');
-// const ShapefileIt = require('./ShapefileIterator');
-// const Shp = require('./shp/Shp');
-// const Dbf = require('./dbf/Dbf');
 const extReg = /\.\w+$/;
-// const FEATURE_TYPE = 'Feature';
 
 /**
  * The Shapefile class.

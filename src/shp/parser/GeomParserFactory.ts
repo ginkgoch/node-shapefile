@@ -1,9 +1,9 @@
 import _ from 'lodash';
-import * as GeomParsers from '.'
-import { ShapefileType } from "../../shared/ShapefileType";
-import EnumUtils from '../../shared/EnumUtils';
 import GeomParser from './GeomParser';
 import Optional from '../../base/Optional';
+import * as GeomParsers from './GeomParsers';
+import EnumUtils from '../../shared/EnumUtils';
+import { ShapefileType } from "../../shared/ShapefileType";
 
 export default class GeomParserFactory {
     static getParser(type: ShapefileType): Optional<GeomParser> {
