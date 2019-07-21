@@ -1,9 +1,9 @@
-import Iterator from "../../src/base/Iterator";
+import _ from "lodash";
 import { StreamReader } from "ginkgoch-stream-io";
+import Iterator from "../../src/base/Iterator";
 import GeomParser from "../../src/shp/parser/GeomParser";
 import Optional from "../../src/base/Optional";
 import ShpReader from "../../src/shp/ShpReader";
-import _ from "lodash";
 import IEnvelope from "../../src/shp/IEnvelope";
 import Envelope from "../../src/shp/Envelope";
 

@@ -14,4 +14,8 @@ export default class Optional<T> {
     get value() {
         return <T>this.obj
     }
+
+    update(obj: T|undefined|null) {
+        this.obj = obj
+    }
 }
