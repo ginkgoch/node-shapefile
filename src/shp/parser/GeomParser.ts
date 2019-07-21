@@ -5,18 +5,16 @@ import { ShapefileType } from "../../shared/ShapefileType";
 
 export default abstract class GeomParser {
     type: number
-    reader: ShpReader
+    reader: ShpReader|undefined
     envelope: IEnvelope|undefined
-    isPoint: boolean
 
-    constructor(reader: ShpReader) {
+    constructor() {
         this.type = 0
-        this.reader = reader
         this.envelope = undefined
-        this.isPoint = false
     }
 
-    prepare(): {envelope: IEnvelope, readGeom: ()=>{type: ShapefileType, coordinates: any}}|null {
+    prepare(reader: ShpReader): {envelope: IEnvelope, readGeom: ()=>{type: ShapefileType, coordinates: any}}|null {
+        this.reader = reader;
         this.type = this.reader.nextInt32LE();
 
         // TODO: maybe here could be this.type !== this.expectedType
@@ -25,20 +23,28 @@ export default abstract class GeomParser {
             return null;
         }
 
-        Validators.checkIsValidShapeType(this.type, this.expectedType, `expected shape type ${this.expectedType}`);
+        Validators.checkIsValidShapeType(this.type, this.expectedType, this.expectedTypeName);
         return this._prepare();
     }
 
     protected _prepare(): {envelope: IEnvelope, readGeom: ()=>{type: ShapefileType, coordinates: any}} {
-        this.envelope = this.reader.nextEnvelope();
+        this.envelope = this._reader.nextEnvelope();
         return { envelope: this.envelope, readGeom: this.readGeom };
     }
 
     abstract get expectedType(): ShapefileType;
+
+    get expectedTypeName(): string {
+        return this.expectedType.toString();
+    }
 
     readGeom(): {type: ShapefileType, coordinates: any} {
         return {type: this.type, coordinates: this._readGeom()};
     }
 
     protected abstract _readGeom(): any;
+
+    get _reader() {
+        return <ShpReader>this.reader;
+    }
 }
