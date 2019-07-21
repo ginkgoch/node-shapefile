@@ -1,8 +1,6 @@
 import IEnvelope from "../../src/shp/IEnvelope";
 import ShpReader from "../../src/shp/ShpReader";
 
-// const ShpReader = require('../libs/shp/ShpReader');
-
 describe('parser helper tests', () => {
     const src: IEnvelope = { minx: -120.0236, miny: -140.8975, maxx: 98.98, maxy: 34.8765 };
 

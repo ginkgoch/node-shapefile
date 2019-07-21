@@ -1,5 +1,3 @@
-// const _ = require('lodash');
-
 import _ from 'lodash';
 import 'jest';
 import Optional from '../../src/base/Optional';
