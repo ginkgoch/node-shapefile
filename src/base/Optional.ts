@@ -1,14 +1,14 @@
 
 
 export default class Optional<T> {
-    obj: T|undefined
+    obj: T|undefined|null
 
-    constructor(obj: T|undefined) {
+    constructor(obj?: T|null) {
         this.obj = obj
     }
 
     get hasValue() {
-        return this.obj !== undefined
+        return this.obj !== undefined && this.obj !== null
     }
 
     get value() {

@@ -13,7 +13,7 @@ export default abstract class GeomParser {
         this.envelope = undefined
     }
 
-    prepare(reader: ShpReader): {envelope: IEnvelope, readGeom: ()=>{type: ShapefileType, coordinates: any}}|null {
+    prepare(reader: ShpReader): {envelope: IEnvelope, readGeom: () => {type: ShapefileType, coordinates: any}}|null {
         this.reader = reader;
         this.type = this.reader.nextInt32LE();
 

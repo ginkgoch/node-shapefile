@@ -1,4 +1,5 @@
 import Optional from "./Optional";
+import { isNullOrUndefined } from "util";
 
 export default abstract class Iterator<T> {
     done: boolean;
@@ -16,5 +17,10 @@ export default abstract class Iterator<T> {
     _continue(obj: T): Optional<T> {
         this.done = false
         return new Optional(obj);
+    }
+
+    _dirty(obj: null|undefined) {
+        this.done = false
+        return new Optional<T>(undefined);
     }
 };

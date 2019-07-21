@@ -13,10 +13,10 @@ export default class Envelope implements IEnvelope {
         this.maxy = maxy;
     }
 
-    disjoined(envelope: IEnvelope|undefined): boolean {
-        if (envelope === undefined) return false;
+    static disjoined(envelope1: IEnvelope|undefined, envelope2: IEnvelope|undefined): boolean {
+        if (envelope1 === undefined || envelope2 === undefined) return false;
 
-        return this.maxx < envelope.minx || this.minx > envelope.maxx
-            || this.miny > envelope.maxy || this.maxy < envelope.miny;
+        return envelope1.maxx < envelope2.minx || envelope1.minx > envelope2.maxx
+            || envelope1.miny > envelope2.maxy || envelope1.maxy < envelope2.miny;
     }
 }
