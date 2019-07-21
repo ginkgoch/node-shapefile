@@ -1,14 +1,3 @@
-// const fs = require('fs');
-// const _ = require('lodash');
-// const {StreamReader} = require('ginkgoch-stream-io');
-
-// const Openable = require('../base/StreamOpenable');
-// const Validators = require('../Validators');
-// const DbfIterator = require('./DbfIterator');
-// const DbfHeader = require('./DbfHeader');
-// const DbfField = require('./DbfField');
-// const DbfRecord = require('./DbfRecord');
-
 import fs from 'fs'
 import _ from 'lodash'
 import {StreamReader} from 'ginkgoch-stream-io'
@@ -18,6 +7,7 @@ import DbfIterator from './DbfIterator'
 import DbfHeader from './DbfHeader'
 import DbfField from './DbfField'
 import DbfRecord from './DbfRecord'
+import IQueryFilter from '../shared/IQueryFilter';
 
 export default class Dbf extends Openable {
     filePath: string
@@ -72,11 +62,11 @@ export default class Dbf extends Openable {
         Validators.checkIndexIsValid(id);
 
         const offset = this.__header.headerLength + this.__header.recordLength * id;
-        const records = await this._getRecordIterator(offset, offset + this.__header.recordLength);
-        records.fields = fields;
-        records._index = id - 1;
+        const iterator = await this._getRecordIterator(offset, offset + this.__header.recordLength);
+        iterator.fields = fields;
+        iterator._index = id - 1;
 
-        const record = await records.next();
+        const record = await iterator.next();
         return record.value;
     }
 
@@ -107,7 +97,7 @@ export default class Dbf extends Openable {
      * @param {Object.<{ from: number|undefined, limit: number|undefined, fields: Array.<string>|undefined }>} filter
      * @returns {Array<DbfRecord>}}
      */
-    async records(filter?: {from?: number, limit?: number, fields?: string[]}): Promise<Array<DbfRecord>> {
+    async records(filter?: IQueryFilter): Promise<Array<DbfRecord>> {
         const option = this._getStreamOption(this.__header.headerLength);
         const stream = fs.createReadStream(this.filePath, option);
         const records = new Array<DbfRecord>();
@@ -165,7 +155,7 @@ export default class Dbf extends Openable {
 
     /**
      * Push single row values into memory. Call flush() to persistent into file.
-     * @param {Object} record The field values of one record.
+     * @param {DbfRecord} record The one record to push.
      * @example
      * dbf.pushRow({ rec:1, name:'china' });
      */
@@ -239,7 +229,7 @@ export default class Dbf extends Openable {
 
         let recordId = record.id === -1 ? this.__header.recordCount : record.id;
         let position = this.__header.headerLength + this.__header.recordLength * recordId;
-        fs.writeSync(<number>this._fd, buff, 0, buff.length, position);
+        fs.writeSync(this.__fd, buff, 0, buff.length, position);
 
         if (record.id === -1) {
             this.__header.recordCount++;
@@ -256,7 +246,7 @@ export default class Dbf extends Openable {
 
         const position = this.__header.headerLength + index * this.__header.recordLength;
         const buff = Buffer.from('*');
-        fs.writeSync(<number>this._fd, buff, 0, 1, position);
+        fs.writeSync(this.__fd, buff, 0, 1, position);
     }
 
     /**
@@ -278,6 +268,7 @@ export default class Dbf extends Openable {
     openForEdit() {
         if (!this._fd) {
             fs.closeSync(this.__fd);
+            this._fd = undefined;
         }
 
         this._fd = fs.openSync(this.filePath, 'rs+');

@@ -1,5 +1,6 @@
-import { DbfFieldType } from './DbfFieldType'
 import _ from 'lodash'
+import { DbfFieldType } from './DbfFieldType'
+
 export default class DbfField {
     name: string;
     type: DbfFieldType;

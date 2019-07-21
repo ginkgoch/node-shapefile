@@ -5,10 +5,10 @@ import {DbfFieldType} from './DbfFieldType'
 import {BufferReader, BufferWriter} from 'ginkgoch-buffer-io'
 
 export default class DbfRecord {
-    header: DbfHeader|undefined
     id: number
-    values: Map<string, any>
     deleted: boolean
+    values: Map<string, any>
+    header: DbfHeader|undefined
 
     /**
      *
