@@ -110,7 +110,7 @@ export default class Shapefile extends StreamOpenable {
      * @param {*} filter Indicates the filter for iterating the records. Allows to filter with fields and envelopes.
      * @returns The iterator for looping records of shapefile.
      */
-    async iterator(filter: IQueryFilter) {
+    async iterator(filter?: IQueryFilter) {
         Validators.checkIsOpened(this.isOpened);
 
         const shpIt = await this._shp.value.iterator();
