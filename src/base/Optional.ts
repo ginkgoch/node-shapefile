@@ -18,4 +18,8 @@ export default class Optional<T> {
     update(obj: T|undefined|null) {
         this.obj = obj
     }
+
+    reset() {
+        this.obj = undefined
+    }
 }
