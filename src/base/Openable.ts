@@ -6,7 +6,7 @@ export default class Openable {
     }
 
     async open() {
-        if (this.isOpened) return;
+        if (this.isOpened) return this;
 
         this.isOpened = true;
         await this._open();
