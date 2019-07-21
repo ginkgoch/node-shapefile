@@ -87,7 +87,7 @@ describe('shapefile general tests', () => {
 describe('shapefile test - polyline', () => {
     const lineShpPath = './tests/data/Austinstreets.shp';
 
-    test('read records test - polygline loop', async () => {
+    test('read records test - polyline loop', async () => {
         const callbackMock = jest.fn();
         await loopRecords(lineShpPath, callbackMock);
         expect(callbackMock.mock.calls.length).toBe(13843);
