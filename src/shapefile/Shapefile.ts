@@ -1,3 +1,4 @@
+import fs from 'fs';
 import _ from "lodash";
 import { EventEmitter } from "events";
 
@@ -159,6 +160,32 @@ export default class Shapefile extends StreamOpenable {
             return record;
         });
         return records;
+    }
+
+    /**
+     * Copy the shp, shx and dbf files as another filename.
+     */
+    static copyFiles(sourceFilename: string, targetFilename: string, overwrite = false) {
+        let extensions = ['.shp', '.shx', '.dbf'];
+
+        extensions.forEach(ext => {
+            const sourceFilePath = sourceFilename.replace(/\.shp$/, ext);
+            const targetFilePath = targetFilename.replace(/\.shp$/, ext);
+            if (fs.existsSync(targetFilePath)) {
+                if (!fs.existsSync(sourceFilePath)) {
+                    return;
+                }
+
+                if (overwrite) {
+                    fs.unlinkSync(targetFilePath);
+                    fs.copyFileSync(sourceFilePath, targetFilePath);
+                } else {
+                    console.warn(`${sourceFilePath} exists. Copy ignored.`);
+                }
+            } else {
+                fs.copyFileSync(sourceFilePath, targetFilePath);
+            }
+        })
     }
 
     /**

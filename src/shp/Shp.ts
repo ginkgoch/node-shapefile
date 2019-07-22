@@ -125,7 +125,7 @@ export default class Shp extends StreamOpenable {
         return result.value;
     }
 
-    async records(filter?: { from?: number, limit?: number, fields?: string[], envelope?: IEnvelope }): Promise<{id: number, geometry: any}[]> {
+    async records(filter?: { from?: number, limit?: number, envelope?: IEnvelope }): Promise<{id: number, geometry: any}[]> {
         Validators.checkIsOpened(this.isOpened);
 
         const option = this._getStreamOption(100);
@@ -204,31 +204,5 @@ export default class Shp extends StreamOpenable {
             const position = recordShx.offset + 8;
             fs.writeSync(this.__fd, buff, 0, buff.length, position);
         }
-    }
-
-    /**
-     * Copy the shp, shx and dbf files as another filename.
-     */
-    static copyFiles(sourceFilename: string, targetFilename: string, overwrite = false) {
-        let extensions = ['.shp', '.shx', '.dbf'];
-
-        extensions.forEach(ext => {
-            const sourceFilePath = sourceFilename.replace(/\.shp$/, ext);
-            const targetFilePath = targetFilename.replace(/\.shp$/, ext);
-            if (fs.existsSync(targetFilePath)) {
-                if (!fs.existsSync(sourceFilePath)) {
-                    return;
-                }
-
-                if (overwrite) {
-                    fs.unlinkSync(targetFilePath);
-                    fs.copyFileSync(sourceFilePath, targetFilePath);
-                } else {
-                    console.warn(`${sourceFilePath} exists. Copy ignored.`);
-                }
-            } else {
-                fs.copyFileSync(sourceFilePath, targetFilePath);
-            }
-        })
     }
 };

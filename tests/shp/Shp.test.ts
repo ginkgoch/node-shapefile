@@ -3,6 +3,7 @@ import Shp from "../../src/shp/Shp";
 import '../jest/JestEx';
 import { ShapefileType } from '../../src/shared';
 import Envelope from '../../src/shp/Envelope';
+import Shapefile from '../../src/shapefile/Shapefile';
 
 const citiesPath = './tests/data/cities_e.shp';
 
@@ -291,7 +292,7 @@ describe('Read shp records tests', () => {
     test('delete shp record', async () => {
         const shpPathSrc = './tests/data/USStates.shp';
         const shpPath = './tests/data/USStates_delete_test.shp';
-        Shp.copyFiles(shpPathSrc, shpPath, true);
+        Shapefile.copyFiles(shpPathSrc, shpPath, true);
 
         const shp = new Shp(shpPath, 'rs+');
         await shp.openWith(async () => {
