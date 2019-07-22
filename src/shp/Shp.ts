@@ -16,6 +16,7 @@ import Optional from '../base/Optional';
 import GeomParser from './parser/GeomParser';
 import StreamOpenable from '../base/StreamOpenable';
 import GeomParserFactory from './parser/GeomParserFactory';
+import IQueryFilter from '../shared/IQueryFilter';
 
 const extReg = /\.\w+$/;
 
@@ -162,14 +163,7 @@ export default class Shp extends StreamOpenable {
                     if (index >= filterNorm.from && index < to) { 
                         let reader = new ShpReader(contentBuffer);
                         let recordReader = this.__shpParser.prepare(reader);
-                        if (recordReader === null) {
-                            continue;
-                        }
-
-                        if (filter === null || 
-                            filter === undefined || 
-                            _.isUndefined(filter.envelope) || 
-                            (filter.envelope && !Envelope.disjoined(recordReader.envelope, filter.envelope))) {
+                        if (recordReader !== null && Shp._matchFilter(filter, recordReader.envelope)) {
                             const record = { id: id, geometry: recordReader.readGeom() };
                             records.push(record);
                         }
@@ -177,11 +171,14 @@ export default class Shp extends StreamOpenable {
 
                     buffer = stream.read(8);
                 }
-
             }).on('end', () => {
                 resolve(records);
             });
         });
+    }
+
+    static _matchFilter(filter: IQueryFilter|null|undefined, recordEnvelope: IEnvelope): boolean {
+        return filter === null || filter === undefined || _.isUndefined(filter.envelope) || (filter.envelope && !Envelope.disjoined(recordEnvelope, filter.envelope));
     }
 
     async _getRecordIterator(start?: number, end?: number) {

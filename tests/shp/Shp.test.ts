@@ -311,4 +311,24 @@ describe('Read shp records tests', () => {
             }
         });
     });
+
+    test('_matchFilter', () => {
+        expect(undefined).toBeFalsy();
+        expect(_.isUndefined(undefined) === true).toBeTruthy();
+
+        const filter = {};
+        const envelope = { minx: -40, miny: -40, maxx: 40, maxy: 40 };
+
+        let match = Shp._matchFilter(filter, envelope);
+        expect(match).toBeTruthy();
+
+        match = Shp._matchFilter(null, envelope);
+        expect(match).toBeTruthy();
+
+        match = Shp._matchFilter(undefined, envelope);
+        expect(match).toBeTruthy();
+
+        match = Shp._matchFilter({envelope: { minx: -40, miny: -40, maxx: 40, maxy: 40 }}, envelope);
+        expect(match).toBeTruthy();
+    })
 });
