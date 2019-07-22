@@ -12,13 +12,15 @@ npm test
 ```
 
 ## Sample
+All the code below are using typescript. It is easy to translate to pure js by removing the type definition.
+
 ### Loops all records and print the vertices
-```js
-async function loopUSStates(callback) {
+```typescript
+async function loopUSStates(callback: (rec: Optional<IFeature>) => void) {
     const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
     const iterator = await statesShp.iterator();
     let record = undefined;
-    while ((record = await iterator.next()) && !record.done) {
+    while ((record = await iterator.next()) && !iterator.done) {
         callback(record);
     }
     await statesShp.close();
@@ -28,28 +30,30 @@ async function loopUSStates(callback) {
 ### Gets specific record by id
 
 Gets records by id with all fields.
-```js
-async function getRecordById(id) {
+```typescript
+async function getRecordById(id: number) {
     const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
     const record = await statesShp.get(0);
     await statesShp.close();
+
     return record;
 }
 ```
 
 Gets records by id with none fields. Specify the fields to fetch from DBF to ignore reading unnecessary field values.
-```js
-async function getRecordById(id) {
+```typescript
+async function getRecordById(id: number) {
     const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
     const record = await statesShp.get(0, []);
     await statesShp.close();
+
     return record;
 }
 ```
 
 ### Gets matched features one time - Update v1.0.16
 If you don't like to use iterator way, here is a normal way to get all features back.
-```js
+```typescript
 async function getAllRecords() {
     const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
     const record = await statesShp.records();
@@ -68,13 +72,31 @@ We also provide the filters that you could control the returned value. Here is t
 
 Let's take a look at a demo. Says I want to paging my features. My page size is 10. I want to return all the features from my second page with only properties whose names are RECID and STATE_NAME. Here is the code.
 
-```js
+```typescript
 async function getAllRecords() {
     const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
     const record = await statesShp.records({ from: 10, limit: 10, fields: ['RECID', 'STATE_NAME'] });
     await statesShp.close();
 
     return record;
+}
+```
+
+## Changelog
+### July 22 - v2.0.0
+- The major change is to translate the original source code to *typescript*. To have future concern.
+- Performance improved.
+- ShapefileIterator adds a `done` property to replace one on `record` instance. 
+```diff
+async function loopUSStatesV2(callback: (rec: Optional<IFeature>) => void) {
+    const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
+    const iterator = await statesShp.iterator();
+    let record = undefined;
++   while ((record = await iterator.next()) && !iterator.done) {
+-   while ((record = await iterator.next()) && !record.done) {
+        callback(record);
+    }
+    await statesShp.close();
 }
 ```
 
