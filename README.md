@@ -13,7 +13,8 @@ npm test
 
 ## Sample
 ### Loops all records and print the vertices
-```javascript-typescript
+```typescript
+// v2
 async function loopUSStates(callback: (rec: Optional<IFeature>) => void) {
     const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
     const iterator = await statesShp.iterator();
@@ -24,7 +25,9 @@ async function loopUSStates(callback: (rec: Optional<IFeature>) => void) {
     await statesShp.close();
 }
 ```
-```javascript-node
+
+```javascript
+// v1
 async function loopUSStates(callback: (rec: Optional<IFeature>) => void) {
     const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
     const iterator = await statesShp.iterator();
@@ -93,7 +96,7 @@ async function getAllRecords() {
 
 ## Changelog
 ### July 22 - v2.0.0
-- The major change is to translate the original source code to typescript. To have future concern.
+- The major change is to translate the original source code to *typescript*. To have future concern.
 - Performance improved.
 - ShapefileIterator adds a `done` property to replace one on `record` instance. 
 ```diff
