@@ -59,7 +59,7 @@ export default class Dbf extends Openable {
 
     async get(id: number, fields?: string[]): Promise<DbfRecord> {
         Validators.checkIsOpened(this.isOpened);
-        Validators.checkIndexIsValid(id);
+        Validators.checkIndexIsGEZero(id);
 
         const offset = this.__header.headerLength + this.__header.recordLength * id;
         const iterator = await this._getRecordIterator(offset, offset + this.__header.recordLength);
@@ -242,7 +242,7 @@ export default class Dbf extends Openable {
      */
     removeAt(index: number) {
         Validators.checkIsOpened(this.isOpened);
-        Validators.checkIndexIsValid(index);
+        Validators.checkIndexIsGEZero(index);
 
         const position = this.__header.headerLength + index * this.__header.recordLength;
         const buff = Buffer.from('*');
@@ -255,7 +255,7 @@ export default class Dbf extends Openable {
      */
     recoverAt(index: number) {
         Validators.checkIsOpened(this.isOpened);
-        Validators.checkIndexIsValid(index);
+        Validators.checkIndexIsGEZero(index);
 
         const position = this.__header.headerLength + index * this.__header.recordLength;
         const buff = Buffer.from(' ');

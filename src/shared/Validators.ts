@@ -11,8 +11,13 @@ export default class Validators {
         }
     }
 
-    static checkIndexIsValid(index: number) {
+    static checkIndexIsGEZero(index: number) {
         assert(index >= 0, 'Index must greater than or equal to 0.')
+    }
+
+    static checkIndexIsLessThan(index: number, max: number) {
+        assert(index < max, `Index(${index}) must less than the ${max}.`)
+
     }
 
     static checkIsValidShapeType(actual: ShapefileType, expected: ShapefileType, expectedName: string) {

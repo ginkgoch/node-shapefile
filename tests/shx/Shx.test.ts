@@ -44,4 +44,24 @@ describe('shx tests', () => {
             }
         });
     });
+
+    test('updateAt', async () => {
+        const filePathToDelete = './tests/data/USStates_update_test.shx';
+        fs.copyFileSync(filePath, filePathToDelete);
+
+        const shx = new Shx(filePathToDelete, 'rs+');
+        await shx.openWith(() => {
+            try {
+                const id = 30, offset = 356, length = 488;
+                
+                shx.updateAt(id, offset, length);
+
+                const record = shx.get(id);
+                expect(record.offset).toBe(offset);
+                expect(record.length).toBe(length);
+            } finally {
+                fs.unlinkSync(filePathToDelete);
+            }
+        });
+    });
 });
