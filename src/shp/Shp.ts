@@ -205,4 +205,8 @@ export default class Shp extends StreamOpenable {
             fs.writeSync(this.__fd, buff, 0, buff.length, position);
         }
     }
+
+    updateAt(index: number, geometry: any) {
+        
+    }
 };

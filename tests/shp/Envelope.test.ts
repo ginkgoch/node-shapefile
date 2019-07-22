@@ -20,4 +20,26 @@ describe('envelope helper test', () => {
         
         expect(Envelope.disjoined(undefined, undefined)).toBeFalsy();
     });
+
+    test('equals', () => {
+        let env1 = {minx: -20, miny: -20, maxx: 20, maxy: 20};
+        let env2 = {minx: -20, miny: -20, maxx: 20, maxy: 20};
+        let result = Envelope.equals(env1, env2);
+        expect(result).toBeTruthy();
+
+        env1 = {minx: -40, miny: -20, maxx: 20, maxy: 20};
+        env2 = {minx: -20, miny: -20, maxx: 20, maxy: 20};
+        result = Envelope.equals(env1, env2);
+        expect(result).toBeFalsy();
+
+        env1 = {minx: -20.0001, miny: -20, maxx: 20, maxy: 20};
+        env2 = {minx: -20, miny: -20, maxx: 20, maxy: 20};
+        result = Envelope.equals(env1, env2);
+        expect(result).toBeFalsy();
+
+        env1 = {minx: -20.0001, miny: -20, maxx: 20, maxy: 20};
+        env2 = {minx: -20, miny: -20, maxx: 20, maxy: 20};
+        result = Envelope.equals(env1, env2, 0.001);
+        expect(result).toBeTruthy();
+    });
 });

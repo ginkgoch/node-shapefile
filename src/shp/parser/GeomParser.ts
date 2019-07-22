@@ -44,6 +44,8 @@ export default abstract class GeomParser {
 
     protected abstract _readGeom(): any;
 
+    // abstract writeGeom(type: ShapefileType, coordinates: any): void;
+
     get _reader() {
         return <ShpReader>this.reader;
     }
