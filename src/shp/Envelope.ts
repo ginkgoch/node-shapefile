@@ -1,4 +1,5 @@
 import IEnvelope from "./IEnvelope";
+import GeomParser from "./parser/GeomParser";
 
 export default class Envelope implements IEnvelope {
     minx: number;
@@ -33,5 +34,18 @@ export default class Envelope implements IEnvelope {
             Math.abs(envelope1.miny - envelope2.miny) <= tolerance &&
             Math.abs(envelope1.maxx - envelope2.maxx) <= tolerance &&
             Math.abs(envelope1.maxy - envelope2.maxy) <= tolerance;
+    }
+
+    static from(geometry: any) {
+        const coordinates = GeomParser.vertices(geometry);
+        let [minx, miny, maxx, maxy] = [Number.MAX_VALUE, Number.MAX_VALUE, Number.MIN_VALUE, Number.MIN_VALUE];
+        for(let coordinate of coordinates) {
+            if (minx > coordinate[0]) minx = coordinate[0];
+            if (miny > coordinate[1]) miny = coordinate[1];
+            if (maxx < coordinate[0]) maxx = coordinate[0];
+            if (maxy < coordinate[1]) maxy = coordinate[1];
+        }
+
+        return new Envelope(minx, miny, maxx, maxy);
     }
 }

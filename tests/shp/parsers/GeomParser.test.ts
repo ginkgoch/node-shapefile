@@ -1,6 +1,8 @@
-import GeomParserFactory from "../../../src/shp/parser/GeomParserFactory";
-import ShpReader from "../../../src/shp/ShpReader";
 import * as shared from '../../../src/shared';
+import ShpReader from "../../../src/shp/ShpReader";
+import GeomParser from "../../../src/shp/parser/GeomParser";
+import GeomParserFactory from "../../../src/shp/parser/GeomParserFactory";
+import ShpWriter from '../../../src/shp/ShpWriter';
 
 describe('parser tests', () => {
     test('get parsers test', () => {
@@ -58,18 +60,71 @@ describe('parser tests', () => {
     });
 
     test('vertices', () => {
-        let parser = GeomParserFactory.getParser(shared.ShapefileType.point);
-        
         let geom: any = [24, 85];
-        let vertices = parser.value.vertices(geom);
+        let vertices = GeomParser.vertices(geom);
         expect(vertices).toEqual([[24, 85]]);
 
         geom = [[24, 85], [45, 98]];
-        vertices = parser.value.vertices(geom);
+        vertices = GeomParser.vertices(geom);
         expect(vertices).toEqual([[24, 85], [45, 98]]);
 
         geom = [[[24, 85], [45, 98]], [34, 81]];
-        vertices = parser.value.vertices(geom);
+        vertices = GeomParser.vertices(geom);
         expect(vertices).toEqual([[24, 85], [45, 98], [34, 81]]);
+
+        let r = typeof geom
+        console.log(r);
+    });
+
+    it('write - point', () => {
+        let buff = Buffer.alloc(256);
+        const writer = new ShpWriter(buff);
+        const reader = new ShpReader(buff);
+        const point1 = [45, 56];
+
+        const parser = GeomParserFactory.getParser(shared.ShapefileType.point);
+        parser.value.write(point1, writer);
+        const geomInfo = parser.value.read(reader) as any;
+        const geom = geomInfo.readGeom();
+        expect(geom.coordinates).toEqual(point1);
+    });
+
+    it('write - line', () => {
+        let buff = Buffer.alloc(256);
+        const writer = new ShpWriter(buff);
+        const reader = new ShpReader(buff);
+        const line = [[45, 56], [78, 98]];
+
+        const parser = GeomParserFactory.getParser(shared.ShapefileType.polyLine);
+        parser.value.write(line, writer);
+        const geomInfo = parser.value.read(reader) as any;
+        const geom = geomInfo.readGeom();
+        expect(geom.coordinates).toEqual(line);
+    });
+
+    it('write - multi line', () => {
+        let buff = Buffer.alloc(256);
+        const writer = new ShpWriter(buff);
+        const reader = new ShpReader(buff);
+        const line = [[[45, 56], [78, 98]], [[34, 97], [46, 23]]];
+
+        const parser = GeomParserFactory.getParser(shared.ShapefileType.polyLine);
+        parser.value.write(line, writer);
+        const geomInfo = parser.value.read(reader) as any;
+        const geom = geomInfo.readGeom();
+        expect(geom.coordinates).toEqual(line);
+    });
+
+    it('write - polygon', () => {
+        let buff = Buffer.alloc(256);
+        const writer = new ShpWriter(buff);
+        const reader = new ShpReader(buff);
+        const line = [[[45, 56], [78, 98]], [[34, 97], [46, 23]]];
+
+        const parser = GeomParserFactory.getParser(shared.ShapefileType.polygon);
+        parser.value.write(line, writer);
+        const geomInfo = parser.value.read(reader) as any;
+        const geom = geomInfo.readGeom();
+        expect(geom.coordinates).toEqual(line);
     });
 });

@@ -26,4 +26,8 @@ export default class PointParser extends GeomParser {
     get expectedTypeName(): string {
         return Constants.GEOM_TYPE_POINT;
     }
+
+    protected _write(coordinates: any, writer: ShpWriter): void {
+        writer.writePoint(coordinates as number[])
+    }
 }

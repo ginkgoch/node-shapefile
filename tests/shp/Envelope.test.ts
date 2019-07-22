@@ -42,4 +42,14 @@ describe('envelope helper test', () => {
         result = Envelope.equals(env1, env2, 0.001);
         expect(result).toBeTruthy();
     });
+
+    it('from', () => {
+        let geom: any = [23, 35];
+        let envelope = Envelope.from(geom);
+        expect(envelope).toEqual({ minx: 23, miny: 35, maxx: 23, maxy: 35 });
+
+        geom = [[1, 4], [34, -1], [-34, 24]];
+        envelope = Envelope.from(geom);
+        expect(envelope).toEqual({ minx: -34, miny: -1, maxx: 34, maxy: 24 });
+    })
 });

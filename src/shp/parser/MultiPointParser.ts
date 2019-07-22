@@ -1,5 +1,7 @@
 import GeomParser from "./GeomParser";
 import { ShapefileType, Constants } from "../../shared";
+import ShpWriter from "../ShpWriter";
+import { getConsoleOutput } from "@jest/console";
 
 export default class MultiPointParser extends GeomParser {
     get expectedType(): ShapefileType {
@@ -19,5 +21,13 @@ export default class MultiPointParser extends GeomParser {
 
     get expectedTypeName(): string {
         return Constants.GEOM_TYPE_MULTIPOINT;
+    }
+
+    protected _write(coordinates: any, writer: ShpWriter): void {
+        let geom = coordinates as number[][];
+        writer.writeInt32LE(geom.length);
+        geom.forEach(p => {
+            writer.writePoint(p);
+        });
     }
 }
