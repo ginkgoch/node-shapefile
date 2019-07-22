@@ -12,22 +12,10 @@ npm test
 ```
 
 ## Sample
+All the code below are using typescript. It is easy to translate to pure js by removing the type definition.
+
 ### Loops all records and print the vertices
 ```typescript
-// v2
-async function loopUSStates(callback: (rec: Optional<IFeature>) => void) {
-    const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
-    const iterator = await statesShp.iterator();
-    let record = undefined;
-    while ((record = await iterator.next()) && !iterator.done) {
-        callback(record);
-    }
-    await statesShp.close();
-}
-```
-
-```javascript
-// v1
 async function loopUSStates(callback: (rec: Optional<IFeature>) => void) {
     const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
     const iterator = await statesShp.iterator();
