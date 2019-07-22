@@ -1,4 +1,6 @@
+import _ from "lodash";
 import ShpReader from "../ShpReader";
+import ShpWriter from "../ShpWriter";
 import IEnvelope from "../IEnvelope";
 import Validators from "../../shared/Validators";
 import { ShapefileType } from "../../shared/ShapefileType";
@@ -13,7 +15,7 @@ export default abstract class GeomParser {
         this.envelope = undefined
     }
 
-    prepare(reader: ShpReader): {envelope: IEnvelope, readGeom: () => {type: ShapefileType, coordinates: any}}|null {
+    read(reader: ShpReader): {envelope: IEnvelope, readGeom: () => {type: ShapefileType, coordinates: any}}|null {
         this.reader = reader;
         this.type = this.reader.nextInt32LE();
 
@@ -24,12 +26,21 @@ export default abstract class GeomParser {
         }
 
         Validators.checkIsValidShapeType(this.type, this.expectedType, this.expectedTypeName);
-        return this._prepare();
+        return this._read();
     }
 
-    protected _prepare(): {envelope: IEnvelope, readGeom: ()=>{type: ShapefileType, coordinates: any}} {
+    protected _read(): {envelope: IEnvelope, readGeom: ()=>{type: ShapefileType, coordinates: any}} {
         this.envelope = this._reader.nextEnvelope();
         return { envelope: this.envelope, readGeom: this.readGeom.bind(this) };
+    }
+
+    write(type: ShapefileType, coordinates: any, writer: ShpWriter): void {
+        writer.writeInt32LE(type);
+        this._write(coordinates, writer);
+    }
+
+    protected _write(coordinates: any, writer: ShpWriter): void {
+        //TODO: 
     }
 
     abstract get expectedType(): ShapefileType;
@@ -44,9 +55,17 @@ export default abstract class GeomParser {
 
     protected abstract _readGeom(): any;
 
-    abstract writeGeom(type: ShapefileType, coordinates: any): void;
-
     get _reader() {
         return <ShpReader>this.reader;
+    }
+
+    vertices(coordinates: any): number[][] {
+        const vertices = new Array<number[]>();
+        const flatten = _.flattenDeep(coordinates) as number[];
+        for(let i = 0; i < flatten.length; i += 2) {
+            vertices.push([flatten[i], flatten[i+1]]);
+        }
+
+        return vertices;
     }
 }

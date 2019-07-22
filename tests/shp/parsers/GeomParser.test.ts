@@ -37,7 +37,7 @@ describe('parser tests', () => {
         let obj = GeomParserFactory.getParser(shared.ShapefileType.point);
         expect(obj.hasValue).toBeTruthy();
 
-        obj.value.prepare(new ShpReader(buffer));
+        obj.value.read(new ShpReader(buffer));
         let geom = obj.value.readGeom();
         expect(geom).toEqual({ type: shared.ShapefileType.point, coordinates: [x, y] });
     });
@@ -52,8 +52,24 @@ describe('parser tests', () => {
 
         function parsePointBuffer() {
             let parser = GeomParserFactory.getParser(shared.ShapefileType.point);
-            parser.value.prepare(new ShpReader(buffer));
+            parser.value.read(new ShpReader(buffer));
         }
         expect(parsePointBuffer).toThrow(/Not a point record/);
+    });
+
+    test('vertices', () => {
+        let parser = GeomParserFactory.getParser(shared.ShapefileType.point);
+        
+        let geom: any = [24, 85];
+        let vertices = parser.value.vertices(geom);
+        expect(vertices).toEqual([[24, 85]]);
+
+        geom = [[24, 85], [45, 98]];
+        vertices = parser.value.vertices(geom);
+        expect(vertices).toEqual([[24, 85], [45, 98]]);
+
+        geom = [[[24, 85], [45, 98]], [34, 81]];
+        vertices = parser.value.vertices(geom);
+        expect(vertices).toEqual([[24, 85], [45, 98], [34, 81]]);
     });
 });

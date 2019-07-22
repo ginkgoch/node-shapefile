@@ -43,7 +43,7 @@ export default class ShpIterator extends Iterator<{ id: number, geometry: any }>
         }
 
         let reader = new ShpReader(contentBuffer);
-        let content = this._shpParser.prepare(reader);
+        let content = this._shpParser.read(reader);
         if (content === null) {
             return this._dirty(content);
         }

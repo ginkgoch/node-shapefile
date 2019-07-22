@@ -2,15 +2,15 @@ import GeomParser from "./GeomParser";
 import IEnvelope from "../IEnvelope";
 import Envelope from "../Envelope";
 import { ShapefileType, Constants } from "../../shared";
+import ShpWriter from "../ShpWriter";
 
 export default class PointParser extends GeomParser {
-    //TODO: test constructor
 
     get expectedType(): ShapefileType {
         return ShapefileType.point;
     }
 
-    protected _prepare(): {envelope: IEnvelope, readGeom: () => {type: ShapefileType, coordinates: any}} {
+    protected _read(): {envelope: IEnvelope, readGeom: () => {type: ShapefileType, coordinates: any}} {
         const geom = this._reader.nextPoint();
         this.envelope = new Envelope(geom[0], geom[1], geom[0], geom[1]);
 

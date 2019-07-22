@@ -162,7 +162,7 @@ export default class Shp extends StreamOpenable {
 
                     if (index >= filterNorm.from && index < to) { 
                         let reader = new ShpReader(contentBuffer);
-                        let recordReader = this.__shpParser.prepare(reader);
+                        let recordReader = this.__shpParser.read(reader);
                         if (recordReader !== null && Shp._matchFilter(filter, recordReader.envelope)) {
                             const record = { id: id, geometry: recordReader.readGeom() };
                             records.push(record);
