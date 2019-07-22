@@ -21,20 +21,22 @@ export default class ShpWriter extends BufferWriter {
 
     writeParts(parts: number[]) {
         for (let i = 0; i < parts.length; i++) {
-            this.writeInt32LE(i);
+            this.writeInt32LE(parts[i]);
         }
     }
 
-    writePoints(points: number[][][]) {
+    writePoints(points: number[][][]): {count: number, parts: number[]} {
         const parts = [];
 
-        let index = 0;
+        let count = 0;
         for (let i = 0; i < points.length; i++) {
-            parts.push(index);
+            parts.push(count);
             for(let j = 0; j < points[i].length; j++) {
                 this.writePoint(points[i][j]);
-                index++;
+                count++;
             }
         }
+
+        return { count, parts };
     }
 }

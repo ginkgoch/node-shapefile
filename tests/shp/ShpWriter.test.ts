@@ -1,6 +1,7 @@
+import _ from "lodash";
+import Envelope from "../../src/shp/Envelope";
 import ShpWriter from "../../src/shp/ShpWriter";
 import ShpReader from "../../src/shp/ShpReader";
-import Envelope from "../../src/shp/Envelope";
 
 describe('ShpWriter', () => {
     it('writeEnvelope', () => {
@@ -31,7 +32,7 @@ describe('ShpWriter', () => {
     });
 
     it('writeParts', () => {
-        const parts1 = [4, 9, 1, 8, 2,  7];
+        const parts1 = [4, 9, 1, 8, 2, 7];
 
         const buff = Buffer.alloc(256);
         const writer = new ShpWriter(buff);
@@ -41,6 +42,21 @@ describe('ShpWriter', () => {
         const parts2 = reader.nextParts(parts1.length);
 
         compareArray(parts1, parts2);
+    });
+
+    it('writePoints', () => {
+        const points1 = [[[1, 2], [3, 4]], [[5, 6], [7, 8]]];
+
+        const buff = Buffer.alloc(256);
+        const writer = new ShpWriter(buff);
+        const parts = writer.writePoints(points1);
+
+        const reader = new ShpReader(buff);
+        const points2 = reader.nextPointsByParts(parts.count, parts.parts);
+
+        const flatten1 = _.flattenDeep(points1) as any;
+        const flatten2 = _.flattenDeep(points2) as any;
+        expect(compareArray(flatten1, flatten2))
     });
 });
 
