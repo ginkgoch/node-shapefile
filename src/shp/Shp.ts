@@ -61,7 +61,7 @@ export default class Shp extends StreamOpenable {
 
         this._fd = fs.openSync(this.filePath, this._flag);
         this._header = await this._readHeader();
-        this._shpParser = GeomParserFactory.getParser(this.__header.fileType);
+        this._shpParser = GeomParserFactory.create(this.__header.fileType);
 
         const filePathShx = this.filePath.replace(extReg, '.shx');
         if(fs.existsSync(filePathShx)) {

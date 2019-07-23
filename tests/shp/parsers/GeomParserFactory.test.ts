@@ -12,7 +12,7 @@ describe('GeomParserFactory', () => {
 });
 
 function checkGeomParserCreator(type: ShapefileType, supported = true) {
-    let parser = GeomParserFactory.getParser(type);
+    let parser = GeomParserFactory.create(type);
     if (supported) {
         expect(parser.hasValue).toBeTruthy()
         expect(parser.value.expectedType).toBe(type);
