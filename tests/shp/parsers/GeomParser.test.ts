@@ -74,65 +74,61 @@ describe('parser tests', () => {
     });
 
     it('write - point', () => {
-        let buff = Buffer.alloc(256);
-        const writer = new ShpWriter(buff);
-        const reader = new ShpReader(buff);
         const point1 = [45, 56];
 
         const parser = GeomParserFactory.create(shared.ShapefileType.point);
-        parser.value.write(point1, writer);
+        const buff = parser.value.getBuff(point1);
+
+        const reader = new ShpReader(buff);
         const geomInfo = parser.value.read(reader) as any;
         const geom = geomInfo.readGeom();
+
         expect(geom.coordinates).toEqual(point1);
     });
 
     it('write - multi point', () => {
-        let buff = Buffer.alloc(256);
-        const writer = new ShpWriter(buff);
-        const reader = new ShpReader(buff);
         const points = [[45, 56], [78, 98]];
 
         const parser = GeomParserFactory.create(shared.ShapefileType.multiPoint);
-        parser.value.write(points, writer);
+        const buff = parser.value.getBuff(points);
+        const reader = new ShpReader(buff);
+
         const geomInfo = parser.value.read(reader) as any;
         const geom = geomInfo.readGeom();
         expect(geom.coordinates).toEqual(points);
     });
 
     it('write - line', () => {
-        let buff = Buffer.alloc(256);
-        const writer = new ShpWriter(buff);
-        const reader = new ShpReader(buff);
         const line = [[45, 56], [78, 98]];
 
         const parser = GeomParserFactory.create(shared.ShapefileType.polyLine);
-        parser.value.write(line, writer);
+        const buff = parser.value.getBuff(line);
+        const reader = new ShpReader(buff);
+
         const geomInfo = parser.value.read(reader) as any;
         const geom = geomInfo.readGeom();
         expect(geom.coordinates).toEqual(line);
     });
 
     it('write - multi line', () => {
-        let buff = Buffer.alloc(256);
-        const writer = new ShpWriter(buff);
-        const reader = new ShpReader(buff);
         const line = [[[45, 56], [78, 98]], [[34, 97], [46, 23]]];
 
         const parser = GeomParserFactory.create(shared.ShapefileType.polyLine);
-        parser.value.write(line, writer);
+        const buff = parser.value.getBuff(line);
+        const reader = new ShpReader(buff);
+
         const geomInfo = parser.value.read(reader) as any;
         const geom = geomInfo.readGeom();
         expect(geom.coordinates).toEqual(line);
     });
 
     it('write - polygon', () => {
-        let buff = Buffer.alloc(256);
-        const writer = new ShpWriter(buff);
-        const reader = new ShpReader(buff);
         const line = [[[45, 56], [78, 98]], [[34, 97], [46, 23]]];
 
         const parser = GeomParserFactory.create(shared.ShapefileType.polygon);
-        parser.value.write(line, writer);
+        const buff = parser.value.getBuff(line);
+        const reader = new ShpReader(buff);
+
         const geomInfo = parser.value.read(reader) as any;
         const geom = geomInfo.readGeom();
         expect(geom.coordinates).toEqual(line);
