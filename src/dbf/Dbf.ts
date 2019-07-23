@@ -138,7 +138,7 @@ export default class Dbf extends Openable {
      * @returns {Dbf}
      * @static
      */
-    static createEmptyDbf(filePath: string, fields: DbfField[]): Dbf {
+    static createEmpty(filePath: string, fields: DbfField[]): Dbf {
         const dbfFile = new Dbf(filePath, 'rs+');
         dbfFile._header = DbfHeader.createEmptyHeader(fields);
 

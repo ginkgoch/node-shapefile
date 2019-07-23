@@ -6,5 +6,6 @@ export default {
 
     FEATURE_TYPE: 'feature',
     SIZE_OF_POINT: 16,
-    SIZE_OF_ENVELOPE: 32
+    SIZE_OF_ENVELOPE: 32,
+    SIZE_OF_SHP_HEADER: 100
 };

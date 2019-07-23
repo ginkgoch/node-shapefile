@@ -3,14 +3,14 @@ import IEnvelope from './IEnvelope';
 import { BufferWriter } from 'ginkgoch-buffer-io';
 
 export default class ShpHeader {
-    fileCode: number = 0;
-    fileLength: number = 0;
-    version: number = 0;
-    fileType: number = 0;
-    minx: number = 0;
-    miny: number = 0;
-    maxx: number = 0;
-    maxy: number = 0;
+    fileCode: number = 9994;
+    fileLength: number = 100;
+    version: number = 1000;
+    fileType: number = 5;
+    minx: number = Number.MAX_VALUE;
+    miny: number = Number.MAX_VALUE;
+    maxx: number = Number.MIN_VALUE;
+    maxy: number = Number.MIN_VALUE;
 
     get envelope(): IEnvelope { 
         return { 

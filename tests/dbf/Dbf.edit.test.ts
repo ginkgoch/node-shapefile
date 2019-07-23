@@ -16,7 +16,7 @@ describe('create dbf', () => {
         await dbfSrc.open();
 
         const fieldsSrc = <DbfField[]>dbfSrc.fields(true);
-        const dbfTgt = Dbf.createEmptyDbf(filePathTgt, fieldsSrc);
+        const dbfTgt = Dbf.createEmpty(filePathTgt, fieldsSrc);
 
         try {
             await dbfTgt.openWith(async () => {
@@ -32,7 +32,7 @@ describe('create dbf', () => {
         const filePath = './tests/data/USStates_create_test1.dbf';
 
         try {
-            const dbf = Dbf.createEmptyDbf(filePath, dbf_create_fields.map(f => DbfField.fromJson(f)));
+            const dbf = Dbf.createEmpty(filePath, dbf_create_fields.map(f => DbfField.fromJson(f)));
             await dbf.open();
 
             dbf.pushRecords(dbf_create_records.map(r => DbfRecord.fromJson({ values: r })));

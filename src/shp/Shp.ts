@@ -10,7 +10,7 @@ import Envelope from './Envelope';
 import IEnvelope from './IEnvelope';
 import ShpHeader from './ShpHeader';
 import ShpReader from './ShpReader';
-import { Validators } from "../shared";
+import { Validators, ShapefileType, Constants } from "../shared";
 import ShpIterator from './ShpIterator';
 import Optional from '../base/Optional';
 import GeomParser from './parser/GeomParser';
@@ -239,10 +239,26 @@ export default class Shp extends StreamOpenable {
         return { geomBuff, offset };
     }
 
+    //TODO: test required.
+    static createEmpty(filePath: string, fileType: ShapefileType): Shp {
+        const header = new ShpHeader();
+        header.fileType = fileType;
+        
+        const headerBuff = Buffer.alloc(Constants.SIZE_OF_SHP_HEADER);
+        header._write(headerBuff);
+
+        fs.writeFileSync(filePath, headerBuff);
+        fs.copyFileSync(filePath, filePath.replace(/(.shp)$/g, '.shx'));
+
+        const shp = new Shp(filePath, 'rw+');
+        return shp;
+    }
+
     private _updateHeader(geom: any, geomLength: number) {
         this.__header.fileLength += geomLength;
         const geomEnvelope = Envelope.from(geom);
         this.__header.envelope = Envelope.union(this.__header.envelope, geomEnvelope);
         this.__header.write(this.__fd);
+        this.__header.write(this.__shx._fd as number);
     }
 };
