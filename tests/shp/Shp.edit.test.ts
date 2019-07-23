@@ -1,4 +1,3 @@
-import fs from "fs"
 import Shp from "../../src/shp/Shp"
 import Shapefile from "../../src/shapefile/Shapefile"
 import * as Utils from './Utils'
@@ -29,6 +28,38 @@ describe('Shp edit', () => {
             expect(lastRec1_new).not.toBe(null);
             expect(lastRec1_new).toEqual(lastRec1)
             expect(polygon1_new.geometry.coordinates).toEqual(polygon1)
+            expect(shp._shx.value.count()).toBe(recordCount);
+            
+        } finally {
+            Utils.clearShapefiles(filePath);
+        }
+    })
+
+    it('update record', async () => {
+        const filePath = Utils.resolvePath('USStates_test_update');
+        Shapefile.copyFiles(filePathSrc, filePath);
+
+        try {
+            const shp = new Shp(filePath, 'rs+');
+            await shp.open()
+            const oldCount = shp.count()
+            const lastRec1 = await shp.get(oldCount - 1);
+
+            const updateIndex = 35;
+
+            shp.updateAt(updateIndex, polygon1)
+            await shp.close()
+            
+            await shp.open()
+            const recordCount = shp.count()
+            expect(recordCount).toBe(oldCount)
+            const lastRec1_new = await shp.get(oldCount - 1)
+            const polygon1_new = await shp.get(updateIndex) as any
+
+            expect(lastRec1_new).not.toBe(null);
+            expect(lastRec1_new).toEqual(lastRec1)
+            expect(polygon1_new.geometry.coordinates).toEqual(polygon1)
+            expect(shp._shx.value.count()).toBe(recordCount);
             
         } finally {
             Utils.clearShapefiles(filePath);

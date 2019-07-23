@@ -194,6 +194,8 @@ export default class Shp extends StreamOpenable {
      * @param {number} index
      */
     removeAt(index: number) {
+        Validators.checkIsOpened(this.isOpened);
+
         const recordShx = this.__shx.get(index);
         if (recordShx && recordShx.length > 0) {
             this.__shx.removeAt(index);
@@ -208,13 +210,20 @@ export default class Shp extends StreamOpenable {
     }
 
     updateAt(index: number, geometry: any) {
+        Validators.checkIsOpened(this.isOpened);
         
+        const record = this._pushRecord(geometry);
+        this.__shx.updateAt(index, record.offset, record.geomBuff.length);
     }
 
-    // TODO: test
     push(geometry: any) {
         Validators.checkIsOpened(this.isOpened);
 
+        const record = this._pushRecord(geometry);
+        this.__shx.push(record.offset, record.geomBuff.length);
+    }
+
+    _pushRecord(geometry: any): { geomBuff: Buffer, offset: number } {
         const parser = GeomParserFactory.create(this.__header.fileType);
         const geomBuff = parser.value.getBuff(geometry);
         const recBuff = Buffer.alloc(geomBuff.length + 8);
@@ -222,11 +231,12 @@ export default class Shp extends StreamOpenable {
         recBuff.writeInt32BE(geomBuff.length / 2, 4);
         geomBuff.copy(recBuff, 8);
 
-        const position = this.__header.fileLength;
-        fs.writeSync(this.__fd, recBuff, 0, recBuff.length, position);
+        const offset = this.__header.fileLength;
+        fs.writeSync(this.__fd, recBuff, 0, recBuff.length, offset);
 
-        this._updateHeader(geometry, recBuff.length)
-        this.__shx.push(position, geomBuff.length);
+        this._updateHeader(geometry, recBuff.length);
+
+        return { geomBuff, offset };
     }
 
     private _updateHeader(geom: any, geomLength: number) {
