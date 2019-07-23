@@ -8,15 +8,15 @@ import Envelope from "../Envelope";
 
 export default abstract class GeomParser {
     type: number
-    reader: ShpReader|undefined
-    envelope: IEnvelope|undefined
+    reader: ShpReader | undefined
+    envelope: IEnvelope | undefined
 
     constructor() {
         this.type = 0
         this.envelope = undefined
     }
 
-    read(reader: ShpReader): {envelope: IEnvelope, readGeom: () => {type: ShapefileType, coordinates: any}}|null {
+    read(reader: ShpReader): { envelope: IEnvelope, readGeom: () => { type: ShapefileType, coordinates: any } } | null {
         this.reader = reader;
         this.type = this.reader.nextInt32LE();
 
@@ -30,8 +30,7 @@ export default abstract class GeomParser {
         return this._read();
     }
 
-    //TODO: can flat the type and coordinates.
-    protected _read(): {envelope: IEnvelope, readGeom: ()=>{type: ShapefileType, coordinates: any}} {
+    protected _read(): { envelope: IEnvelope, readGeom: () => { type: ShapefileType, coordinates: any } } {
         this.envelope = this._reader.nextEnvelope();
         return { envelope: this.envelope, readGeom: this.readGeom.bind(this) };
     }
@@ -54,8 +53,8 @@ export default abstract class GeomParser {
         return this.expectedType.toString();
     }
 
-    readGeom(): {type: ShapefileType, coordinates: any} {
-        return {type: this.type, coordinates: this._readGeom()};
+    readGeom(): { type: ShapefileType, coordinates: any } {
+        return { type: this.type, coordinates: this._readGeom() };
     }
 
     protected abstract _readGeom(): any;
@@ -64,13 +63,24 @@ export default abstract class GeomParser {
         return <ShpReader>this.reader;
     }
 
+    protected abstract _size(coordinates: any): number;
+
     static vertices(coordinates: any): number[][] {
         const vertices = new Array<number[]>();
         const flatten = _.flattenDeep(coordinates) as number[];
-        for(let i = 0; i < flatten.length; i += 2) {
-            vertices.push([flatten[i], flatten[i+1]]);
+        for (let i = 0; i < flatten.length; i += 2) {
+            vertices.push([flatten[i], flatten[i + 1]]);
         }
 
         return vertices;
+    }
+
+    getBuff(coordinates: any): Buffer {
+        const size = this._size(coordinates);
+        const buff = Buffer.alloc(size);
+        const writer = new ShpWriter(buff);
+        this.write(coordinates, writer);
+
+        return buff;
     }
 }

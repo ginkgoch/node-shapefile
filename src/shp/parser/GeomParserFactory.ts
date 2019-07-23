@@ -6,7 +6,6 @@ import EnumUtils from '../../shared/EnumUtils';
 import { ShapefileType } from "../../shared/ShapefileType";
 
 export default class GeomParserFactory {
-    //TODO: rename to create.
     static create(type: ShapefileType): Optional<GeomParser> {
         const keyName = EnumUtils.getName<ShapefileType>(type, ShapefileType);
         if (_.isUndefined(keyName)) return new Optional<GeomParser>(undefined);

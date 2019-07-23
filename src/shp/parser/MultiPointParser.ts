@@ -6,7 +6,7 @@ import { getConsoleOutput } from "@jest/console";
 export default class MultiPointParser extends GeomParser {
     get expectedType(): ShapefileType {
         return ShapefileType.multiPoint;
-    } 
+    }
 
     _readGeom(): any {
         const numPoints = this._reader.nextInt32LE();
@@ -24,10 +24,22 @@ export default class MultiPointParser extends GeomParser {
     }
 
     protected _write(coordinates: any, writer: ShpWriter): void {
-        let geom = coordinates as number[][];
+        const geom = coordinates as number[][];
         writer.writeInt32LE(geom.length);
         geom.forEach(p => {
             writer.writePoint(p);
         });
+    }
+
+    protected _size(coordinates: any): number {
+        const vertices = coordinates as number[][];
+
+        /**
+         * type - 4
+         * envelope
+         * point count - 4
+         * points
+         */
+        return 4 + Constants.SIZE_OF_ENVELOPE + 4 + Constants.SIZE_OF_POINT * vertices.length;
     }
 }

@@ -10,13 +10,13 @@ export default class PointParser extends GeomParser {
         return ShapefileType.point;
     }
 
-    protected _read(): {envelope: IEnvelope, readGeom: () => {type: ShapefileType, coordinates: any}} {
+    protected _read(): { envelope: IEnvelope, readGeom: () => { type: ShapefileType, coordinates: any } } {
         const geom = this._reader.nextPoint();
         this.envelope = new Envelope(geom[0], geom[1], geom[0], geom[1]);
 
         return { envelope: this.envelope, readGeom: this.readGeom.bind(this) };
     }
-    
+
     protected _readGeom(): any {
         const x = (<IEnvelope>this.envelope).minx;
         const y = (<IEnvelope>this.envelope).miny;
@@ -29,5 +29,9 @@ export default class PointParser extends GeomParser {
 
     protected _write(coordinates: any, writer: ShpWriter): void {
         writer.writePoint(coordinates as number[])
+    }
+
+    protected _size(coordinates: any): number {
+        return 4 + Constants.SIZE_OF_POINT;
     }
 }

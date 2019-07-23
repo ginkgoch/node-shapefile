@@ -4,5 +4,7 @@ export default {
     GEOM_TYPE_POLYLINE: 'polyLine',
     GEOM_TYPE_MULTIPOINT: 'multiPoint',
 
-    FEATURE_TYPE: 'feature'
+    FEATURE_TYPE: 'feature',
+    SIZE_OF_POINT: 16,
+    SIZE_OF_ENVELOPE: 32
 };
