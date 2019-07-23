@@ -223,7 +223,7 @@ export default class Shp extends StreamOpenable {
         geomBuff.copy(recBuff, 8);
 
         const position = this.__header.fileLength;
-        fs.writeSync(this.__fd, geomBuff, 0, recBuff.length, position);
+        fs.writeSync(this.__fd, recBuff, 0, recBuff.length, position);
 
         this._updateHeader(geometry, recBuff.length)
         this.__shx.push(position, geomBuff.length);
