@@ -1,6 +1,6 @@
 import fs from 'fs'
 import _ from 'lodash'
-import {StreamReader} from 'ginkgoch-stream-io'
+import { StreamReader } from 'ginkgoch-stream-io'
 import Openable from '../base/StreamOpenable'
 import Validators from '../shared/Validators'
 import DbfIterator from './DbfIterator'
@@ -14,15 +14,11 @@ export default class Dbf extends Openable {
     _fd?: number
     _header?: DbfHeader
     _flag: string
-    _pushRowCache: DbfRecord[]
-    _updateRowCache: DbfRecord[]
 
     constructor(filePath: string, flag = 'rs') {
         super();
         this.filePath = filePath;
         this._flag = flag;
-        this._pushRowCache = [];
-        this._updateRowCache = [];
     }
 
     /**
@@ -34,7 +30,7 @@ export default class Dbf extends Openable {
         await Promise.resolve();
     }
 
-    fields(detail: boolean = false): DbfField[]|string[] {
+    fields(detail: boolean = false): DbfField[] | string[] {
         let fields = _.cloneDeep(this.__header.fields);
         if (!detail) {
             return fields.map(f => f.name);
@@ -157,10 +153,12 @@ export default class Dbf extends Openable {
      * Push single row values into memory. Call flush() to persistent into file.
      * @param {DbfRecord} record The one record to push.
      * @example
-     * dbf.pushRow({ rec:1, name:'china' });
+     * dbf.pushRecord({ rec:1, name:'china' });
      */
-    pushRow(record: DbfRecord) {
-        this._pushRowCache.push(record);
+    pushRecord(record: DbfRecord) {
+        record.id = -1;
+        this._flush(record);
+        this.__header.write(this.__fd);
     }
 
     /**
@@ -169,10 +167,17 @@ export default class Dbf extends Openable {
      * @example
      * dbf.pushRows([{ rec:1, name:'china'}, {rec:2, name:'usa'}]);
      */
-    pushRows(records: DbfRecord[]) { 
+    pushRecords(records: DbfRecord[]) {
         //TODO: update docs around...
-        records.forEach(r => this.pushRow(r));
-    } 
+        records.forEach(r => {
+            r.id = -1;
+            this._flush(r);
+        });
+
+        if (records.length > 0) {
+            this.__header.write(this.__fd);
+        }
+    }
 
     /**
      * Update a specific row values. Call flush() to persistent into file.
@@ -181,8 +186,8 @@ export default class Dbf extends Openable {
      * const record = {id: 0, values: {rec: 1, name: 'usa'}};
      * dbf.updateRow(record);
      */
-    updateRow(record: DbfRecord) {
-        this._updateRowCache.push(record)
+    updateRecord(record: DbfRecord) {
+        this._flush(record);
     }
 
     /**
@@ -192,30 +197,8 @@ export default class Dbf extends Openable {
      * const records = [{id: 0, values: {rec: 1, name: 'usa'}}];
      * dbf.updateRows(records);
      */
-    updateRows(records: DbfRecord[]) {
-        records.forEach(r => this.updateRow(r));
-    }
-
-    /**
-     * Flush updated and added records cache into dbf file.
-     */
-    flush() {
-        Validators.checkIsOpened(this.isOpened);
-
-        for (let record of this._updateRowCache) {
-            record.header = this._header;
-            this._flush(record);
-        }
-
-        for (let record of this._pushRowCache) {
-            record.header = this._header;
-            this._flush(record);
-        }
-
-        if (this._pushRowCache.length > 0) {
-            (this.__header).write(this.__fd);
-            this._pushRowCache = [];
-        }
+    updateRecords(records: DbfRecord[]) {
+        records.forEach(r => this.updateRecord(r));
     }
 
     /**
@@ -224,6 +207,8 @@ export default class Dbf extends Openable {
      * @private
      */
     _flush(record: DbfRecord) {
+        record.header = this._header;
+
         const buff = Buffer.alloc(this.__header.recordLength);
         record.write(buff);
 
@@ -240,7 +225,7 @@ export default class Dbf extends Openable {
      * Remove record at index.
      * @param {number} index The record index to delete. Start from 0.
      */
-    removeAt(index: number) {
+    removeRecordAt(index: number) {
         Validators.checkIsOpened(this.isOpened);
         Validators.checkIndexIsGEZero(index);
 
@@ -253,7 +238,7 @@ export default class Dbf extends Openable {
      * Recover the deleted record at index. Edited record doesn't support.
      * @param {number} index The record index to delete. Start from 0.
      */
-    recoverAt(index: number) {
+    recoverRecordAt(index: number) {
         Validators.checkIsOpened(this.isOpened);
         Validators.checkIndexIsGEZero(index);
 

@@ -35,8 +35,7 @@ describe('create dbf', () => {
             const dbf = Dbf.createEmptyDbf(filePath, dbf_create_fields.map(f => DbfField.fromJson(f)));
             await dbf.open();
 
-            dbf.pushRows(dbf_create_records.map(r => DbfRecord.fromJson({values: r})));
-            dbf.flush();
+            dbf.pushRecords(dbf_create_records.map(r => DbfRecord.fromJson({ values: r })));
             dbf.close();
 
             const dbfNew = new Dbf(filePath);
@@ -53,7 +52,7 @@ describe('create dbf', () => {
     });
 });
 
-async function _compare (filePath1: string, filePath2: string) {
+async function _compare(filePath1: string, filePath2: string) {
     const dbf1 = new Dbf(filePath1);
     await dbf1.open();
 
@@ -67,7 +66,7 @@ async function _compare (filePath1: string, filePath2: string) {
     let offset = 1697;
     let seg = 467;
 
-    while(offset < length - 1) {
+    while (offset < length - 1) {
         let segBuff1 = buffer1.slice(offset, offset + seg);
         let segBuff2 = buffer2.slice(offset, offset + seg);
         if (!segBuff1.equals(segBuff2)) {
@@ -89,13 +88,13 @@ describe('dbf deletion test', () => {
             await dbf.open();
 
             const idToRemove = 20;
-            dbf.removeAt(idToRemove);
+            dbf.removeRecordAt(idToRemove);
             let r = await dbf.get(idToRemove);
 
             expect(r.id).toBe(20);
             expect(r.deleted).toBeTruthy();
 
-            dbf.recoverAt(idToRemove);
+            dbf.recoverRecordAt(idToRemove);
             r = await dbf.get(idToRemove);
             expect(r.id).toBe(20);
             expect(r.deleted).toBeFalsy();
@@ -123,8 +122,7 @@ describe('dbf update test', () => {
             expect(record.values.get('CAPITAL')).toBe('N');
             expect(record.values.get('PLACEFIP')).toBe('65000');
 
-            dbf.updateRow(DbfRecord.fromJson(dbf_update_record));
-            dbf.flush();
+            dbf.updateRecord(DbfRecord.fromJson(dbf_update_record));
 
             record = await dbf.get(idToUpdate);
             expect(record.values.get('CAPITAL')).toBe('Y');

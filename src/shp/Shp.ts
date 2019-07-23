@@ -209,4 +209,8 @@ export default class Shp extends StreamOpenable {
     updateAt(index: number, geometry: any) {
         
     }
+
+    push(geometry: any) {
+        
+    }
 };

@@ -71,9 +71,6 @@ describe('parser tests', () => {
         geom = [[[24, 85], [45, 98]], [34, 81]];
         vertices = GeomParser.vertices(geom);
         expect(vertices).toEqual([[24, 85], [45, 98], [34, 81]]);
-
-        let r = typeof geom
-        console.log(r);
     });
 
     it('write - point', () => {
