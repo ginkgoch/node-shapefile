@@ -58,12 +58,23 @@ export default class Shx extends Openable {
     updateAt(index: number, offset: number, length: number) {
         Validators.checkIndexIsLessThan(index, this.count());
 
+        const buff = Shx._getRecordBuff(offset, length);
+        const position = HEADER_LENGTH + RECORD_LENGTH * index;
+        fs.writeSync(this.__fd, buff, 0, buff.length, position);
+    }
+
+    push(offset: number, length: number) {
+        const buff = Shx._getRecordBuff(offset, length);
+        fs.writeSync(this.__fd, buff, 0, buff.length, this._totalSize);
+        
+        this._totalSize += buff.length;
+    }
+
+    private static _getRecordBuff(offset: number,  length: number): Buffer {
         const buff = Buffer.alloc(RECORD_LENGTH);
         buff.writeInt32BE(offset * .5, 0);
         buff.writeInt32BE(length * .5, 4);
-        
-        const position = HEADER_LENGTH + RECORD_LENGTH * index;
-        fs.writeSync(this.__fd, buff, 0, buff.length, position);
+        return buff
     }
 
     private get __fd() {

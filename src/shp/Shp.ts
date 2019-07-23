@@ -201,7 +201,8 @@ export default class Shp extends StreamOpenable {
             const buff = Buffer.alloc(4);
             buff.writeInt32LE(0, 0);
 
-            const position = recordShx.offset + 8;
+            // write record length to  0.
+            const position = recordShx.offset + 4;
             fs.writeSync(this.__fd, buff, 0, buff.length, position);
         }
     }
@@ -210,7 +211,28 @@ export default class Shp extends StreamOpenable {
         
     }
 
+    // TODO: test
     push(geometry: any) {
-        
+        Validators.checkIsOpened(this.isOpened);
+
+        const parser = GeomParserFactory.create(this.__header.fileType);
+        const geomBuff = parser.value.getBuff(geometry);
+        const recBuff = Buffer.alloc(geomBuff.length + 8);
+        recBuff.writeInt32BE(this.__shx.count() + 1, 0);
+        recBuff.writeInt32BE(geomBuff.length / 2, 4);
+        geomBuff.copy(recBuff, 8);
+
+        const position = this.__header.fileLength;
+        fs.writeSync(this.__fd, geomBuff, 0, recBuff.length, position);
+
+        this._updateHeader(geometry, recBuff.length)
+        this.__shx.push(position, geomBuff.length);
+    }
+
+    private _updateHeader(geom: any, geomLength: number) {
+        this.__header.fileLength += geomLength;
+        const geomEnvelope = Envelope.from(geom);
+        this.__header.envelope = Envelope.union(this.__header.envelope, geomEnvelope);
+        this.__header.write(this.__fd);
     }
 };

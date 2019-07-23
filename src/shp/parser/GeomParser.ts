@@ -13,7 +13,6 @@ export default abstract class GeomParser {
 
     constructor() {
         this.type = 0
-        this.envelope = undefined
     }
 
     read(reader: ShpReader): { envelope: IEnvelope, readGeom: () => { type: ShapefileType, coordinates: any } } | null {

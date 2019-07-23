@@ -14,6 +14,14 @@ export default class Envelope implements IEnvelope {
         this.maxy = maxy;
     }
 
+    static union(env1: IEnvelope, env2: IEnvelope): IEnvelope {
+        let minx = Math.min(env1.minx, env2.minx);
+        let miny = Math.min(env1.miny, env2.miny);
+        let maxx = Math.max(env1.maxx, env2.maxx);
+        let maxy = Math.max(env1.maxy, env2.maxy);
+        return { minx, miny, maxx, maxy };
+    }
+
     static disjoined(envelope1: IEnvelope|undefined, envelope2: IEnvelope|undefined): boolean {
         if (envelope1 === undefined || envelope2 === undefined) return false;
 
