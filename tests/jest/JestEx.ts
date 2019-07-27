@@ -1,15 +1,16 @@
 import _ from 'lodash';
 import 'jest';
 import Optional from '../../src/base/Optional';
+import { Geometry } from 'ginkgoch-geom';
 
 expect.extend({
     toBeGeneralRecord: (received: any, id = 1) => {
-        const current = <Optional<{ id: number, geometry: any }>>received;
+        const current = <Optional<Geometry>>received;
         expect(current).not.toBeNull();
         expect(current).not.toBeUndefined();
         expect(current.value.id).toBe(id);
 
-        const geom = current.value.geometry;
+        const geom = current.value;
         expect(geom).not.toBeNull();
         expect(geom).not.toBeUndefined();
 

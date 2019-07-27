@@ -110,7 +110,7 @@ export default class Shp extends StreamOpenable {
         return await this._getRecordIterator(100);
     }
 
-    async get(id: number): Promise<{id: number, geometry: any}|null> {
+    async get(id: number): Promise<Geometry|null> {
         const shxPath = this.filePath.replace(extReg, '.shx');
         assert(!_.isUndefined(this._shx), `${path.basename(shxPath)} doesn't exist.`);
 
@@ -124,12 +124,12 @@ export default class Shp extends StreamOpenable {
         return result.value;
     }
 
-    async records(filter?: { from?: number, limit?: number, envelope?: IEnvelope }): Promise<{id: number, geometry: any}[]> {
+    async records(filter?: { from?: number, limit?: number, envelope?: IEnvelope }): Promise<Array<Geometry>> {
         Validators.checkIsOpened(this.isOpened);
 
         const option = this._getStreamOption(100);
         const stream = fs.createReadStream(this.filePath, option);
-        const records: Array<{id: number, geometry: any}> = [];
+        const records: Array<Geometry> = [];
         const total = this.count();
 
         const filterNorm = this._normalizeFilter(filter);
@@ -165,8 +165,7 @@ export default class Shp extends StreamOpenable {
                         if (recordReader !== null && Shp._matchFilter(filter, recordReader.envelope)) {
                             const geometry = recordReader.readGeom();
                             geometry.id = id;
-                            const record = { id, geometry };
-                            records.push(record);
+                            records.push(geometry);
                         }
                     }
 

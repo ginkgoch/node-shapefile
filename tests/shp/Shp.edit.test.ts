@@ -30,7 +30,7 @@ describe('Shp edit', () => {
             expect(polygon1_new).not.toBe(null);
             expect(lastRec1_new).toEqual(lastRec1);
 
-            expect(polygon1_new.geometry.coordinates()).toEqual(polygon1)
+            expect(polygon1_new.coordinates()).toEqual(polygon1)
             expect(shp._shx.value.count()).toBe(recordCount);
             
         } finally {
@@ -61,7 +61,7 @@ describe('Shp edit', () => {
 
             expect(lastRec1_new).not.toBe(null);
             expect(lastRec1_new).toEqual(lastRec1)
-            expect(polygon1_new.geometry.coordinates()).toEqual(polygon1)
+            expect(polygon1_new.coordinates()).toEqual(polygon1)
             expect(shp._shx.value.count()).toBe(recordCount);
             
         } finally {

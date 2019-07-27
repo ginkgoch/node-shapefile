@@ -105,7 +105,7 @@ describe('shapefile test - polyline', () => {
         expect(record).not.toBeNullOrUndefined();
         expect(record).toBeGeneralRecord(1);
 
-        const line = record.value.geometry as LineString;
+        const line = record.value as LineString;
         const coordinates = new Array<Number[]>(); 
         line.coordinatesFlat().forEach(c => { 
             coordinates.push([c.x, c.y]);
@@ -127,7 +127,7 @@ describe('shapefile test - point', () => {
         const record = await getFirstRecord(citiesPath);
         expect(record).toBeGeneralRecord(1);
 
-        const point = record.value.geometry as Point;
+        const point = record.value as Point;
         expect({coordinates: [point.x, point.y]}).toBeClosePointTo([-122.2065, 48.7168], 4);
     });
 });
@@ -145,7 +145,7 @@ describe('shapefile test - polygon', () => {
         let recordOpt = await getFirstRecord(shpPath);
         expect(recordOpt).toBeGeneralRecord(1);
 
-        const record = recordOpt.value.geometry as Polygon;
+        const record = recordOpt.value as Polygon;
         expect(record.type).toEqual(GeometryType.Polygon);
         expect(record.coordinates().length).toBe(3);
         expect(record.coordinates()[0].length).toBe(244);

@@ -7,7 +7,7 @@ import ShpReader from "../../src/shp/ShpReader";
 import { Envelope, IEnvelope, Geometry } from 'ginkgoch-geom';
 import GeomParser from "../../src/shp/parser/GeomParser";
 
-export default class ShpIterator extends Iterator<{ id: number, geometry: Geometry|null }> {
+export default class ShpIterator extends Iterator<Geometry|null> {
     envelope: IEnvelope|undefined;
     _streamReader: StreamReader;
     _shpParser: GeomParser;
@@ -28,7 +28,7 @@ export default class ShpIterator extends Iterator<{ id: number, geometry: Geomet
     /**
      * @override
      */
-    async next(): Promise<Optional<{ id: number, geometry: Geometry|null }>> {
+    async next(): Promise<Optional<Geometry|null>> {
         let buffer = <Buffer>await this._streamReader.read(8);
         if (buffer === null || buffer.length === 0) {
             return this._done();
@@ -47,13 +47,13 @@ export default class ShpIterator extends Iterator<{ id: number, geometry: Geomet
             return this._dirty(content);
         }
 
-        let record: { id: number, geometry: Geometry|null };
+        let record: Geometry|null;
         if (_.isUndefined(this.envelope) || (this.envelope && !Envelope.disjoined(content.envelope, this.envelope))) {
             const geometry = content.readGeom();
             geometry.id = id;
-            record = { id, geometry };
+            record = geometry;
         } else {
-            record = { id, geometry: null };
+            record = null;
         }
 
         return this._continue(record); 
