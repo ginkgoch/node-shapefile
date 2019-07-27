@@ -2,13 +2,14 @@ import GeomParser from "./GeomParser";
 import { ShapefileType, Constants } from "../../shared";
 import ShpWriter from "../ShpWriter";
 import { getConsoleOutput } from "@jest/console";
+import { Geometry, MultiPoint, Point } from "ginkgoch-geom";
 
 export default class MultiPointParser extends GeomParser {
     get expectedType(): ShapefileType {
         return ShapefileType.multiPoint;
     }
 
-    _readGeom(): any {
+    _readGeom(): Geometry {
         const numPoints = this._reader.nextInt32LE();
         const points = new Array<number[]>();
 
@@ -16,7 +17,7 @@ export default class MultiPointParser extends GeomParser {
             points.push(this._reader.nextPoint());
         }
 
-        return points;
+        return new MultiPoint(points.map(p => new Point(p[0], p[1])));
     }
 
     get expectedTypeName(): string {

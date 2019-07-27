@@ -6,7 +6,7 @@ import { EventEmitter } from "events";
 import { StreamReader } from 'ginkgoch-stream-io';
 
 import Shx from '../shx/Shx';
-import { Envelope, IEnvelope } from 'ginkgoch-geom';
+import { Envelope, IEnvelope, Geometry } from 'ginkgoch-geom';
 import ShpHeader from './ShpHeader';
 import ShpReader from './ShpReader';
 import { Validators, ShapefileType, Constants } from "../shared";
@@ -110,7 +110,7 @@ export default class Shp extends StreamOpenable {
         return await this._getRecordIterator(100);
     }
 
-    async get(id: number) {
+    async get(id: number): Promise<{id: number, geometry: any}|null> {
         const shxPath = this.filePath.replace(extReg, '.shx');
         assert(!_.isUndefined(this._shx), `${path.basename(shxPath)} doesn't exist.`);
 
@@ -163,7 +163,9 @@ export default class Shp extends StreamOpenable {
                         let reader = new ShpReader(contentBuffer);
                         let recordReader = this.__shpParser.read(reader);
                         if (recordReader !== null && Shp._matchFilter(filter, recordReader.envelope)) {
-                            const record = { id: id, geometry: recordReader.readGeom() };
+                            const geometry = recordReader.readGeom();
+                            geometry.id = id;
+                            const record = { id, geometry };
                             records.push(record);
                         }
                     }

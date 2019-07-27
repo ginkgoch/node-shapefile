@@ -1,6 +1,6 @@
 import ShpWriter from "../ShpWriter";
 import GeomParser from "./GeomParser";
-import { IEnvelope, Envelope } from "ginkgoch-geom";
+import { IEnvelope, Envelope, Geometry, Point } from "ginkgoch-geom";
 import { ShapefileType, Constants } from "../../shared";
 
 export default class PointParser extends GeomParser {
@@ -9,17 +9,17 @@ export default class PointParser extends GeomParser {
         return ShapefileType.point;
     }
 
-    protected _read(): { envelope: IEnvelope, readGeom: () => { type: ShapefileType, coordinates: any } } {
+    protected _read(): { envelope: IEnvelope, readGeom: () => Geometry } {
         const geom = this._reader.nextPoint();
         this.envelope = new Envelope(geom[0], geom[1], geom[0], geom[1]);
 
         return { envelope: this.envelope, readGeom: this.readGeom.bind(this) };
     }
 
-    protected _readGeom(): any {
+    protected _readGeom(): Geometry {
         const x = (<IEnvelope>this.envelope).minx;
         const y = (<IEnvelope>this.envelope).miny;
-        return [x, y];
+        return new Point(x, y);
     }
 
     get expectedTypeName(): string {

@@ -4,10 +4,10 @@ import { StreamReader } from "ginkgoch-stream-io";
 import Iterator from "../../src/base/Iterator";
 import Optional from "../../src/base/Optional";
 import ShpReader from "../../src/shp/ShpReader";
-import { Envelope, IEnvelope } from 'ginkgoch-geom';
+import { Envelope, IEnvelope, Geometry } from 'ginkgoch-geom';
 import GeomParser from "../../src/shp/parser/GeomParser";
 
-export default class ShpIterator extends Iterator<{ id: number, geometry: any }> {
+export default class ShpIterator extends Iterator<{ id: number, geometry: Geometry|null }> {
     envelope: IEnvelope|undefined;
     _streamReader: StreamReader;
     _shpParser: GeomParser;
@@ -28,7 +28,7 @@ export default class ShpIterator extends Iterator<{ id: number, geometry: any }>
     /**
      * @override
      */
-    async next(): Promise<Optional<{ id: number, geometry: any }>> {
+    async next(): Promise<Optional<{ id: number, geometry: Geometry|null }>> {
         let buffer = <Buffer>await this._streamReader.read(8);
         if (buffer === null || buffer.length === 0) {
             return this._done();
@@ -47,9 +47,11 @@ export default class ShpIterator extends Iterator<{ id: number, geometry: any }>
             return this._dirty(content);
         }
 
-        let record: { id: number, geometry: any };
+        let record: { id: number, geometry: Geometry|null };
         if (_.isUndefined(this.envelope) || (this.envelope && !Envelope.disjoined(content.envelope, this.envelope))) {
-            record = { id, geometry: content.readGeom() };
+            const geometry = content.readGeom();
+            geometry.id = id;
+            record = { id, geometry };
         } else {
             record = { id, geometry: null };
         }

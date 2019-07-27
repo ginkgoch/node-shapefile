@@ -2,7 +2,7 @@ import _ from "lodash";
 import ShpReader from "../ShpReader";
 import ShpWriter from "../ShpWriter";
 import Validators from "../../shared/Validators";
-import { IEnvelope, Envelope, ICoordinate } from "ginkgoch-geom";
+import { IEnvelope, Envelope, ICoordinate, Geometry } from "ginkgoch-geom";
 import { ShapefileType } from "../../shared/ShapefileType";
 
 export default abstract class GeomParser {
@@ -14,7 +14,7 @@ export default abstract class GeomParser {
         this.type = 0
     }
 
-    read(reader: ShpReader): { envelope: IEnvelope, readGeom: () => { type: ShapefileType, coordinates: any } } | null {
+    read(reader: ShpReader): { envelope: IEnvelope, readGeom: () => Geometry } | null {
         this.reader = reader;
         this.type = this.reader.nextInt32LE();
 
@@ -28,7 +28,7 @@ export default abstract class GeomParser {
         return this._read();
     }
 
-    protected _read(): { envelope: IEnvelope, readGeom: () => { type: ShapefileType, coordinates: any } } {
+    protected _read(): { envelope: IEnvelope, readGeom: () => Geometry } {
         this.envelope = this._reader.nextEnvelope();
         return { envelope: this.envelope, readGeom: this.readGeom.bind(this) };
     }
@@ -51,11 +51,11 @@ export default abstract class GeomParser {
         return this.expectedType.toString();
     }
 
-    readGeom(): { type: ShapefileType, coordinates: any } {
-        return { type: this.type, coordinates: this._readGeom() };
+    readGeom(): Geometry {
+        return this._readGeom();
     }
 
-    protected abstract _readGeom(): any;
+    protected abstract _readGeom(): Geometry;
 
     get _reader() {
         return <ShpReader>this.reader;

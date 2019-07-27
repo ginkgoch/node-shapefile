@@ -1,6 +1,7 @@
 import * as Utils from './Utils'
 import Shp from "../../src/shp/Shp"
 import Shapefile from "../../src/shapefile/Shapefile"
+import { Polygon } from 'ginkgoch-geom';
 
 describe('Shp edit', () => {
     const filePathSrc =  Utils.resolvePath('USStates');
@@ -22,12 +23,14 @@ describe('Shp edit', () => {
             await shp.open()
             const recordCount = shp.count()
             expect(recordCount).toBe(oldCount + 1)
-            const lastRec1_new = await shp.get(oldCount - 1)
+            const lastRec1_new = await shp.get(oldCount - 1) as any
             const polygon1_new = await shp.get(oldCount) as any
 
             expect(lastRec1_new).not.toBe(null);
-            expect(lastRec1_new).toEqual(lastRec1)
-            expect(polygon1_new.geometry.coordinates).toEqual(polygon1)
+            expect(polygon1_new).not.toBe(null);
+            expect(lastRec1_new).toEqual(lastRec1);
+
+            expect(polygon1_new.geometry.coordinates()).toEqual(polygon1)
             expect(shp._shx.value.count()).toBe(recordCount);
             
         } finally {
@@ -53,12 +56,12 @@ describe('Shp edit', () => {
             await shp.open()
             const recordCount = shp.count()
             expect(recordCount).toBe(oldCount)
-            const lastRec1_new = await shp.get(oldCount - 1)
+            const lastRec1_new = await shp.get(oldCount - 1) as any
             const polygon1_new = await shp.get(updateIndex) as any
 
             expect(lastRec1_new).not.toBe(null);
             expect(lastRec1_new).toEqual(lastRec1)
-            expect(polygon1_new.geometry.coordinates).toEqual(polygon1)
+            expect(polygon1_new.geometry.coordinates()).toEqual(polygon1)
             expect(shp._shx.value.count()).toBe(recordCount);
             
         } finally {

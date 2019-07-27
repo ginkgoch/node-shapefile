@@ -3,8 +3,7 @@
 import _ from 'lodash';
 import '../jest/JestEx';
 import Shp from "../../src/shp/Shp";
-import { Envelope } from 'ginkgoch-geom';
-import { ShapefileType } from '../../src/shared';
+import { Envelope, GeometryType, Polygon, Point, LineString } from 'ginkgoch-geom';
 import Shapefile from '../../src/shapefile/Shapefile';
 
 const citiesPath = './tests/data/cities_e.shp';
@@ -105,7 +104,13 @@ describe('shapefile test - polyline', () => {
 
         expect(record).not.toBeNullOrUndefined();
         expect(record).toBeGeneralRecord(1);
-        expect(record.value.geometry).toBeClosePolyLineTo([-97.731192, 30.349088, -97.731584, 30.349305], 4);
+
+        const line = record.value.geometry as LineString;
+        const coordinates = new Array<Number[]>(); 
+        line.coordinatesFlat().forEach(c => { 
+            coordinates.push([c.x, c.y]);
+        });
+        expect({ coordinates }).toBeClosePolyLineTo([-97.731192, 30.349088, -97.731584, 30.349305], 4);
 
         await lineShp.close();
     });
@@ -121,7 +126,9 @@ describe('shapefile test - point', () => {
     test('read records test - point read first record', async () => {
         const record = await getFirstRecord(citiesPath);
         expect(record).toBeGeneralRecord(1);
-        expect(record.value.geometry).toBeClosePointTo([-122.2065, 48.7168], 4);
+
+        const point = record.value.geometry as Point;
+        expect({coordinates: [point.x, point.y]}).toBeClosePointTo([-122.2065, 48.7168], 4);
     });
 });
 
@@ -138,15 +145,15 @@ describe('shapefile test - polygon', () => {
         let recordOpt = await getFirstRecord(shpPath);
         expect(recordOpt).toBeGeneralRecord(1);
 
-        const record = recordOpt.value;
-        expect(record.geometry.type).toEqual(ShapefileType.polygon);
-        expect(record.geometry.coordinates.length).toBe(3);
-        expect(record.geometry.coordinates[0].length).toBe(244);
-        expect(record.geometry.coordinates[1].length).toBe(12);
-        expect(record.geometry.coordinates[2].length).toBe(20);
-        expect(record.geometry.coordinates[0][0]).toEqual(record.geometry.coordinates[0][243]);
-        expect(record.geometry.coordinates[1][0]).toEqual(record.geometry.coordinates[1][11]);
-        expect(record.geometry.coordinates[2][0]).toEqual(record.geometry.coordinates[2][19]);
+        const record = recordOpt.value.geometry as Polygon;
+        expect(record.type).toEqual(GeometryType.Polygon);
+        expect(record.coordinates().length).toBe(3);
+        expect(record.coordinates()[0].length).toBe(244);
+        expect(record.coordinates()[1].length).toBe(12);
+        expect(record.coordinates()[2].length).toBe(20);
+        expect(record.coordinates()[0][0]).toEqual(record.coordinates()[0][243]);
+        expect(record.coordinates()[1][0]).toEqual(record.coordinates()[1][11]);
+        expect(record.coordinates()[2][0]).toEqual(record.coordinates()[2][19]);
     });
 });
 
