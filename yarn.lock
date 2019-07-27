@@ -1300,10 +1300,10 @@ ginkgoch-buffer-io@^1.1.0:
   resolved "https://registry.yarnpkg.com/ginkgoch-buffer-io/-/ginkgoch-buffer-io-1.1.0.tgz#7d5a5780c483ad59c25d1bf7b3405327abe2399f"
   integrity sha512-w0B2hfzW0MlidR4mKtj4cjUtT/2fF1qeufNUdejjMnC8DiAjb1SR+m1+fo51UXqsBwh8NDU1NWpPhmMObMZbQw==
 
-ginkgoch-geom@^1.0.2:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/ginkgoch-geom/-/ginkgoch-geom-1.0.4.tgz#b643e78ab8ade076bacbd409bf9ea07aadaf3404"
-  integrity sha512-7JSMagUKcYwyeXSBBQMdVvvWQYv0qx9ApuXIDwP2YUe3za4jk8aMrNr3Z/eNo4YAeRYBdV5UOcxErTYISWT7+w==
+ginkgoch-geom@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/ginkgoch-geom/-/ginkgoch-geom-1.0.5.tgz#616a3965cbbcaf8e024eba5da79fd2a772b71a93"
+  integrity sha512-Lefp8KYUhNEQvlK77xMW8sD6PtptWXWFYJUq/h2SpazyFaMYMTDFZdGTjVN+7Lt6sArRoLaf4jsjhhXLo6fBrQ==
   dependencies:
     "@types/jsts" "^0.17.0"
     "@types/lodash" "^4.14.136"
@@ -1312,10 +1312,10 @@ ginkgoch-geom@^1.0.2:
     jsts "^2.0.6"
     lodash "^4.17.15"
 
-ginkgoch-stream-io@^1.2.0-beta:
-  version "1.2.0-beta"
-  resolved "https://registry.yarnpkg.com/ginkgoch-stream-io/-/ginkgoch-stream-io-1.2.0-beta.tgz#df37d0334c05a482e9e5219658202838ff3068dd"
-  integrity sha512-JLKGJhHJDQek9j0LUfR02UK/ZIP/0+it0isqsmu1P6KLv/gSUBijpX4EiQ7SPWzQzvCiswvkYAasIjljZT8eiw==
+ginkgoch-stream-io@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/ginkgoch-stream-io/-/ginkgoch-stream-io-1.2.0.tgz#e3159e1a42fd5c529ccbf4cdbe7069e2e049e953"
+  integrity sha512-y/AAguSXEM5uQE2o2PrjsJpBuQ8OhwJ63iYjnKP+GNNz2pr1jvuk2sdyoD02fyW0w9wjps+e2mNsWyoRK8g5Tg==
 
 git-config-path@^1.0.1:
   version "1.0.1"
@@ -3192,9 +3192,9 @@ sax@^1.2.4:
   integrity sha512-Ya52jSX2u7QKghxeoFGpLwCtGlt7j0oY9DYb5apt9nPlJ42ID+ulTXESnt/qAQcoSERyZ5sl3LDIOw0nAn/5DA==
 
 semver@^6.0.0:
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/semver/-/semver-6.2.0.tgz#4d813d9590aaf8a9192693d6c85b9344de5901db"
-  integrity sha512-jdFC1VdUGT/2Scgbimf7FSx9iJLXoqfglSF+gJeuNWVpiE37OIbc1jywR/GJyFdz3mnkz2/id0L0J/cr0izR5A==
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-6.3.0.tgz#ee0a64c8af5e8ceea67687b133761e1becbd1d3d"
+  integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
 
 set-blocking@^2.0.0, set-blocking@~2.0.0:
   version "2.0.0"
