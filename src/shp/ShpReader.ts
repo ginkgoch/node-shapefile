@@ -1,5 +1,5 @@
 import { BufferReader } from "ginkgoch-buffer-io";
-import Envelope from "./Envelope";
+import { Envelope } from 'ginkgoch-geom';
 
 export default class ShpReader extends BufferReader {
     nextEnvelope() {

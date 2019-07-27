@@ -1,8 +1,7 @@
-import GeomParser from "./GeomParser";
-import IEnvelope from "../IEnvelope";
-import Envelope from "../Envelope";
-import { ShapefileType, Constants } from "../../shared";
 import ShpWriter from "../ShpWriter";
+import GeomParser from "./GeomParser";
+import { IEnvelope, Envelope } from "ginkgoch-geom";
+import { ShapefileType, Constants } from "../../shared";
 
 export default class PointParser extends GeomParser {
 

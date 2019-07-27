@@ -1,8 +1,10 @@
+/// <reference path="../jest/JestEx.d.ts" />
+
 import _ from 'lodash';
-import Shp from "../../src/shp/Shp";
 import '../jest/JestEx';
+import Shp from "../../src/shp/Shp";
+import { Envelope } from 'ginkgoch-geom';
 import { ShapefileType } from '../../src/shared';
-import Envelope from '../../src/shp/Envelope';
 import Shapefile from '../../src/shapefile/Shapefile';
 
 const citiesPath = './tests/data/cities_e.shp';

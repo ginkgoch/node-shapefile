@@ -1,5 +1,5 @@
 import fs from 'fs';
-import IEnvelope from './IEnvelope';
+import { IEnvelope } from 'ginkgoch-geom';
 import { BufferWriter } from 'ginkgoch-buffer-io';
 
 export default class ShpHeader {

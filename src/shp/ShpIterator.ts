@@ -1,11 +1,10 @@
 import _ from "lodash";
 import { StreamReader } from "ginkgoch-stream-io";
 
-import Envelope from "../../src/shp/Envelope";
 import Iterator from "../../src/base/Iterator";
 import Optional from "../../src/base/Optional";
 import ShpReader from "../../src/shp/ShpReader";
-import IEnvelope from "../../src/shp/IEnvelope";
+import { Envelope, IEnvelope } from 'ginkgoch-geom';
 import GeomParser from "../../src/shp/parser/GeomParser";
 
 export default class ShpIterator extends Iterator<{ id: number, geometry: any }> {

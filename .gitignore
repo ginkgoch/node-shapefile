@@ -6,3 +6,4 @@ package-lock.json
 *.code-workspace
 .idea/
 built/
+yarn-error.log

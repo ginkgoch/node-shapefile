@@ -2,7 +2,6 @@ import * as shared from '../../../src/shared';
 import ShpReader from "../../../src/shp/ShpReader";
 import GeomParser from "../../../src/shp/parser/GeomParser";
 import GeomParserFactory from "../../../src/shp/parser/GeomParserFactory";
-import ShpWriter from '../../../src/shp/ShpWriter';
 
 describe('parser tests', () => {
     test('get parsers test', () => {

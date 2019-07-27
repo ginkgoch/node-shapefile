@@ -6,8 +6,7 @@ import { EventEmitter } from "events";
 import { StreamReader } from 'ginkgoch-stream-io';
 
 import Shx from '../shx/Shx';
-import Envelope from './Envelope';
-import IEnvelope from './IEnvelope';
+import { Envelope, IEnvelope } from 'ginkgoch-geom';
 import ShpHeader from './ShpHeader';
 import ShpReader from './ShpReader';
 import { Validators, ShapefileType, Constants } from "../shared";

@@ -1,5 +1,4 @@
-import Envelope from "../../src/shp/Envelope";
-import IEnvelope from "../../src/shp/IEnvelope";
+import { Envelope, IEnvelope } from 'ginkgoch-geom';
 
 describe('envelope helper test', () => {
     test('disjoined test', () => {
@@ -44,12 +43,12 @@ describe('envelope helper test', () => {
     });
 
     it('from', () => {
-        let geom: any = [23, 35];
-        let envelope = Envelope.from(geom);
+        let geom1 = { x: 23,  y: 35 };
+        let envelope = Envelope.from([geom1]);
         expect(envelope).toEqual({ minx: 23, miny: 35, maxx: 23, maxy: 35 });
 
-        geom = [[1, 4], [34, -1], [-34, 24]];
-        envelope = Envelope.from(geom);
+        let geom2 = [[1, 4], [34, -1], [-34, 24]];
+        envelope = Envelope.from(geom2.map(g => ({x: g[0], y: g[1]})));
         expect(envelope).toEqual({ minx: -34, miny: -1, maxx: 34, maxy: 24 });
     })
 });

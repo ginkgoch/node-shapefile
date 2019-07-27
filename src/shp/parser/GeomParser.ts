@@ -1,10 +1,9 @@
 import _ from "lodash";
 import ShpReader from "../ShpReader";
 import ShpWriter from "../ShpWriter";
-import IEnvelope from "../IEnvelope";
 import Validators from "../../shared/Validators";
+import { IEnvelope, Envelope, ICoordinate } from "ginkgoch-geom";
 import { ShapefileType } from "../../shared/ShapefileType";
-import Envelope from "../Envelope";
 
 export default abstract class GeomParser {
     type: number
@@ -37,7 +36,7 @@ export default abstract class GeomParser {
     write(coordinates: any, writer: ShpWriter): void {
         writer.writeInt32LE(this.type);
         if (this.type !== ShapefileType.point) {
-            const envelope = Envelope.from(GeomParser.vertices(coordinates));
+            const envelope = Envelope.from(GeomParser.coordinates(coordinates));
             writer.writeEnvelope(envelope);
         }
 
@@ -72,6 +71,10 @@ export default abstract class GeomParser {
         }
 
         return vertices;
+    }
+
+    static coordinates(coordinates: any): ICoordinate[] {
+        return GeomParser.vertices(coordinates).map(c => ({ x: c[0], y: c[1] }));
     }
 
     getBuff(coordinates: any): Buffer {

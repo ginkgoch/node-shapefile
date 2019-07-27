@@ -1,6 +1,6 @@
+import * as Utils from './Utils'
 import Shp from "../../src/shp/Shp"
 import Shapefile from "../../src/shapefile/Shapefile"
-import * as Utils from './Utils'
 
 describe('Shp edit', () => {
     const filePathSrc =  Utils.resolvePath('USStates');
