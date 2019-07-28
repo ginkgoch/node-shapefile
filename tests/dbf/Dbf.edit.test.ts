@@ -35,7 +35,7 @@ describe('create dbf', () => {
             const dbf = Dbf.createEmpty(filePath, dbf_create_fields.map(f => DbfField.fromJson(f)));
             await dbf.open();
 
-            dbf.pushRecords(dbf_create_records.map(r => DbfRecord.fromJson({ values: r })));
+            dbf.pushAll(dbf_create_records.map(r => DbfRecord.fromJson({ values: r })));
             dbf.close();
 
             const dbfNew = new Dbf(filePath);
@@ -88,7 +88,7 @@ describe('dbf deletion test', () => {
             await dbf.open();
 
             const idToRemove = 20;
-            dbf.removeRecordAt(idToRemove);
+            dbf.removeAt(idToRemove);
             let r = await dbf.get(idToRemove);
 
             expect(r.id).toBe(20);
@@ -122,7 +122,7 @@ describe('dbf update test', () => {
             expect(record.values.get('CAPITAL')).toBe('N');
             expect(record.values.get('PLACEFIP')).toBe('65000');
 
-            dbf.updateRecord(DbfRecord.fromJson(dbf_update_record));
+            dbf.update(DbfRecord.fromJson(dbf_update_record));
 
             record = await dbf.get(idToUpdate);
             expect(record.values.get('CAPITAL')).toBe('Y');

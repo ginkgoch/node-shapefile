@@ -4,6 +4,32 @@ import DbfField from '../../src/dbf/DbfField';
 import { DbfFieldType } from '../../src/dbf/DbfFieldType';
 
 describe('dbf record tests', () => {
+    it('constructor - 1', () => {
+        const record = new DbfRecord();
+        expect(record.values.size).toBe(0);
+        expect(record.id).toBe(-1);
+    });
+
+    it('constructor - 2', () => {
+        const props = new Map<string, any>();
+        props.set('RECID', 1);
+        props.set('NAME', 'Micheal');
+
+        const record = new DbfRecord(props);
+        expect(record.values.size).toBe(2);
+        expect(record.id).toBe(-1);
+        expect(record.values.get('RECID')).toBe(1);
+        expect(record.values.get('NAME')).toEqual('Micheal');
+    });
+
+    it('constructor - 3', () => {
+        const record = new DbfRecord({ 'RECID':1, 'NAME': 'Micheal' });
+        expect(record.values.size).toBe(2);
+        expect(record.id).toBe(-1);
+        expect(record.values.get('RECID')).toBe(1);
+        expect(record.values.get('NAME')).toEqual('Micheal');
+    });
+
     it('bool string length', () => {
         let buff = Buffer.from('F');
         expect(buff.length).toBe(1);

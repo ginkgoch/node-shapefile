@@ -11,6 +11,7 @@ import ShapefileIterator from "./ShapefileIterator";
 import StreamOpenable from "../base/StreamOpenable";
 import IQueryFilter from "../shared/IQueryFilter";
 import DbfField from '../dbf/DbfField';
+import DbfRecord from '../dbf/DbfRecord';
 
 const extReg = /\.\w+$/;
 
@@ -167,6 +168,35 @@ export default class Shapefile extends StreamOpenable {
         const fieldRecords = await this._dbf.value.records(filter);
         const records = _.zipWith(shapeRecords, fieldRecords.map(r => r.values), (s, f) => new Feature(s, f, s.id));
         return records;
+    }
+
+    push(feature: IFeature) {
+        Validators.checkIsOpened(this.isOpened);
+
+        this._shp.value.push(feature.geometry);
+
+        const dbfRecord = new DbfRecord();
+        feature.properties.forEach((v, k, m) => {
+            dbfRecord.values.set(k, v);
+        });
+        this._dbf.value.push(dbfRecord);
+    }
+
+    update(feature: IFeature) {
+        Validators.checkIsOpened(this.isOpened);
+
+        this._shp.value.updateAt(feature.id, feature.geometry);
+
+        const dbfRecord = new DbfRecord(feature.properties);
+        dbfRecord.id = feature.id;
+        this._dbf.value.update(dbfRecord);
+    }
+
+    removeAt(id: number) {
+        Validators.checkIsOpened(this.isOpened);
+
+        this._shp.value.removeAt(id);
+        this._dbf.value.removeAt(id);
     }
 
     /**

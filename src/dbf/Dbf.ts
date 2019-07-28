@@ -154,7 +154,7 @@ export default class Dbf extends Openable {
      * @example
      * dbf.pushRecord({ rec:1, name:'china' });
      */
-    pushRecord(record: DbfRecord) {
+    push(record: DbfRecord) {
         record.id = -1;
         this._flush(record);
         this.__header.write(this.__fd);
@@ -166,7 +166,7 @@ export default class Dbf extends Openable {
      * @example
      * dbf.pushRows([{ rec:1, name:'china'}, {rec:2, name:'usa'}]);
      */
-    pushRecords(records: DbfRecord[]) {
+    pushAll(records: DbfRecord[]) {
         //TODO: update docs around...
         records.forEach(r => {
             r.id = -1;
@@ -185,19 +185,19 @@ export default class Dbf extends Openable {
      * const record = {id: 0, values: {rec: 1, name: 'usa'}};
      * dbf.updateRow(record);
      */
-    updateRecord(record: DbfRecord) {
+    update(record: DbfRecord) {
         this._flush(record);
     }
 
     /**
      * Update a specific row values. Call flush() to persistent into file.
-     * @param {Array.<Object>} records Records to update.
+     * @param {Array<DbfRecord>} records Records to update.
      * @example
      * const records = [{id: 0, values: {rec: 1, name: 'usa'}}];
      * dbf.updateRows(records);
      */
     updateRecords(records: DbfRecord[]) {
-        records.forEach(r => this.updateRecord(r));
+        records.forEach(r => this.update(r));
     }
 
     /**
@@ -224,7 +224,7 @@ export default class Dbf extends Openable {
      * Remove record at index.
      * @param {number} index The record index to delete. Start from 0.
      */
-    removeRecordAt(index: number) {
+    removeAt(index: number) {
         Validators.checkIsOpened(this.isOpened);
         Validators.checkIndexIsGEZero(index);
 
