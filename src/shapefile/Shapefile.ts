@@ -1,3 +1,4 @@
+import fs from 'fs';
 import _ from "lodash";
 import { EventEmitter } from "events";
 
@@ -141,12 +142,12 @@ export default class Shapefile extends StreamOpenable {
         Validators.checkIsOpened(this.isOpened);
         const geom = await this._shp.value.get(id);
         if (geom === null) {
-            return geom;
+            return null;
         }
         
         const queryFields = this._normalizeFields(fields);
         const record = await this._dbf.value.get(id, queryFields);
-        return { id: geom.id, geometry: geom.geometry, properties: record.values, type: Constants.FEATURE_TYPE };
+        return { id: geom.id, geometry: geom, properties: record.values, type: Constants.FEATURE_TYPE };
     }
 
     async records(filter?: IQueryFilter): Promise<Array<IFeature>> {
@@ -155,10 +156,36 @@ export default class Shapefile extends StreamOpenable {
         const shapeRecords = await this._shp.value.records(filter);
         const fieldRecords = await this._dbf.value.records(filter);
         const records = _.zipWith(shapeRecords, fieldRecords.map(r => r.values), (s, f) => {
-            const record = _.assign(s, { properties: f, type: Constants.FEATURE_TYPE });
+            const record = { id: s.id, geometry: s, properties: f, type: Constants.FEATURE_TYPE };
             return record;
         });
         return records;
+    }
+
+    /**
+     * Copy the shp, shx and dbf files as another filename.
+     */
+    static copyFiles(sourceFilename: string, targetFilename: string, overwrite = false) {
+        let extensions = ['.shp', '.shx', '.dbf'];
+
+        extensions.forEach(ext => {
+            const sourceFilePath = sourceFilename.replace(/\.shp$/, ext);
+            const targetFilePath = targetFilename.replace(/\.shp$/, ext);
+            if (fs.existsSync(targetFilePath)) {
+                if (!fs.existsSync(sourceFilePath)) {
+                    return;
+                }
+
+                if (overwrite) {
+                    fs.unlinkSync(targetFilePath);
+                    fs.copyFileSync(sourceFilePath, targetFilePath);
+                } else {
+                    console.warn(`${sourceFilePath} exists. Copy ignored.`);
+                }
+            } else {
+                fs.copyFileSync(sourceFilePath, targetFilePath);
+            }
+        })
     }
 
     /**

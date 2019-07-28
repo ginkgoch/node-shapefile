@@ -1,4 +1,4 @@
-import IEnvelope from "../shp/IEnvelope";
+import { IEnvelope } from "ginkgoch-geom";
 
 export default interface IQueryFilter {
     from?: number;

@@ -350,6 +350,13 @@
   dependencies:
     "@types/jest-diff" "*"
 
+"@types/jsts@^0.17.0":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@types/jsts/-/jsts-0.17.0.tgz#8e55d20986ba2ef985bb31c334525cdfe39755c5"
+  integrity sha512-HABWQ7Q33xlUniLkY8egb+vievXEkJXt2TVirBpQVGN5H+En2+ALmxoPq7ktGAat0fzI8iY1AtIFTaxjv556GA==
+  dependencies:
+    "@types/openlayers" "*"
+
 "@types/lodash@^4.14.136":
   version "4.14.136"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.136.tgz#413e85089046b865d960c9ff1d400e04c31ab60f"
@@ -359,6 +366,11 @@
   version "12.6.8"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.6.8.tgz#e469b4bf9d1c9832aee4907ba8a051494357c12c"
   integrity sha512-aX+gFgA5GHcDi89KG5keey2zf0WfZk/HAQotEamsK2kbey+8yGKcson0hbK8E+v0NArlCJQCqMP161YhV6ZXLg==
+
+"@types/openlayers@*":
+  version "4.6.17"
+  resolved "https://registry.yarnpkg.com/@types/openlayers/-/openlayers-4.6.17.tgz#39a8dce631e284a26cf0958664509932e6cd7c7d"
+  integrity sha512-vCCV5MY3XRmHyED1ndHxXJ/5IpeA3pX9J6IKZnMY+uTerhYNfG7pM451dgS90tSkBBxszd8ETPrF5ggQ9mqwlA==
 
 "@types/stack-utils@^1.0.1":
   version "1.0.1"
@@ -1288,10 +1300,22 @@ ginkgoch-buffer-io@^1.1.0:
   resolved "https://registry.yarnpkg.com/ginkgoch-buffer-io/-/ginkgoch-buffer-io-1.1.0.tgz#7d5a5780c483ad59c25d1bf7b3405327abe2399f"
   integrity sha512-w0B2hfzW0MlidR4mKtj4cjUtT/2fF1qeufNUdejjMnC8DiAjb1SR+m1+fo51UXqsBwh8NDU1NWpPhmMObMZbQw==
 
-ginkgoch-stream-io@^1.2.0-beta:
-  version "1.2.0-beta"
-  resolved "https://registry.yarnpkg.com/ginkgoch-stream-io/-/ginkgoch-stream-io-1.2.0-beta.tgz#df37d0334c05a482e9e5219658202838ff3068dd"
-  integrity sha512-JLKGJhHJDQek9j0LUfR02UK/ZIP/0+it0isqsmu1P6KLv/gSUBijpX4EiQ7SPWzQzvCiswvkYAasIjljZT8eiw==
+ginkgoch-geom@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/ginkgoch-geom/-/ginkgoch-geom-1.0.7.tgz#f93421eef46e8c4a2c8764e9a28805d9811c16a9"
+  integrity sha512-LpdhYbyPuTndwqhHYrAZU/nRzRs+s+gDcs7AvyT5yBjfYUhnAu5DpPneaimf+nGnFv76zfpJTm5H+H5i3R2FPA==
+  dependencies:
+    "@types/jsts" "^0.17.0"
+    "@types/lodash" "^4.14.136"
+    "@types/node" "^12.6.8"
+    ginkgoch-buffer-io "^1.1.0"
+    jsts "^2.0.6"
+    lodash "^4.17.15"
+
+ginkgoch-stream-io@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/ginkgoch-stream-io/-/ginkgoch-stream-io-1.2.0.tgz#e3159e1a42fd5c529ccbf4cdbe7069e2e049e953"
+  integrity sha512-y/AAguSXEM5uQE2o2PrjsJpBuQ8OhwJ63iYjnKP+GNNz2pr1jvuk2sdyoD02fyW0w9wjps+e2mNsWyoRK8g5Tg==
 
 git-config-path@^1.0.1:
   version "1.0.1"
@@ -2159,6 +2183,11 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
+jsts@^2.0.6:
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/jsts/-/jsts-2.0.6.tgz#8ea783b26bd65cba6371dbdb9088433913fe24d9"
+  integrity sha512-rpWt1+9dzN47dmAb+jeD9OwErkI5WJgfvFqzf/hpR3LHDsMA9kr+uFIYYfRMYaMgMMLQCIIBr2bCpc5Lnmn7hA==
+
 kind-of@^3.0.2, kind-of@^3.0.3, kind-of@^3.2.0:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-3.2.2.tgz#31ea21a734bab9bbb0f32466d893aea51e4a3c64"
@@ -2259,7 +2288,7 @@ lodash.sortby@^4.7.0:
   resolved "https://registry.yarnpkg.com/lodash.sortby/-/lodash.sortby-4.7.0.tgz#edd14c824e2cc9c1e0b0a1b42bb5210516a42438"
   integrity sha1-7dFMgk4sycHgsKG0K7UhBRakJDg=
 
-lodash@^4.17.11, lodash@^4.17.13, lodash@^4.17.14:
+lodash@^4.17.11, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15:
   version "4.17.15"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
   integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
@@ -3163,9 +3192,9 @@ sax@^1.2.4:
   integrity sha512-Ya52jSX2u7QKghxeoFGpLwCtGlt7j0oY9DYb5apt9nPlJ42ID+ulTXESnt/qAQcoSERyZ5sl3LDIOw0nAn/5DA==
 
 semver@^6.0.0:
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/semver/-/semver-6.2.0.tgz#4d813d9590aaf8a9192693d6c85b9344de5901db"
-  integrity sha512-jdFC1VdUGT/2Scgbimf7FSx9iJLXoqfglSF+gJeuNWVpiE37OIbc1jywR/GJyFdz3mnkz2/id0L0J/cr0izR5A==
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-6.3.0.tgz#ee0a64c8af5e8ceea67687b133761e1becbd1d3d"
+  integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
 
 set-blocking@^2.0.0, set-blocking@~2.0.0:
   version "2.0.0"

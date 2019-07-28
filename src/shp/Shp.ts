@@ -4,18 +4,18 @@ import path from 'path';
 import assert = require('assert');
 import { EventEmitter } from "events";
 import { StreamReader } from 'ginkgoch-stream-io';
+import { Envelope, IEnvelope, Geometry } from 'ginkgoch-geom';
 
 import Shx from '../shx/Shx';
-import Envelope from './Envelope';
-import IEnvelope from './IEnvelope';
 import ShpHeader from './ShpHeader';
 import ShpReader from './ShpReader';
-import { Validators } from "../shared";
 import ShpIterator from './ShpIterator';
 import Optional from '../base/Optional';
 import GeomParser from './parser/GeomParser';
+import IQueryFilter from '../shared/IQueryFilter';
 import StreamOpenable from '../base/StreamOpenable';
 import GeomParserFactory from './parser/GeomParserFactory';
+import { Validators, ShapefileType, Constants } from "../shared";
 
 const extReg = /\.\w+$/;
 
@@ -60,7 +60,7 @@ export default class Shp extends StreamOpenable {
 
         this._fd = fs.openSync(this.filePath, this._flag);
         this._header = await this._readHeader();
-        this._shpParser = GeomParserFactory.getParser(this.__header.fileType);
+        this._shpParser = GeomParserFactory.create(this.__header.fileType);
 
         const filePathShx = this.filePath.replace(extReg, '.shx');
         if(fs.existsSync(filePathShx)) {
@@ -110,7 +110,7 @@ export default class Shp extends StreamOpenable {
         return await this._getRecordIterator(100);
     }
 
-    async get(id: number) {
+    async get(id: number): Promise<Geometry|null> {
         const shxPath = this.filePath.replace(extReg, '.shx');
         assert(!_.isUndefined(this._shx), `${path.basename(shxPath)} doesn't exist.`);
 
@@ -124,12 +124,12 @@ export default class Shp extends StreamOpenable {
         return result.value;
     }
 
-    async records(filter?: { from?: number, limit?: number, fields?: string[], envelope?: IEnvelope }): Promise<{id: number, geometry: any}[]> {
+    async records(filter?: { from?: number, limit?: number, envelope?: IEnvelope }): Promise<Array<Geometry>> {
         Validators.checkIsOpened(this.isOpened);
 
         const option = this._getStreamOption(100);
         const stream = fs.createReadStream(this.filePath, option);
-        const records: Array<{id: number, geometry: any}> = [];
+        const records: Array<Geometry> = [];
         const total = this.count();
 
         const filterNorm = this._normalizeFilter(filter);
@@ -161,27 +161,24 @@ export default class Shp extends StreamOpenable {
 
                     if (index >= filterNorm.from && index < to) { 
                         let reader = new ShpReader(contentBuffer);
-                        let recordReader = this.__shpParser.prepare(reader);
-                        if (recordReader === null) {
-                            continue;
-                        }
-
-                        if (filter === null || 
-                            filter === undefined || 
-                            _.isUndefined(filter.envelope) || 
-                            (filter.envelope && !Envelope.disjoined(recordReader.envelope, filter.envelope))) {
-                            const record = { id: id, geometry: recordReader.readGeom() };
-                            records.push(record);
+                        let recordReader = this.__shpParser.read(reader);
+                        if (recordReader !== null && Shp._matchFilter(filter, recordReader.envelope)) {
+                            const geometry = recordReader.readGeom();
+                            geometry.id = id;
+                            records.push(geometry);
                         }
                     }
 
                     buffer = stream.read(8);
                 }
-
             }).on('end', () => {
                 resolve(records);
             });
         });
+    }
+
+    static _matchFilter(filter: IQueryFilter|null|undefined, recordEnvelope: IEnvelope): boolean {
+        return filter === null || filter === undefined || _.isUndefined(filter.envelope) || (filter.envelope && !Envelope.disjoined(recordEnvelope, filter.envelope));
     }
 
     async _getRecordIterator(start?: number, end?: number) {
@@ -197,6 +194,8 @@ export default class Shp extends StreamOpenable {
      * @param {number} index
      */
     removeAt(index: number) {
+        Validators.checkIsOpened(this.isOpened);
+
         const recordShx = this.__shx.get(index);
         if (recordShx && recordShx.length > 0) {
             this.__shx.removeAt(index);
@@ -204,34 +203,62 @@ export default class Shp extends StreamOpenable {
             const buff = Buffer.alloc(4);
             buff.writeInt32LE(0, 0);
 
-            const position = recordShx.offset + 8;
+            // write record length to  0.
+            const position = recordShx.offset + 4;
             fs.writeSync(this.__fd, buff, 0, buff.length, position);
         }
     }
 
-    /**
-     * Copy the shp, shx and dbf files as another filename.
-     */
-    static copyFiles(sourceFilename: string, targetFilename: string, overwrite = false) {
-        let extensions = ['.shp', '.shx', '.dbf'];
+    updateAt(index: number, geometry: Geometry) {
+        Validators.checkIsOpened(this.isOpened);
+        
+        const record = this._pushRecord(geometry);
+        this.__shx.updateAt(index, record.offset, record.geomBuff.length);
+    }
 
-        extensions.forEach(ext => {
-            const sourceFilePath = sourceFilename.replace(/\.shp$/, ext);
-            const targetFilePath = targetFilename.replace(/\.shp$/, ext);
-            if (fs.existsSync(targetFilePath)) {
-                if (!fs.existsSync(sourceFilePath)) {
-                    return;
-                }
+    push(geometry: Geometry) {
+        Validators.checkIsOpened(this.isOpened);
 
-                if (overwrite) {
-                    fs.unlinkSync(targetFilePath);
-                    fs.copyFileSync(sourceFilePath, targetFilePath);
-                } else {
-                    console.warn(`${sourceFilePath} exists. Copy ignored.`);
-                }
-            } else {
-                fs.copyFileSync(sourceFilePath, targetFilePath);
-            }
-        })
+        const record = this._pushRecord(geometry);
+        this.__shx.push(record.offset, record.geomBuff.length);
+    }
+
+    _pushRecord(geometry: Geometry): { geomBuff: Buffer, offset: number } {
+        const parser = GeomParserFactory.create(this.__header.fileType);
+        const geomBuff = parser.value.getGeomBuff(geometry);
+        const recBuff = Buffer.alloc(geomBuff.length + 8);
+        recBuff.writeInt32BE(this.__shx.count() + 1, 0);
+        recBuff.writeInt32BE(geomBuff.length / 2, 4);
+        geomBuff.copy(recBuff, 8);
+
+        const offset = this.__header.fileLength;
+        fs.writeSync(this.__fd, recBuff, 0, recBuff.length, offset);
+
+        this._updateHeader(geometry, recBuff.length);
+
+        return { geomBuff, offset };
+    }
+
+    //TODO: test required.
+    static createEmpty(filePath: string, fileType: ShapefileType): Shp {
+        const header = new ShpHeader();
+        header.fileType = fileType;
+        
+        const headerBuff = Buffer.alloc(Constants.SIZE_OF_SHP_HEADER);
+        header._write(headerBuff);
+
+        fs.writeFileSync(filePath, headerBuff);
+        fs.copyFileSync(filePath, filePath.replace(/(.shp)$/g, '.shx'));
+
+        const shp = new Shp(filePath, 'rs+');
+        return shp;
+    }
+
+    private _updateHeader(geom: Geometry, geomLength: number) {
+        this.__header.fileLength += geomLength;
+        const geomEnvelope = geom.envelope();
+        this.__header.envelope = Envelope.union(this.__header.envelope, geomEnvelope);
+        this.__header.write(this.__fd);
+        this.__header.write(this.__shx._fd as number);
     }
 };

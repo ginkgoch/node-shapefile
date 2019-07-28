@@ -1,8 +1,10 @@
+/// <reference path="../jest/JestEx.d.ts" />
+
 import _ from 'lodash';
-import Shp from "../../src/shp/Shp";
 import '../jest/JestEx';
-import { ShapefileType } from '../../src/shared';
-import Envelope from '../../src/shp/Envelope';
+import Shp from "../../src/shp/Shp";
+import { Envelope, GeometryType, Polygon, Point, LineString, Geometry } from 'ginkgoch-geom';
+import Shapefile from '../../src/shapefile/Shapefile';
 
 const citiesPath = './tests/data/cities_e.shp';
 
@@ -100,9 +102,15 @@ describe('shapefile test - polyline', () => {
         const records = await lineShp.iterator();
         let record = await records.next();
 
-        expect(record).not.toBeNullOrUndefined();
-        expect(record).toBeGeneralRecord(1);
-        expect(record.value.geometry).toBeClosePolyLineTo([-97.731192, 30.349088, -97.731584, 30.349305], 4);
+        expect(record.value).not.toBeNullOrUndefined();
+        expect(record.value).toBeGeneralRecord(1);
+
+        const line = record.value as LineString;
+        const coordinates = new Array<Number[]>(); 
+        line.coordinatesFlat().forEach(c => { 
+            coordinates.push([c.x, c.y]);
+        });
+        expect({ coordinates }).toBeClosePolyLineTo([-97.731192, 30.349088, -97.731584, 30.349305], 4);
 
         await lineShp.close();
     });
@@ -116,9 +124,11 @@ describe('shapefile test - point', () => {
     });
 
     test('read records test - point read first record', async () => {
-        const record = await getFirstRecord(citiesPath);
+        const record = await getFirstRecord(citiesPath) as Geometry;
         expect(record).toBeGeneralRecord(1);
-        expect(record.value.geometry).toBeClosePointTo([-122.2065, 48.7168], 4);
+
+        const coordinates = record.coordinates();
+        expect(coordinates).toBeClosePointTo([-122.2065, 48.7168], 4);
     });
 });
 
@@ -135,15 +145,15 @@ describe('shapefile test - polygon', () => {
         let recordOpt = await getFirstRecord(shpPath);
         expect(recordOpt).toBeGeneralRecord(1);
 
-        const record = recordOpt.value;
-        expect(record.geometry.type).toEqual(ShapefileType.polygon);
-        expect(record.geometry.coordinates.length).toBe(3);
-        expect(record.geometry.coordinates[0].length).toBe(244);
-        expect(record.geometry.coordinates[1].length).toBe(12);
-        expect(record.geometry.coordinates[2].length).toBe(20);
-        expect(record.geometry.coordinates[0][0]).toEqual(record.geometry.coordinates[0][243]);
-        expect(record.geometry.coordinates[1][0]).toEqual(record.geometry.coordinates[1][11]);
-        expect(record.geometry.coordinates[2][0]).toEqual(record.geometry.coordinates[2][19]);
+        const record = recordOpt as Polygon;
+        expect(record.type).toEqual(GeometryType.Polygon);
+        expect(record.coordinates().length).toBe(3);
+        expect(record.coordinates()[0].length).toBe(244);
+        expect(record.coordinates()[1].length).toBe(12);
+        expect(record.coordinates()[2].length).toBe(20);
+        expect(record.coordinates()[0][0]).toEqual(record.coordinates()[0][243]);
+        expect(record.coordinates()[1][0]).toEqual(record.coordinates()[1][11]);
+        expect(record.coordinates()[2][0]).toEqual(record.coordinates()[2][19]);
     });
 });
 
@@ -177,7 +187,7 @@ async function loopRecords(path: string, callback: () => void) {
     await shapefile.close();
 }
 
-async function getFirstRecord(path: string) {
+async function getFirstRecord(path: string): Promise<Geometry|null> {
     const shapefile = new Shp(path);
     await shapefile.open();
 
@@ -185,7 +195,7 @@ async function getFirstRecord(path: string) {
     const record = await records.next();
     await shapefile.close();
 
-    return await Promise.resolve(record);
+    return await Promise.resolve(record.value);
 }
 
 describe('Read shp records tests', () => {
@@ -291,7 +301,7 @@ describe('Read shp records tests', () => {
     test('delete shp record', async () => {
         const shpPathSrc = './tests/data/USStates.shp';
         const shpPath = './tests/data/USStates_delete_test.shp';
-        Shp.copyFiles(shpPathSrc, shpPath, true);
+        Shapefile.copyFiles(shpPathSrc, shpPath, true);
 
         const shp = new Shp(shpPath, 'rs+');
         await shp.openWith(async () => {
@@ -311,4 +321,24 @@ describe('Read shp records tests', () => {
             }
         });
     });
+
+    test('_matchFilter', () => {
+        expect(undefined).toBeFalsy();
+        expect(_.isUndefined(undefined) === true).toBeTruthy();
+
+        const filter = {};
+        const envelope = { minx: -40, miny: -40, maxx: 40, maxy: 40 };
+
+        let match = Shp._matchFilter(filter, envelope);
+        expect(match).toBeTruthy();
+
+        match = Shp._matchFilter(null, envelope);
+        expect(match).toBeTruthy();
+
+        match = Shp._matchFilter(undefined, envelope);
+        expect(match).toBeTruthy();
+
+        match = Shp._matchFilter({envelope: { minx: -40, miny: -40, maxx: 40, maxy: 40 }}, envelope);
+        expect(match).toBeTruthy();
+    })
 });

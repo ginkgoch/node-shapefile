@@ -3,6 +3,7 @@ import path from 'path';
 import assert from 'assert';
 import _ from 'lodash';
 import { ShapefileType } from './ShapefileType';
+import { Geometry, GeometryType } from 'ginkgoch-geom';
 
 export default class Validators {
     static checkIsOpened(isOpened: boolean) {
@@ -11,8 +12,13 @@ export default class Validators {
         }
     }
 
-    static checkIndexIsValid(index: number) {
+    static checkIndexIsGEZero(index: number) {
         assert(index >= 0, 'Index must greater than or equal to 0.')
+    }
+
+    static checkIndexIsLessThan(index: number, max: number) {
+        assert(index < max, `Index(${index}) must less than the ${max}.`)
+
     }
 
     static checkIsValidShapeType(actual: ShapefileType, expected: ShapefileType, expectedName: string) {
@@ -35,5 +41,9 @@ export default class Validators {
     static _checkFileExists(filePath: string) {
         const basename = path.basename(filePath);
         assert(fs.existsSync(filePath), `${basename} not exists.`);
+    }
+
+    static checkGeomType(geom: Geometry, expectedGeomType: GeometryType) {
+        assert(geom.type !== expectedGeomType, `Invalid geometry type ${ geom.type }, expected ${ expectedGeomType }.`)
     }
 }

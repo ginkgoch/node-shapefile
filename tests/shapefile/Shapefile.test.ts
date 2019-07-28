@@ -2,7 +2,7 @@ import Shapefile from "../../src/shapefile/Shapefile";
 import _ from "lodash";
 import DbfField from "../../src/dbf/DbfField";
 import IFeature from "../../src/shapefile/IFeature";
-import Envelope from "../../src/shp/Envelope";
+import { Envelope } from 'ginkgoch-geom';
 import { EventEmitter } from "events";
 
 // const Shapefile = require('../../libs/Shapefile');

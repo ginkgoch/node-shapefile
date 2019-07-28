@@ -1,5 +1,6 @@
 import fs from 'fs';
 import Openable from '../base/Openable';
+import { Validators } from '../shared';
 
 const RECORD_LENGTH = 8;
 const HEADER_LENGTH = 100;
@@ -52,6 +53,28 @@ export default class Shx extends Openable {
         const buff = Buffer.alloc(CONTENT_LENGTH);
         buff.writeInt32BE(0, 0);
         fs.writeSync(this.__fd, buff, 0, buff.length, position);
+    }
+
+    updateAt(index: number, offset: number, length: number) {
+        Validators.checkIndexIsLessThan(index, this.count());
+
+        const buff = Shx._getRecordBuff(offset, length);
+        const position = HEADER_LENGTH + RECORD_LENGTH * index;
+        fs.writeSync(this.__fd, buff, 0, buff.length, position);
+    }
+
+    push(offset: number, length: number) {
+        const buff = Shx._getRecordBuff(offset, length);
+        fs.writeSync(this.__fd, buff, 0, buff.length, this._totalSize);
+        
+        this._totalSize += buff.length;
+    }
+
+    private static _getRecordBuff(offset: number,  length: number): Buffer {
+        const buff = Buffer.alloc(RECORD_LENGTH);
+        buff.writeInt32BE(offset * .5, 0);
+        buff.writeInt32BE(length * .5, 4);
+        return buff
     }
 
     private get __fd() {
