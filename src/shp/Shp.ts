@@ -4,18 +4,18 @@ import path from 'path';
 import assert = require('assert');
 import { EventEmitter } from "events";
 import { StreamReader } from 'ginkgoch-stream-io';
+import { Envelope, IEnvelope, Geometry } from 'ginkgoch-geom';
 
 import Shx from '../shx/Shx';
-import { Envelope, IEnvelope, Geometry } from 'ginkgoch-geom';
 import ShpHeader from './ShpHeader';
 import ShpReader from './ShpReader';
-import { Validators, ShapefileType, Constants } from "../shared";
 import ShpIterator from './ShpIterator';
 import Optional from '../base/Optional';
 import GeomParser from './parser/GeomParser';
+import IQueryFilter from '../shared/IQueryFilter';
 import StreamOpenable from '../base/StreamOpenable';
 import GeomParserFactory from './parser/GeomParserFactory';
-import IQueryFilter from '../shared/IQueryFilter';
+import { Validators, ShapefileType, Constants } from "../shared";
 
 const extReg = /\.\w+$/;
 
@@ -250,7 +250,7 @@ export default class Shp extends StreamOpenable {
         fs.writeFileSync(filePath, headerBuff);
         fs.copyFileSync(filePath, filePath.replace(/(.shp)$/g, '.shx'));
 
-        const shp = new Shp(filePath, 'rw+');
+        const shp = new Shp(filePath, 'rs+');
         return shp;
     }
 
