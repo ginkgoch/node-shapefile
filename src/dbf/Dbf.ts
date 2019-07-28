@@ -143,18 +143,37 @@ export default class Dbf extends Openable {
         const fd = fs.openSync(filePath, 'w');
         header.write(fd);
         fs.closeSync(fd);
-        
+
         const dbfFile = new Dbf(filePath, 'rs+');
         return dbfFile;
     }
 
+    push(props: any): void
+    push(props: Map<string, any>): void
     /**
      * Push single row values into memory. Call flush() to persistent into file.
      * @param {DbfRecord} record The one record to push.
      * @example
      * dbf.pushRecord({ rec:1, name:'china' });
      */
-    push(record: DbfRecord) {
+    push(record: DbfRecord): void
+    push(param: DbfRecord | Map<string, any> | any): void {
+        let record: DbfRecord;
+
+        if (param instanceof Map) {
+            record = new DbfRecord();
+            (<Map<string, any>>param).forEach((v, k, m) => {
+                record.values.set(k, v);
+            });
+        } else if (param instanceof DbfRecord) {
+            record = param as DbfRecord;
+        } else {
+            record = new DbfRecord();
+            Object.keys(param).forEach((k, i, arr) => {
+                record.values.set(k, param[k]);
+            });
+        }
+
         record.id = -1;
         this._flush(record);
         this.__header.write(this.__fd);
@@ -166,11 +185,18 @@ export default class Dbf extends Openable {
      * @example
      * dbf.pushRows([{ rec:1, name:'china'}, {rec:2, name:'usa'}]);
      */
-    pushAll(records: DbfRecord[]) {
+    pushAll(records: Array<DbfRecord|any>) {
         //TODO: update docs around...
         records.forEach(r => {
-            r.id = -1;
-            this._flush(r);
+            let record: DbfRecord;
+            if (r instanceof DbfRecord) {
+                record = r as DbfRecord;
+            } else {
+                record = new DbfRecord(r);
+            }
+
+            record.id = -1;
+            this._flush(record);
         });
 
         if (records.length > 0) {
@@ -196,7 +222,7 @@ export default class Dbf extends Openable {
      * const records = [{id: 0, values: {rec: 1, name: 'usa'}}];
      * dbf.updateRows(records);
      */
-    updateRecords(records: DbfRecord[]) {
+    updateAll(records: DbfRecord[]) {
         records.forEach(r => this.update(r));
     }
 
@@ -237,7 +263,7 @@ export default class Dbf extends Openable {
      * Recover the deleted record at index. Edited record doesn't support.
      * @param {number} index The record index to delete. Start from 0.
      */
-    recoverRecordAt(index: number) {
+    recoverAt(index: number) {
         Validators.checkIsOpened(this.isOpened);
         Validators.checkIndexIsGEZero(index);
 
