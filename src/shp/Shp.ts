@@ -209,23 +209,23 @@ export default class Shp extends StreamOpenable {
         }
     }
 
-    updateAt(index: number, geometry: any) {
+    updateAt(index: number, geometry: Geometry) {
         Validators.checkIsOpened(this.isOpened);
         
         const record = this._pushRecord(geometry);
         this.__shx.updateAt(index, record.offset, record.geomBuff.length);
     }
 
-    push(geometry: any) {
+    push(geometry: Geometry) {
         Validators.checkIsOpened(this.isOpened);
 
         const record = this._pushRecord(geometry);
         this.__shx.push(record.offset, record.geomBuff.length);
     }
 
-    _pushRecord(geometry: any): { geomBuff: Buffer, offset: number } {
+    _pushRecord(geometry: Geometry): { geomBuff: Buffer, offset: number } {
         const parser = GeomParserFactory.create(this.__header.fileType);
-        const geomBuff = parser.value.getBuff(geometry);
+        const geomBuff = parser.value.getGeomBuff(geometry);
         const recBuff = Buffer.alloc(geomBuff.length + 8);
         recBuff.writeInt32BE(this.__shx.count() + 1, 0);
         recBuff.writeInt32BE(geomBuff.length / 2, 4);
@@ -254,9 +254,9 @@ export default class Shp extends StreamOpenable {
         return shp;
     }
 
-    private _updateHeader(geom: any, geomLength: number) {
+    private _updateHeader(geom: Geometry, geomLength: number) {
         this.__header.fileLength += geomLength;
-        const geomEnvelope = Envelope.from(geom);
+        const geomEnvelope = geom.envelope();
         this.__header.envelope = Envelope.union(this.__header.envelope, geomEnvelope);
         this.__header.write(this.__fd);
         this.__header.write(this.__shx._fd as number);
