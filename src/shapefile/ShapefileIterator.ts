@@ -1,7 +1,7 @@
-import IFeature from "./IFeature";
+import { IEnvelope, IFeature } from "ginkgoch-geom";
+
 import { Constants } from "../shared";
 import Iterator from '../base/Iterator';
-import { IEnvelope } from "ginkgoch-geom";
 import DbfIterator from "../dbf/DbfIterator";
 import ShpIterator from "../shp/ShpIterator";
 

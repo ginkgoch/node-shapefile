@@ -1,10 +1,10 @@
 import fs from 'fs';
 import _ from "lodash";
 import { EventEmitter } from "events";
+import { IFeature } from "ginkgoch-geom";
 
 import Shp from "../shp/Shp";
 import Dbf from "../dbf/Dbf";
-import IFeature from "./IFeature";
 import Optional from "../base/Optional";
 import { Validators, Constants } from "../shared";
 import ShapefileIterator from "./ShapefileIterator";

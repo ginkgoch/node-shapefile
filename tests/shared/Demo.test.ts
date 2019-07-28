@@ -1,6 +1,6 @@
 import Shapefile from "../../src/shapefile/Shapefile";
 import Optional from "../../src/base/Optional";
-import IFeature from "../../src/shapefile/IFeature";
+import { IFeature } from "ginkgoch-geom";
 
 describe('demos tests', () => {
     async function loopUSStates(callback: (rec: Optional<IFeature>) => void) {
