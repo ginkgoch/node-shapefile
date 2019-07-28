@@ -3,7 +3,7 @@
 import _ from 'lodash';
 import '../jest/JestEx';
 import Shp from "../../src/shp/Shp";
-import { Envelope, GeometryType, Polygon, Point, LineString } from 'ginkgoch-geom';
+import { Envelope, GeometryType, Polygon, Point, LineString, Geometry } from 'ginkgoch-geom';
 import Shapefile from '../../src/shapefile/Shapefile';
 
 const citiesPath = './tests/data/cities_e.shp';
@@ -102,8 +102,8 @@ describe('shapefile test - polyline', () => {
         const records = await lineShp.iterator();
         let record = await records.next();
 
-        expect(record).not.toBeNullOrUndefined();
-        expect(record).toBeGeneralRecord(1);
+        expect(record.value).not.toBeNullOrUndefined();
+        expect(record.value).toBeGeneralRecord(1);
 
         const line = record.value as LineString;
         const coordinates = new Array<Number[]>(); 
@@ -124,11 +124,11 @@ describe('shapefile test - point', () => {
     });
 
     test('read records test - point read first record', async () => {
-        const record = await getFirstRecord(citiesPath);
+        const record = await getFirstRecord(citiesPath) as Geometry;
         expect(record).toBeGeneralRecord(1);
 
-        const point = record.value as Point;
-        expect({coordinates: [point.x, point.y]}).toBeClosePointTo([-122.2065, 48.7168], 4);
+        const coordinates = record.coordinates();
+        expect(coordinates).toBeClosePointTo([-122.2065, 48.7168], 4);
     });
 });
 
@@ -145,7 +145,7 @@ describe('shapefile test - polygon', () => {
         let recordOpt = await getFirstRecord(shpPath);
         expect(recordOpt).toBeGeneralRecord(1);
 
-        const record = recordOpt.value as Polygon;
+        const record = recordOpt as Polygon;
         expect(record.type).toEqual(GeometryType.Polygon);
         expect(record.coordinates().length).toBe(3);
         expect(record.coordinates()[0].length).toBe(244);
@@ -187,7 +187,7 @@ async function loopRecords(path: string, callback: () => void) {
     await shapefile.close();
 }
 
-async function getFirstRecord(path: string) {
+async function getFirstRecord(path: string): Promise<Geometry|null> {
     const shapefile = new Shp(path);
     await shapefile.open();
 
@@ -195,7 +195,7 @@ async function getFirstRecord(path: string) {
     const record = await records.next();
     await shapefile.close();
 
-    return await Promise.resolve(record);
+    return await Promise.resolve(record.value);
 }
 
 describe('Read shp records tests', () => {

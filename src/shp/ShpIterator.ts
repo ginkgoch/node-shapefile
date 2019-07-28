@@ -47,15 +47,12 @@ export default class ShpIterator extends Iterator<Geometry|null> {
             return this._dirty(content);
         }
 
-        let record: Geometry|null;
+        let geometry: Geometry|null = null;
         if (_.isUndefined(this.envelope) || (this.envelope && !Envelope.disjoined(content.envelope, this.envelope))) {
-            const geometry = content.readGeom();
+            geometry = content.readGeom();
             geometry.id = id;
-            record = geometry;
-        } else {
-            record = null;
         }
 
-        return this._continue(record); 
+        return this._continue(geometry); 
     }
 };

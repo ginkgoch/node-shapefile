@@ -5,14 +5,10 @@ import { Geometry } from 'ginkgoch-geom';
 
 expect.extend({
     toBeGeneralRecord: (received: any, id = 1) => {
-        const current = <Optional<Geometry>>received;
+        const current = received;
         expect(current).not.toBeNull();
         expect(current).not.toBeUndefined();
-        expect(current.value.id).toBe(id);
-
-        const geom = current.value;
-        expect(geom).not.toBeNull();
-        expect(geom).not.toBeUndefined();
+        expect(current.id).toBe(id);
 
         return { pass: true, message: '' };
     },
@@ -32,8 +28,8 @@ expect.extend({
             [x, y] = [expected.x, expected.y];
         }
 
-        expect(actual.coordinates[0]).toBeCloseTo(x, numDigit);
-        expect(actual.coordinates[1]).toBeCloseTo(y, numDigit);
+        expect(actual[0]).toBeCloseTo(x, numDigit);
+        expect(actual[1]).toBeCloseTo(y, numDigit);
         return { pass: true, message: '' };
     },
 
