@@ -20,10 +20,10 @@ const extReg = /\.\w+$/;
  */
 export default class Shapefile extends StreamOpenable {
     filePath: string;
-    _flag: string;    
+    _flag: string;
     _shp: Optional<Shp>;
     _dbf: Optional<Dbf>;
-    _eventEmitter: EventEmitter|undefined;
+    _eventEmitter: EventEmitter | undefined;
 
     /**
      * Creates a Shapefile instance.
@@ -38,11 +38,11 @@ export default class Shapefile extends StreamOpenable {
         this._dbf = new Optional<Dbf>();
     }
 
-    get eventEmitter(): EventEmitter|undefined {
+    get eventEmitter(): EventEmitter | undefined {
         return this._eventEmitter;
     }
 
-    set eventEmitter(v: EventEmitter|undefined) {
+    set eventEmitter(v: EventEmitter | undefined) {
         this._eventEmitter = v;
         this._shp && (this._shp.value._eventEmitter = v);
     }
@@ -68,12 +68,12 @@ export default class Shapefile extends StreamOpenable {
      * @override
      */
     async _close() {
-        if(this._shp.hasValue) {
+        if (this._shp.hasValue) {
             await this._shp.value.close();
             this._shp.reset();
         }
 
-        if(this._dbf.hasValue) {
+        if (this._dbf.hasValue) {
             await this._dbf.value.close();
             this._dbf.reset();
         }
@@ -125,7 +125,7 @@ export default class Shapefile extends StreamOpenable {
         shapefileIt.envelope = filter && filter.envelope;
         return shapefileIt;
     }
-    
+
     /**
      * Gets the record count of shapefile.
      * @returns The count of shapefile.
@@ -141,20 +141,21 @@ export default class Shapefile extends StreamOpenable {
 
         return this._shp.value.shapeType();
     }
-    
+
     /**
      * Gets shapefile record by a specified id, and returnes with the given fields. If fields is not indicated, all fields will be fetched.
      * @param {number} id The record id. Starts from 0.
      * @param {undefined|'all'|'none'|Array.<string>} fields The fields that will be fetch from DBF file.
      * @returns The record that contains the required id.
      */
-    async get(id: number, fields?: string[]): Promise<Feature|null> {
+    //TODO: make sure the id are starts from 0 or 1.
+    async get(id: number, fields?: string[]): Promise<Feature | null> {
         Validators.checkIsOpened(this.isOpened);
         const geom = await this._shp.value.get(id);
         if (geom === null) {
             return null;
         }
-        
+
         const queryFields = this._normalizeFields(fields);
         const record = await this._dbf.value.get(id, queryFields);
         const feature = new Feature(geom, record.values, geom.id);
@@ -175,10 +176,7 @@ export default class Shapefile extends StreamOpenable {
 
         this._shp.value.push(feature.geometry);
 
-        const dbfRecord = new DbfRecord();
-        feature.properties.forEach((v, k, m) => {
-            dbfRecord.values.set(k, v);
-        });
+        const dbfRecord = new DbfRecord(feature.properties);
         this._dbf.value.push(dbfRecord);
     }
 
@@ -246,7 +244,7 @@ export default class Shapefile extends StreamOpenable {
      * @private
      * @param {*} fields The fields filter could be 'all', 'none', Array.<string> - field names. Default value is 'all' which means returns all fields.
      */
-    _normalizeFields(fields?: 'all'|'none'|string[]) {
+    _normalizeFields(fields?: 'all' | 'none' | string[]) {
         if (fields === 'none') {
             return [];
         }
