@@ -5,6 +5,7 @@ export default class Openable {
         this.isOpened = false;
     }
 
+    //TODO: can it be sync?
     async open() {
         if (this.isOpened) return this;
 
@@ -15,6 +16,7 @@ export default class Openable {
 
     protected async _open() { }
 
+    //TODO: can it be sync?
     async close() {
         if(this.isOpened) {
             await this._close();

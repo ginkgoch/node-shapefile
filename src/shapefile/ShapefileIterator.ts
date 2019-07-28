@@ -1,9 +1,9 @@
-import { IEnvelope, IFeature } from "ginkgoch-geom";
+import { IEnvelope, Feature } from "ginkgoch-geom";
 
-import { Constants } from "../shared";
 import Iterator from '../base/Iterator';
 import DbfIterator from "../dbf/DbfIterator";
 import ShpIterator from "../shp/ShpIterator";
+import Optional from "../base/Optional";
 
 /**
  * The Shapefile iterator.
@@ -16,7 +16,7 @@ import ShpIterator from "../shp/ShpIterator";
  *      console.log(record);
  * }
  */
-export default class ShapefileIterator extends Iterator<IFeature> {
+export default class ShapefileIterator extends Iterator<Feature | null> {
     _shpIt: ShpIterator
     _dbfIt: DbfIterator
 
@@ -41,16 +41,16 @@ export default class ShapefileIterator extends Iterator<IFeature> {
     /**
      * Sets the envelope filter for iterator.
      */
-    set envelope(v: IEnvelope|undefined) {
+    set envelope(v: IEnvelope | undefined) {
         this._shpIt.envelope = v;
     }
 
     /**
      * Moves to and return the next record. The last record will return with a field { done: true } for a complete reading flag.
      */
-    async next() {
+    async next(): Promise<Optional<Feature | null>> {
         let record = await this._next();
-        while(!this.done && record.value && (record.value.geometry === undefined || record.value.geometry === null)) {
+        while (!this.done && (!record.value || !record.value.geometry)) {
             record = await this._next();
         }
 
@@ -60,20 +60,17 @@ export default class ShapefileIterator extends Iterator<IFeature> {
     /**
      * @private
      */
-    async _next() {
+    async _next(): Promise<Optional<Feature | null>> {
         let shpRecordOpt = await this._shpIt.next();
         let dbfRecordOpt = await this._dbfIt.next();
         if (!this._shpIt.done && !this._dbfIt.done) {
-            let record = {} as IFeature;
+            let feature : Feature | null = null;
             let shpRecord = shpRecordOpt.value;
             if (shpRecord !== null) {
-                record.id = shpRecord.id;
-                record.geometry = shpRecord;
-                record.properties = dbfRecordOpt.value.values;
-                record.type = Constants.FEATURE_TYPE;
+                feature = new Feature(shpRecord, dbfRecordOpt.value.values, shpRecord.id);
             }
-            
-            return this._continue(record);
+
+            return this._continue(feature);
         } else if (this._shpIt.done && this._dbfIt.done) {
             return this._done();
         } else {

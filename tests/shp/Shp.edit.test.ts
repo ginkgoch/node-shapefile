@@ -1,6 +1,6 @@
-import * as Utils from './Utils'
-import Shp from "../../src/shp/Shp"
-import Shapefile from "../../src/shapefile/Shapefile"
+import * as Utils from '../utils/Utils';
+import Shp from "../../src/shp/Shp";
+import Shapefile from "../../src/shapefile/Shapefile";
 import { Polygon, GeometryFactory } from 'ginkgoch-geom';
 
 describe('Shp edit', () => {

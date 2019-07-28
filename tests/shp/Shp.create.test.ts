@@ -2,7 +2,7 @@ import fs from 'fs';
 
 import Shp from "../../src/shp/Shp";
 import { ShapefileType } from "../../src/shared";
-import * as Utils from './Utils';
+import * as Utils from '../utils/Utils';
 import { Polygon, LinearRing } from 'ginkgoch-geom';
 
 describe('Shp - create', () => {

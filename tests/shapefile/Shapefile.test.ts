@@ -169,7 +169,7 @@ describe('shapefile filters', () => {
             const actionForGeom = jest.fn();
             const actionForGeomNull = jest.fn();
             while((rec = await iterator.next()) && !iterator.done) {
-                if(rec.value.geometry !== null) {
+                if(rec.value !== null) {
                     actionForGeom();
                 } else {
                     actionForGeomNull();
@@ -192,7 +192,7 @@ describe('shapefile filters', () => {
             const actionForAll = jest.fn();
             while((rec = await iterator.next()) && !iterator.done) {
                 actionForAll();
-                if(rec.value.geometry !== null) {
+                if(rec.value !== null) {
                     actionForGeom();
                 }
             }
@@ -212,7 +212,7 @@ describe('shapefile filters', () => {
             const actionForAll = jest.fn();
             while((rec = await iterator.next()) && !iterator.done) {
                 actionForAll();
-                if(rec.value.geometry !== null) {
+                if(rec.value !== null) {
                     actionForGeom();
                 }
             }

@@ -1,15 +1,16 @@
 import fs from 'fs';
 import _ from "lodash";
 import { EventEmitter } from "events";
-import { IFeature } from "ginkgoch-geom";
+import { IFeature, Feature } from "ginkgoch-geom";
 
 import Shp from "../shp/Shp";
 import Dbf from "../dbf/Dbf";
 import Optional from "../base/Optional";
-import { Validators, Constants } from "../shared";
+import { Validators, Constants, ShapefileType } from "../shared";
 import ShapefileIterator from "./ShapefileIterator";
 import StreamOpenable from "../base/StreamOpenable";
 import IQueryFilter from "../shared/IQueryFilter";
+import DbfField from '../dbf/DbfField';
 
 const extReg = /\.\w+$/;
 
@@ -18,6 +19,7 @@ const extReg = /\.\w+$/;
  */
 export default class Shapefile extends StreamOpenable {
     filePath: string;
+    _flag: string;    
     _shp: Optional<Shp>;
     _dbf: Optional<Dbf>;
     _eventEmitter: EventEmitter|undefined;
@@ -27,9 +29,10 @@ export default class Shapefile extends StreamOpenable {
      * @constructor
      * @param {*} filePath The shapefile file path. 
      */
-    constructor(filePath: string) {
+    constructor(filePath: string, flag = 'rs') {
         super();
         this.filePath = filePath;
+        this._flag = flag;
         this._shp = new Optional<Shp>();
         this._dbf = new Optional<Dbf>();
     }
@@ -50,12 +53,12 @@ export default class Shapefile extends StreamOpenable {
     async _open() {
         Validators.checkFileExists(this.filePath, ['.shp', '.shx', '.dbf']);
 
-        this._shp = new Optional(new Shp(this.filePath));
+        this._shp = new Optional(new Shp(this.filePath, this._flag));
         this._shp.value._eventEmitter = this._eventEmitter;
         await this._shp.value.open();
 
         const filePathDbf = this.filePath.replace(extReg, '.dbf');
-        this._dbf = new Optional(new Dbf(filePathDbf));
+        this._dbf = new Optional(new Dbf(filePathDbf, this._flag));
         await this._dbf.value.open();
     }
 
@@ -126,10 +129,16 @@ export default class Shapefile extends StreamOpenable {
      * Gets the record count of shapefile.
      * @returns The count of shapefile.
      */
-    async count() {
+    count(): number {
         Validators.checkIsOpened(this.isOpened);
 
-        return await Promise.resolve(this._shp.value.count());
+        return this._shp.value.count();
+    }
+
+    shapeType(): ShapefileType {
+        Validators.checkIsOpened(this.isOpened);
+
+        return this._shp.value.shapeType();
     }
     
     /**
@@ -138,7 +147,7 @@ export default class Shapefile extends StreamOpenable {
      * @param {undefined|'all'|'none'|Array.<string>} fields The fields that will be fetch from DBF file.
      * @returns The record that contains the required id.
      */
-    async get(id: number, fields?: string[]): Promise<IFeature|null> {
+    async get(id: number, fields?: string[]): Promise<Feature|null> {
         Validators.checkIsOpened(this.isOpened);
         const geom = await this._shp.value.get(id);
         if (geom === null) {
@@ -147,19 +156,34 @@ export default class Shapefile extends StreamOpenable {
         
         const queryFields = this._normalizeFields(fields);
         const record = await this._dbf.value.get(id, queryFields);
-        return { id: geom.id, geometry: geom, properties: record.values, type: Constants.FEATURE_TYPE };
+        const feature = new Feature(geom, record.values, geom.id);
+        return feature;
     }
 
-    async records(filter?: IQueryFilter): Promise<Array<IFeature>> {
+    async records(filter?: IQueryFilter): Promise<Array<Feature>> {
         Validators.checkIsOpened(this.isOpened);
 
         const shapeRecords = await this._shp.value.records(filter);
         const fieldRecords = await this._dbf.value.records(filter);
-        const records = _.zipWith(shapeRecords, fieldRecords.map(r => r.values), (s, f) => {
-            const record = { id: s.id, geometry: s, properties: f, type: Constants.FEATURE_TYPE };
-            return record;
-        });
+        const records = _.zipWith(shapeRecords, fieldRecords.map(r => r.values), (s, f) => new Feature(s, f, s.id));
         return records;
+    }
+
+    /**
+     * Creates an empty shapefile as well as its shape index file and d-base file.
+     * @param {string} filePath The shapefile path. File path extension must be '.shp'.
+     * @param {ShapefileType} fileType The geometry type that this new shapefile maintains.
+     * @param {DbfField[]} fields The fields info of the d-base file.
+     * @static
+     */
+    static createEmpty(filePath: string, fileType: ShapefileType, fields: DbfField[]) {
+        Shp.createEmpty(filePath, fileType);
+
+        const dbfFilePath = filePath.replace(/\.shp$/, '.dbf');
+        Dbf.createEmpty(dbfFilePath, fields);
+
+        const shapefile = new Shapefile(filePath, 'rs+');
+        return shapefile;
     }
 
     /**

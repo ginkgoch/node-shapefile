@@ -18,6 +18,7 @@ import GeomParserFactory from './parser/GeomParserFactory';
 import { Validators, ShapefileType, Constants } from "../shared";
 
 const extReg = /\.\w+$/;
+const CONTENT_START_OFFSET = 100;
 
 export default class Shp extends StreamOpenable {
     filePath: string;
@@ -84,6 +85,7 @@ export default class Shp extends StreamOpenable {
         }
     } 
 
+    //TODO: remove async
     async _readHeader() {
         Validators.checkIsOpened(this.isOpened);
         const header = ShpHeader.read(this.__fd);
@@ -105,9 +107,15 @@ export default class Shp extends StreamOpenable {
         return this.__shx.count();
     }
 
+    shapeType(): ShapefileType {
+        Validators.checkIsOpened(this.isOpened);
+
+        return this.__header.fileType;
+    }
+
     async iterator() {
         Validators.checkIsOpened(this.isOpened);
-        return await this._getRecordIterator(100);
+        return await this._getRecordIterator(CONTENT_START_OFFSET);
     }
 
     async get(id: number): Promise<Geometry|null> {
@@ -239,7 +247,6 @@ export default class Shp extends StreamOpenable {
         return { geomBuff, offset };
     }
 
-    //TODO: test required.
     static createEmpty(filePath: string, fileType: ShapefileType): Shp {
         const header = new ShpHeader();
         header.fileType = fileType;
