@@ -1300,10 +1300,10 @@ ginkgoch-buffer-io@^1.1.0:
   resolved "https://registry.yarnpkg.com/ginkgoch-buffer-io/-/ginkgoch-buffer-io-1.1.0.tgz#7d5a5780c483ad59c25d1bf7b3405327abe2399f"
   integrity sha512-w0B2hfzW0MlidR4mKtj4cjUtT/2fF1qeufNUdejjMnC8DiAjb1SR+m1+fo51UXqsBwh8NDU1NWpPhmMObMZbQw==
 
-ginkgoch-geom@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/ginkgoch-geom/-/ginkgoch-geom-1.0.6.tgz#5d46122e62c47e0edaac2cce9b5ee95eec59d352"
-  integrity sha512-XEmZhqnFkl4pJjv8ER3y6XFrr+YyWKUFKRJi5uIN/0Bd7FapaPHjOp2lkerEzNqW4z36OJ7uxlsfjjQxpgCB0g==
+ginkgoch-geom@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/ginkgoch-geom/-/ginkgoch-geom-1.0.7.tgz#f93421eef46e8c4a2c8764e9a28805d9811c16a9"
+  integrity sha512-LpdhYbyPuTndwqhHYrAZU/nRzRs+s+gDcs7AvyT5yBjfYUhnAu5DpPneaimf+nGnFv76zfpJTm5H+H5i3R2FPA==
   dependencies:
     "@types/jsts" "^0.17.0"
     "@types/lodash" "^4.14.136"
