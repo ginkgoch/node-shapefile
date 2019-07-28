@@ -1,7 +1,7 @@
 import IFeature from "./IFeature";
 import { Constants } from "../shared";
 import Iterator from '../base/Iterator';
-import IEnvelope from "../shp/IEnvelope";
+import { IEnvelope } from "ginkgoch-geom";
 import DbfIterator from "../dbf/DbfIterator";
 import ShpIterator from "../shp/ShpIterator";
 
@@ -50,7 +50,7 @@ export default class ShapefileIterator extends Iterator<IFeature> {
      */
     async next() {
         let record = await this._next();
-        while(!this.done && record.value && record.value.geometry === null) {
+        while(!this.done && record.value && (record.value.geometry === undefined || record.value.geometry === null)) {
             record = await this._next();
         }
 
@@ -64,10 +64,16 @@ export default class ShapefileIterator extends Iterator<IFeature> {
         let shpRecordOpt = await this._shpIt.next();
         let dbfRecordOpt = await this._dbfIt.next();
         if (!this._shpIt.done && !this._dbfIt.done) {
-            let shpRecord = <any>shpRecordOpt.value;
-            shpRecord.properties = dbfRecordOpt.value.values;
-            shpRecord.type = Constants.FEATURE_TYPE;
-            return this._continue(shpRecord);
+            let record = {} as IFeature;
+            let shpRecord = shpRecordOpt.value;
+            if (shpRecord !== null) {
+                record.id = shpRecord.id;
+                record.geometry = shpRecord;
+                record.properties = dbfRecordOpt.value.values;
+                record.type = Constants.FEATURE_TYPE;
+            }
+            
+            return this._continue(record);
         } else if (this._shpIt.done && this._dbfIt.done) {
             return this._done();
         } else {

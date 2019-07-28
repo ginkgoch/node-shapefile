@@ -2,23 +2,28 @@ import _ from "lodash";
 import ShpWriter from "../ShpWriter";
 import GeomParser from "./GeomParser";
 import { ShapefileType, Constants } from "../../shared";
+import { Geometry, LineString, MultiLineString } from "ginkgoch-geom";
 
 export default class PolyLineParser extends GeomParser {
     get expectedType(): ShapefileType {
         return ShapefileType.polyLine;
     }
 
-    protected _readGeom(): any {
+    protected _readGeom(): Geometry {
         const numParts = this._reader.nextInt32LE();
         const numPoints = this._reader.nextInt32LE();
         const parts = _.range(numParts).map(i => this._reader.nextInt32LE());
-        let points: any = this._reader.nextPointsByParts(numPoints, parts);
+        let points = this._reader.nextPointsByParts(numPoints, parts);
 
         if (points.length === 1) {
-            points = _.first(points);
+            return new LineString(points[0].map(p => ({x: p[0], y: p[1]})));
+        } else if (points.length > 1) {
+            return new MultiLineString(points.map(l => {
+                return new LineString(l.map(p => ({x: p[0], y: p[1]})));
+            }));
+        } else {
+            return new LineString();
         }
-
-        return points;
     }
 
     get expectedTypeName(): string {

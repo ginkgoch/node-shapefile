@@ -6,8 +6,7 @@ import { EventEmitter } from "events";
 import { StreamReader } from 'ginkgoch-stream-io';
 
 import Shx from '../shx/Shx';
-import Envelope from './Envelope';
-import IEnvelope from './IEnvelope';
+import { Envelope, IEnvelope, Geometry } from 'ginkgoch-geom';
 import ShpHeader from './ShpHeader';
 import ShpReader from './ShpReader';
 import { Validators, ShapefileType, Constants } from "../shared";
@@ -111,7 +110,7 @@ export default class Shp extends StreamOpenable {
         return await this._getRecordIterator(100);
     }
 
-    async get(id: number) {
+    async get(id: number): Promise<Geometry|null> {
         const shxPath = this.filePath.replace(extReg, '.shx');
         assert(!_.isUndefined(this._shx), `${path.basename(shxPath)} doesn't exist.`);
 
@@ -125,12 +124,12 @@ export default class Shp extends StreamOpenable {
         return result.value;
     }
 
-    async records(filter?: { from?: number, limit?: number, envelope?: IEnvelope }): Promise<{id: number, geometry: any}[]> {
+    async records(filter?: { from?: number, limit?: number, envelope?: IEnvelope }): Promise<Array<Geometry>> {
         Validators.checkIsOpened(this.isOpened);
 
         const option = this._getStreamOption(100);
         const stream = fs.createReadStream(this.filePath, option);
-        const records: Array<{id: number, geometry: any}> = [];
+        const records: Array<Geometry> = [];
         const total = this.count();
 
         const filterNorm = this._normalizeFilter(filter);
@@ -164,8 +163,9 @@ export default class Shp extends StreamOpenable {
                         let reader = new ShpReader(contentBuffer);
                         let recordReader = this.__shpParser.read(reader);
                         if (recordReader !== null && Shp._matchFilter(filter, recordReader.envelope)) {
-                            const record = { id: id, geometry: recordReader.readGeom() };
-                            records.push(record);
+                            const geometry = recordReader.readGeom();
+                            geometry.id = id;
+                            records.push(geometry);
                         }
                     }
 
@@ -209,23 +209,23 @@ export default class Shp extends StreamOpenable {
         }
     }
 
-    updateAt(index: number, geometry: any) {
+    updateAt(index: number, geometry: Geometry) {
         Validators.checkIsOpened(this.isOpened);
         
         const record = this._pushRecord(geometry);
         this.__shx.updateAt(index, record.offset, record.geomBuff.length);
     }
 
-    push(geometry: any) {
+    push(geometry: Geometry) {
         Validators.checkIsOpened(this.isOpened);
 
         const record = this._pushRecord(geometry);
         this.__shx.push(record.offset, record.geomBuff.length);
     }
 
-    _pushRecord(geometry: any): { geomBuff: Buffer, offset: number } {
+    _pushRecord(geometry: Geometry): { geomBuff: Buffer, offset: number } {
         const parser = GeomParserFactory.create(this.__header.fileType);
-        const geomBuff = parser.value.getBuff(geometry);
+        const geomBuff = parser.value.getGeomBuff(geometry);
         const recBuff = Buffer.alloc(geomBuff.length + 8);
         recBuff.writeInt32BE(this.__shx.count() + 1, 0);
         recBuff.writeInt32BE(geomBuff.length / 2, 4);
@@ -254,9 +254,9 @@ export default class Shp extends StreamOpenable {
         return shp;
     }
 
-    private _updateHeader(geom: any, geomLength: number) {
+    private _updateHeader(geom: Geometry, geomLength: number) {
         this.__header.fileLength += geomLength;
-        const geomEnvelope = Envelope.from(geom);
+        const geomEnvelope = geom.envelope();
         this.__header.envelope = Envelope.union(this.__header.envelope, geomEnvelope);
         this.__header.write(this.__fd);
         this.__header.write(this.__shx._fd as number);

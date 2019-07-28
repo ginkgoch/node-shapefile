@@ -1,18 +1,30 @@
 import ShpWriter from "../ShpWriter";
 import GeomParser from "./GeomParser";
 import { ShapefileType, Constants } from "../../shared";
+import { Geometry, LinearRing, Polygon } from "ginkgoch-geom";
 
 export default class PolygonParser extends GeomParser {
     get expectedType(): ShapefileType {
         return ShapefileType.polygon
     }
 
-    protected _readGeom(): any {
+    protected _readGeom(): Geometry {
         const numParts = this._reader.nextInt32LE();
         const numPoints = this._reader.nextInt32LE();
         const parts = this._reader.nextParts(numParts);
         const points = this._reader.nextPointsByParts(numPoints, parts);
-        return points;
+        
+        const rings = points.map(r => {
+            return new LinearRing(r.map(p => ({x: p[0], y: p[1]})));
+        });
+
+        if (rings.length === 1) {
+            return new Polygon(rings[0]);
+        } else if (rings.length > 1) {
+            return new Polygon(rings[0], ...rings.slice(1));
+        } else {
+            return new Polygon();
+        }
     }
 
     get expectedTypeName(): string {

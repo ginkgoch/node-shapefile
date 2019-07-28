@@ -1,4 +1,4 @@
-import IEnvelope from "../../src/shp/IEnvelope";
+import { IEnvelope } from 'ginkgoch-geom';
 import ShpReader from "../../src/shp/ShpReader";
 
 describe('parser helper tests', () => {

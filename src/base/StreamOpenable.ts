@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import Openable from './Openable';
 import IQueryFilter from '../shared/IQueryFilter';
-import IEnvelope from '../shp/IEnvelope';
+import { IEnvelope } from "ginkgoch-geom";
 
 export default class StreamOpenable extends Openable {
     _getStreamOption(start?: number, end?: number): { autoClose: boolean, start?: number, end?: number } {

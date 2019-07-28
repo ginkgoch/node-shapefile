@@ -1,5 +1,6 @@
 import { BufferWriter } from "ginkgoch-buffer-io";
-import IEnvelope from "./IEnvelope";
+import { IEnvelope, Point, Geometry, GeometryType } from 'ginkgoch-geom';
+import { Validators } from "../shared";
 
 export default class ShpWriter extends BufferWriter {
     writeEnvelope(envelope: IEnvelope) {

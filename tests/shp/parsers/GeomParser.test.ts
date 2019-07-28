@@ -2,7 +2,7 @@ import * as shared from '../../../src/shared';
 import ShpReader from "../../../src/shp/ShpReader";
 import GeomParser from "../../../src/shp/parser/GeomParser";
 import GeomParserFactory from "../../../src/shp/parser/GeomParserFactory";
-import ShpWriter from '../../../src/shp/ShpWriter';
+import { Point } from 'ginkgoch-geom';
 
 describe('parser tests', () => {
     test('get parsers test', () => {
@@ -41,7 +41,7 @@ describe('parser tests', () => {
 
         obj.value.read(new ShpReader(buffer));
         let geom = obj.value.readGeom();
-        expect(geom).toEqual({ type: shared.ShapefileType.point, coordinates: [x, y] });
+        expect(geom).toEqual(new Point(x, y));
     });
 
     test('point shape parser test - incorrect buffer', () => {
@@ -83,7 +83,7 @@ describe('parser tests', () => {
         const geomInfo = parser.value.read(reader) as any;
         const geom = geomInfo.readGeom();
 
-        expect(geom.coordinates).toEqual(point1);
+        expect(geom.coordinates()).toEqual(point1);
     });
 
     it('write - multi point', () => {
@@ -95,7 +95,7 @@ describe('parser tests', () => {
 
         const geomInfo = parser.value.read(reader) as any;
         const geom = geomInfo.readGeom();
-        expect(geom.coordinates).toEqual(points);
+        expect(geom.coordinates()).toEqual(points);
     });
 
     it('write - line', () => {
@@ -107,7 +107,7 @@ describe('parser tests', () => {
 
         const geomInfo = parser.value.read(reader) as any;
         const geom = geomInfo.readGeom();
-        expect(geom.coordinates).toEqual(line);
+        expect(geom.coordinates()).toEqual(line);
     });
 
     it('write - multi line', () => {
@@ -119,11 +119,12 @@ describe('parser tests', () => {
 
         const geomInfo = parser.value.read(reader) as any;
         const geom = geomInfo.readGeom();
-        expect(geom.coordinates).toEqual(line);
+        expect(geom.coordinates()).toEqual(line);
     });
 
     it('write - polygon', () => {
-        const line = [[[45, 56], [78, 98]], [[34, 97], [46, 23]]];
+        const line = [[[45, 56], [78, 98], [78, 98], [45, 56]], 
+            [[34, 97], [46, 23], [46, 23], [34, 97]]];
 
         const parser = GeomParserFactory.create(shared.ShapefileType.polygon);
         const buff = parser.value.getBuff(line);
@@ -131,6 +132,6 @@ describe('parser tests', () => {
 
         const geomInfo = parser.value.read(reader) as any;
         const geom = geomInfo.readGeom();
-        expect(geom.coordinates).toEqual(line);
+        expect(geom.coordinates()).toEqual(line);
     });
 });

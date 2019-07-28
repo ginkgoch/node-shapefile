@@ -1,5 +1,5 @@
 import _ from "lodash";
-import Envelope from "../../src/shp/Envelope";
+import { Envelope } from 'ginkgoch-geom';
 import ShpWriter from "../../src/shp/ShpWriter";
 import ShpReader from "../../src/shp/ShpReader";
 
