@@ -1,7 +1,6 @@
 import GeomParser from "./GeomParser";
 import { ShapefileType, Constants } from "../../shared";
 import ShpWriter from "../ShpWriter";
-import { getConsoleOutput } from "@jest/console";
 import { Geometry, MultiPoint, Point } from "ginkgoch-geom";
 
 export default class MultiPointParser extends GeomParser {

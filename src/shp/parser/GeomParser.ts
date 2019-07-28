@@ -2,8 +2,8 @@ import _ from "lodash";
 import ShpReader from "../ShpReader";
 import ShpWriter from "../ShpWriter";
 import Validators from "../../shared/Validators";
-import { IEnvelope, Envelope, ICoordinate, Geometry } from "ginkgoch-geom";
 import { ShapefileType } from "../../shared/ShapefileType";
+import { IEnvelope, Envelope, ICoordinate, Geometry } from "ginkgoch-geom";
 
 export default abstract class GeomParser {
     type: number
@@ -31,6 +31,15 @@ export default abstract class GeomParser {
     protected _read(): { envelope: IEnvelope, readGeom: () => Geometry } {
         this.envelope = this._reader.nextEnvelope();
         return { envelope: this.envelope, readGeom: this.readGeom.bind(this) };
+    }
+
+    getBuff(coordinates: any): Buffer {
+        const size = this._size(coordinates);
+        const buff = Buffer.alloc(size);
+        const writer = new ShpWriter(buff);
+        this.write(coordinates, writer);
+
+        return buff;
     }
 
     write(coordinates: any, writer: ShpWriter): void {
@@ -63,6 +72,7 @@ export default abstract class GeomParser {
 
     protected abstract _size(coordinates: any): number;
 
+    //TODO: remove this method.
     static vertices(coordinates: any): number[][] {
         const vertices = new Array<number[]>();
         const flatten = _.flattenDeep(coordinates) as number[];
@@ -73,16 +83,28 @@ export default abstract class GeomParser {
         return vertices;
     }
 
+    //TODO: remove this method.
     static coordinates(coordinates: any): ICoordinate[] {
         return GeomParser.vertices(coordinates).map(c => ({ x: c[0], y: c[1] }));
     }
 
-    getBuff(coordinates: any): Buffer {
+    getGeomBuff(geom: Geometry): Buffer {
+        const coordinates = geom.coordinates();
         const size = this._size(coordinates);
         const buff = Buffer.alloc(size);
         const writer = new ShpWriter(buff);
         this.write(coordinates, writer);
 
         return buff;
+    }
+
+    writeGeom(geom: Geometry, writer: ShpWriter): void {
+        writer.writeInt32LE(this.type);
+        if (this.type !== ShapefileType.point) {
+            const envelope = geom.envelope();
+            writer.writeEnvelope(envelope);
+        }
+
+        this._write(geom.coordinates(), writer);
     }
 }

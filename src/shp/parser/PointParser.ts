@@ -4,7 +4,6 @@ import { IEnvelope, Envelope, Geometry, Point } from "ginkgoch-geom";
 import { ShapefileType, Constants } from "../../shared";
 
 export default class PointParser extends GeomParser {
-
     get expectedType(): ShapefileType {
         return ShapefileType.point;
     }
@@ -27,7 +26,7 @@ export default class PointParser extends GeomParser {
     }
 
     protected _write(coordinates: any, writer: ShpWriter): void {
-        writer.writePoint(coordinates as number[])
+        writer.writePoint(coordinates as number[]);
     }
 
     protected _size(coordinates: any): number {
