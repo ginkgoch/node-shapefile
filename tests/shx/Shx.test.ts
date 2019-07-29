@@ -64,4 +64,28 @@ describe('shx tests', () => {
             }
         });
     });
+
+    it('records - 1', async () => {
+        const shx = new Shx(filePath, 'rs');
+        await shx.open();
+
+        const records = await shx.records();
+        expect(records.length).toBe(51);
+        expect(records[0].id).toBe(1);
+        expect(records[records.length - 1].id).toBe(51);
+        expect(records[records.length - 1].length).not.toBe(0);
+        await shx.close();
+    });
+
+    it('records - 2', async () => {
+        const shx = new Shx(filePath, 'rs');
+        await shx.open();
+
+        const records = await shx.records({ from: 20, limit: 10 });
+        expect(records.length).toBe(10);
+        expect(records[0].id).toBe(20);
+        expect(records[records.length - 1].id).toBe(29);
+        expect(records[records.length - 1].length).not.toBe(0);
+        await shx.close();
+    });
 });

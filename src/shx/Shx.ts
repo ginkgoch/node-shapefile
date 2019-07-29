@@ -1,13 +1,15 @@
 import fs from 'fs';
-import Openable from '../base/Openable';
+import ShxRecord from './ShxRecord';
 import { Validators } from '../shared';
+import IQueryFilter from '../shared/IQueryFilter';
+import StreamOpenable from '../base/StreamOpenable';
 
 const RECORD_LENGTH = 8;
 const HEADER_LENGTH = 100;
 const OFFSET_LENGTH = 4;
 const CONTENT_LENGTH = 4;
 
-export default class Shx extends Openable {
+export default class Shx extends StreamOpenable {
     filePath: string
     _flag: string
     _fd?: number
@@ -41,11 +43,41 @@ export default class Shx extends Openable {
      * @param id The id of shx record. Starts from 1.
      */
     get(id: number) {
-        const buffer = Buffer.alloc(8);
-        fs.readSync(this.__fd, buffer, 0, 8, this._getOffsetById(id));
+        const buffer = Buffer.alloc(RECORD_LENGTH);
+        fs.readSync(this.__fd, buffer, 0, RECORD_LENGTH, this._getOffsetById(id));
         const offset = buffer.readInt32BE(0) * 2;
         const length = buffer.readInt32BE(4) * 2;
-        return { offset, length };
+        return { id, offset, length };
+    }
+
+    async records(filter?: IQueryFilter): Promise<Array<ShxRecord>> {
+        const reader = fs.createReadStream(this.filePath, this._getStreamOption(100));
+        return new Promise(res => {
+            const records = new Array<ShxRecord>();
+            const filterOption = this._normalizeFilter(filter);
+            const filterTo = filterOption.from + filterOption.limit;
+            reader.on('readable', () => {
+                let id = 1;
+                let buff = reader.read(RECORD_LENGTH) as Buffer;
+                while (buff !== null && buff.length === RECORD_LENGTH) {
+                    const record = this._buffToRecord(buff, id);
+                    if (record.length > 0 && id >= filterOption.from && id < filterTo) {
+                        records.push(record);
+                    }
+
+                    id++;
+                    buff = reader.read(RECORD_LENGTH);
+                }
+            }).on('end', () => {
+                res(records);
+            });
+        });
+    }
+
+    private _buffToRecord(buff: Buffer, id: number) {
+        const offset = buff.readInt32BE(0) * 2;
+        const length = buff.readInt32BE(4) * 2;
+        return { id, offset, length };
     }
 
     /**
@@ -76,11 +108,11 @@ export default class Shx extends Openable {
     push(offset: number, length: number) {
         const buff = Shx._getRecordBuff(offset, length);
         fs.writeSync(this.__fd, buff, 0, buff.length, this._totalSize);
-        
+
         this._totalSize += buff.length;
     }
 
-    private static _getRecordBuff(offset: number,  length: number): Buffer {
+    private static _getRecordBuff(offset: number, length: number): Buffer {
         const buff = Buffer.alloc(RECORD_LENGTH);
         buff.writeInt32BE(offset * .5, 0);
         buff.writeInt32BE(length * .5, 4);
