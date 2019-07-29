@@ -21,21 +21,21 @@ describe('demos tests', () => {
 
     async function getRecordById(id: number, fields?: string[]) {
         const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
-        const record = await statesShp.get(0, fields);
+        const record = await statesShp.get(id, fields);
         await statesShp.close();
 
         return record;
     }
 
     test('demo 2 - get record by id - all fields', async () => {
-        const record = await getRecordById(0) as IFeature;
+        const record = await getRecordById(1) as IFeature;
         expect(record).not.toBeNull();
         expect(record).not.toBeUndefined();
         expect(record.properties.size).not.toBe(0);
     });
 
     test('demo 2 - get record by id - none fields', async () => {
-        const record = await getRecordById(0, []) as IFeature;
+        const record = await getRecordById(1, []) as IFeature;
         expect(record).not.toBeNull();
         expect(record).not.toBeUndefined();
         expect(record.properties.size).toBe(0);

@@ -36,9 +36,13 @@ export default class Shx extends Openable {
         return (this._totalSize - HEADER_LENGTH) / RECORD_LENGTH;
     }
 
-    get(index: number) {
+    /**
+     * Gets the shx records with offset and length information.
+     * @param id The id of shx record. Starts from 1.
+     */
+    get(id: number) {
         const buffer = Buffer.alloc(8);
-        fs.readSync(this.__fd, buffer, 0, 8, HEADER_LENGTH + index * 8);
+        fs.readSync(this.__fd, buffer, 0, 8, this._getOffsetById(id));
         const offset = buffer.readInt32BE(0) * 2;
         const length = buffer.readInt32BE(4) * 2;
         return { offset, length };
@@ -46,20 +50,26 @@ export default class Shx extends Openable {
 
     /**
      * Remove record at a specific index.
-     * @param {number} index
+     * @param {number} id The id of shx record. Starts from 1.
      */
-    removeAt(index: number) {
-        const position = HEADER_LENGTH + RECORD_LENGTH * index + OFFSET_LENGTH;
+    removeAt(id: number) {
+        const position = this._getOffsetById(id) + OFFSET_LENGTH;
         const buff = Buffer.alloc(CONTENT_LENGTH);
         buff.writeInt32BE(0, 0);
         fs.writeSync(this.__fd, buff, 0, buff.length, position);
     }
 
-    updateAt(index: number, offset: number, length: number) {
-        Validators.checkIndexIsLessThan(index, this.count());
+    /**
+     * Update record at a specific index.
+     * @param id The id of shx record. Starts from 1.
+     * @param offset The offset content.
+     * @param length The length content.
+     */
+    updateAt(id: number, offset: number, length: number) {
+        Validators.checkIndexIsLessThan(id, this.count());
 
         const buff = Shx._getRecordBuff(offset, length);
-        const position = HEADER_LENGTH + RECORD_LENGTH * index;
+        const position = this._getOffsetById(id);
         fs.writeSync(this.__fd, buff, 0, buff.length, position);
     }
 
@@ -79,5 +89,9 @@ export default class Shx extends Openable {
 
     private get __fd() {
         return <number>this._fd;
+    }
+
+    private _getOffsetById(id: number): number {
+        return HEADER_LENGTH + (id - 1) * 8
     }
 };

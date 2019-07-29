@@ -28,10 +28,11 @@ describe('Shapefile create', () => {
         await createShapefileForEditing(filePath, async (shapefile) => {
             await shapefile.open();
 
-            let feature1 = createPointFeature([23, 34], { 'RECID': 1, 'NAME': 'Sam' });
+            let feature1 = createPointFeature([23, 34], { 'RECID': 1, 'NAME': 'Sam' }, 1);
             shapefile.push(feature1);
 
-            let feature2 = createPointFeature([56.9, 312.45], { 'RECID': 2, 'NAME': 'Bill' });
+            let feature2 = createPointFeature([56.9, 312.45], { 'RECID': 2, 'NAME': 'Bill' }, 2);
+            feature2.id = 2;
             shapefile.push(feature2);
             await shapefile.close();
 
@@ -62,9 +63,10 @@ async function createShapefileForEditing(filePath: string, action: (f: Shapefile
     }
 }
 
-function createPointFeature(coords: number[], props: any): IFeature {
+function createPointFeature(coords: number[], props: any, id: number): IFeature {
     const point = new Point(coords[0], coords[1]);
+    point.id = id;
     const properties = new Map<string, any>();
     Object.keys(props).forEach((v) => properties.set(v, props[v]));
-    return new Feature(point, properties);
+    return new Feature(point, properties, id);
 }

@@ -1,7 +1,7 @@
 import StreamOpenable from '../../src/base/StreamOpenable';
 import _ from 'lodash';
 
-const defaultFilter = { from: 0, limit: Number.MAX_SAFE_INTEGER };
+const defaultFilter = { from: 1, limit: Number.MAX_SAFE_INTEGER };
 
 class TestStream extends StreamOpenable {
     normalizeFilter(filter: { from?: number, limit?: number } | null | undefined) {
@@ -17,7 +17,7 @@ describe('base.StreamOpenable', () => {
     it('normalizeFilter', () => {
         const s = new TestStream();
         let f = s.normalizeFilter(undefined);
-        expect(f.from).toBe(0);
+        expect(f.from).toBe(1);
         expect(f.limit).toBe(Number.MAX_SAFE_INTEGER);
 
         f = s.normalizeFilter({ from: 20 });
@@ -25,7 +25,7 @@ describe('base.StreamOpenable', () => {
         expect(f.limit).toBe(Number.MAX_SAFE_INTEGER);
 
         f = s.normalizeFilter({ limit: 20 });
-        expect(f.from).toBe(0);
+        expect(f.from).toBe(1);
         expect(f.limit).toBe(20);
     });
 

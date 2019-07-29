@@ -53,11 +53,16 @@ export default class Dbf extends Openable {
         return header;
     }
 
+    /**
+     * Gets Dbase record at a specific row index.
+     * @param id Index of the record. Starts from 1.
+     * @param fields The fields to fetch in the row.
+     */
     async get(id: number, fields?: string[]): Promise<DbfRecord> {
         Validators.checkIsOpened(this.isOpened);
         Validators.checkIndexIsGEZero(id);
 
-        const offset = this.__header.headerLength + this.__header.recordLength * id;
+        const offset = this._getOffsetById(id);
         const iterator = await this._getRecordIterator(offset, offset + this.__header.recordLength);
         iterator.fields = fields;
         iterator._index = id - 1;
@@ -99,14 +104,14 @@ export default class Dbf extends Openable {
         const records = new Array<DbfRecord>();
 
         const filterFields = filter && filter.fields;
-        const filterStream = this._normalizeFilter(filter);
-        const to = filterStream.from + filterStream.limit;
+        const filterOptions = this._normalizeFilter(filter);
+        const to = filterOptions.from + filterOptions.limit;
 
         return new Promise(resolve => {
-            let index = -1;
             stream.on('readable', () => {
                 const recordLength = this.__header.recordLength;
-
+                
+                let index = 0;
                 let buffer = stream.read(recordLength);
                 while (null !== buffer) {
                     index++;
@@ -117,7 +122,7 @@ export default class Dbf extends Openable {
                     const currentBuff = buffer;
                     buffer = stream.read(recordLength);
 
-                    if (index < filterStream.from || index >= to) {
+                    if (index < filterOptions.from || index >= to) {
                         continue;
                     }
 
@@ -237,8 +242,8 @@ export default class Dbf extends Openable {
         const buff = Buffer.alloc(this.__header.recordLength);
         record.write(buff);
 
-        let recordId = record.id === -1 ? this.__header.recordCount : record.id;
-        let position = this.__header.headerLength + this.__header.recordLength * recordId;
+        let recordId = record.id === -1 ? this.__header.recordCount + 1 : record.id;
+        let position = this._getOffsetById(recordId);
         fs.writeSync(this.__fd, buff, 0, buff.length, position);
 
         if (record.id === -1) {
@@ -248,26 +253,26 @@ export default class Dbf extends Openable {
 
     /**
      * Remove record at index.
-     * @param {number} index The record index to delete. Start from 0.
+     * @param {number} id The record id to delete. Start from 1.
      */
-    removeAt(index: number) {
+    removeAt(id: number) {
         Validators.checkIsOpened(this.isOpened);
-        Validators.checkIndexIsGEZero(index);
+        Validators.checkIndexIsGEZero(id);
 
-        const position = this.__header.headerLength + index * this.__header.recordLength;
+        const position = this._getOffsetById(id);
         const buff = Buffer.from('*');
         fs.writeSync(this.__fd, buff, 0, 1, position);
     }
 
     /**
-     * Recover the deleted record at index. Edited record doesn't support.
-     * @param {number} index The record index to delete. Start from 0.
+     * Recover the deleted record by id. Edited record doesn't support.
+     * @param {number} id The record id to delete. Start from 1.
      */
-    recoverAt(index: number) {
+    recoverAt(id: number) {
         Validators.checkIsOpened(this.isOpened);
-        Validators.checkIndexIsGEZero(index);
+        Validators.checkIndexIsGEZero(id);
 
-        const position = this.__header.headerLength + index * this.__header.recordLength;
+        const position = this._getOffsetById(id);
         const buff = Buffer.from(' ');
         fs.writeSync(<number>this._fd, buff, 0, 1, position);
     }
@@ -290,5 +295,9 @@ export default class Dbf extends Openable {
 
     get __header() {
         return <DbfHeader>this._header;
+    }
+
+    private _getOffsetById(id: number): number {
+        return this.__header.headerLength + (id - 1) * this.__header.recordLength;
     }
 };

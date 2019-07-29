@@ -118,6 +118,10 @@ export default class Shp extends StreamOpenable {
         return await this._getRecordIterator(CONTENT_START_OFFSET);
     }
 
+    /**
+     * Gets shp record by id.
+     * @param id The record id. Starts from 1.
+     */
     async get(id: number): Promise<Geometry|null> {
         const shxPath = this.filePath.replace(extReg, '.shx');
         assert(!_.isUndefined(this._shx), `${path.basename(shxPath)} doesn't exist.`);
@@ -144,14 +148,14 @@ export default class Shp extends StreamOpenable {
         const to = filterNorm.from + filterNorm.limit;
 
         return await new Promise(resolve => {
-            let index = -1, readableTemp: Buffer|null = null;
+            let index = 0, readableTemp: Buffer|null = null;
             stream.on('readable', () => {
                 let buffer = readableTemp || stream.read(8);
                 while (null !== buffer) {
                     if (readableTemp === null) { 
                         index++; 
                         if (this._eventEmitter) {
-                            this._eventEmitter.emit('progress', index + 1, total);
+                            this._eventEmitter.emit('progress', index, total);
                         }
                     }
 
@@ -197,16 +201,17 @@ export default class Shp extends StreamOpenable {
         return new ShpIterator(sr, this.__shpParser);
     }
 
+    //TODO: rename all removeAt to removeBy.
     /**
-     * Remove record at a specific index.
-     * @param {number} index
+     * Remove record by a specific id.
+     * @param {number} id The shp record id. Starts from 1.
      */
-    removeAt(index: number) {
+    removeAt(id: number) {
         Validators.checkIsOpened(this.isOpened);
 
-        const recordShx = this.__shx.get(index);
+        const recordShx = this.__shx.get(id);
         if (recordShx && recordShx.length > 0) {
-            this.__shx.removeAt(index);
+            this.__shx.removeAt(id);
 
             const buff = Buffer.alloc(4);
             buff.writeInt32LE(0, 0);
@@ -217,11 +222,16 @@ export default class Shp extends StreamOpenable {
         }
     }
 
-    updateAt(index: number, geometry: Geometry) {
+    /**
+     * Update geometry by a specific record id.
+     * @param id The record id to update. Starts from 1.
+     * @param geometry The geometry to update.
+     */
+    updateAt(id: number, geometry: Geometry) {
         Validators.checkIsOpened(this.isOpened);
         
         const record = this._pushRecord(geometry);
-        this.__shx.updateAt(index, record.offset, record.geomBuff.length);
+        this.__shx.updateAt(id, record.offset, record.geomBuff.length);
     }
 
     push(geometry: Geometry) {

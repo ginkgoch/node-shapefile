@@ -143,7 +143,7 @@ describe('dbf update test', () => {
             const idToUpdate = 20;
             let record = await dbf.get(idToUpdate);
             expect(record.values.get('CAPITAL')).toBe('N');
-            expect(record.values.get('PLACEFIP')).toBe('65000');
+            expect(record.values.get('PLACEFIP')).toBe('35000');
 
             dbf.update(DbfRecord.fromJson(dbf_update_record));
 
