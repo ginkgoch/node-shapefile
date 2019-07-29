@@ -123,6 +123,8 @@ export default class Shp extends StreamOpenable {
      * @param id The record id. Starts from 1.
      */
     async get(id: number): Promise<Geometry|null> {
+        Validators.checkIsOpened(this.isOpened);
+
         const shxPath = this.filePath.replace(extReg, '.shx');
         assert(!_.isUndefined(this._shx), `${path.basename(shxPath)} doesn't exist.`);
 
@@ -131,62 +133,38 @@ export default class Shp extends StreamOpenable {
             return null;
         }
 
-        const iterator = await this._getRecordIterator(shxRecord.offset, shxRecord.offset + 8 + shxRecord.length);
+        const record = await this._get(shxRecord.offset, shxRecord.length);
+        return record;
+    }
+
+    async _get(offset: number, length: number, envelope?: IEnvelope) {
+        const iterator = await this._getRecordIterator(offset, offset + 8 + length);
+        iterator.envelope = envelope;
         const result = await iterator.next();
         return result.value;
     }
 
-    async records(filter?: { from?: number, limit?: number, envelope?: IEnvelope }): Promise<Array<Geometry>> {
+    async records(filter?: IQueryFilter): Promise<Array<Geometry>> {
         Validators.checkIsOpened(this.isOpened);
 
-        const option = this._getStreamOption(100);
-        const stream = fs.createReadStream(this.filePath, option);
-        const records: Array<Geometry> = [];
-        const total = this.count();
+        const filterOption = this._normalizeFilter(filter);
+        const indexRecords = await this.__shx.records(filter);
+        const records = new Array<Geometry>();
 
-        const filterNorm = this._normalizeFilter(filter);
-        const to = filterNorm.from + filterNorm.limit;
+        let index = 0, total = indexRecords.length;
+        for (let r of indexRecords) {
+            const record = await this._get(r.offset, r.length, filterOption.envelope);
+            if (record !== null) {
+                records.push(record);
+            }
 
-        return await new Promise(resolve => {
-            let index = 0, readableTemp: Buffer|null = null;
-            stream.on('readable', () => {
-                let buffer = readableTemp || stream.read(8);
-                while (null !== buffer) {
-                    if (readableTemp === null) { 
-                        index++; 
-                        if (this._eventEmitter) {
-                            this._eventEmitter.emit('progress', index, total);
-                        }
-                    }
+            index++;
+            if (this._eventEmitter) {
+                this._eventEmitter.emit('progress', index, total);
+            }
+        }
 
-                    const id = buffer.readInt32BE(0);
-                    const length = buffer.readInt32BE(4) * 2;
-
-                    const contentBuffer = stream.read(length);
-                    if (contentBuffer === null || contentBuffer.length === 0) { 
-                        readableTemp = buffer;
-                        break; 
-                    } 
-                    else {
-                        readableTemp = null;
-                    }
-
-                    if (index >= filterNorm.from && index < to) { 
-                        let reader = new ShpReader(contentBuffer);
-                        let recordReader = this.__shpParser.read(reader);
-                        if (recordReader !== null && Shp._matchFilter(filter, recordReader.envelope)) {
-                            const geometry = recordReader.readGeom();
-                            geometry.id = id;
-                            records.push(geometry);
-                        }
-                    }
-
-                    buffer = stream.read(8);
-                }
-            }).on('end', () => {
-                resolve(records);
-            });
-        });
+        return records;
     }
 
     static _matchFilter(filter: IQueryFilter|null|undefined, recordEnvelope: IEnvelope): boolean {
