@@ -7,8 +7,14 @@ import ShpReader from "../../src/shp/ShpReader";
 import { Envelope, IEnvelope, Geometry } from 'ginkgoch-geom';
 import GeomParser from "../../src/shp/parser/GeomParser";
 
-export default class ShpIterator extends Iterator<Geometry|null> {
-    envelope: IEnvelope|undefined;
+export class ShpIterator_ extends Iterator<Geometry | null> {
+    next(): Promise<Optional<Geometry | null>> {
+        throw new Error("Method not implemented.");
+    }
+}
+
+export default class ShpIterator extends Iterator<Geometry | null> {
+    envelope: IEnvelope | undefined;
     _streamReader: StreamReader;
     _shpParser: GeomParser;
 
@@ -28,7 +34,7 @@ export default class ShpIterator extends Iterator<Geometry|null> {
     /**
      * @override
      */
-    async next(): Promise<Optional<Geometry|null>> {
+    async next(): Promise<Optional<Geometry | null>> {
         let buffer = <Buffer>await this._streamReader.read(8);
         if (buffer === null || buffer.length === 0) {
             return this._done();
@@ -47,12 +53,12 @@ export default class ShpIterator extends Iterator<Geometry|null> {
             return this._dirty(content);
         }
 
-        let geometry: Geometry|null = null;
+        let geometry: Geometry | null = null;
         if (_.isUndefined(this.envelope) || (this.envelope && !Envelope.disjoined(content.envelope, this.envelope))) {
             geometry = content.readGeom();
             geometry.id = id;
         }
 
-        return this._continue(geometry); 
+        return this._continue(geometry);
     }
 };
