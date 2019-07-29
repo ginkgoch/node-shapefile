@@ -5,6 +5,7 @@ import DbfField from "../../src/dbf/DbfField";
 import { ShapefileType } from "../../src/shared";
 import Shapefile from "../../src/shapefile/Shapefile";
 import { DbfFieldType } from "../../src/dbf/DbfFieldType";
+import { Point, Feature, IFeature } from "ginkgoch-geom";
 
 describe('Shapefile create', () => {
     it('createEmpty', async () => {
@@ -27,8 +28,23 @@ describe('Shapefile create', () => {
         await createShapefileForEditing(filePath, async (shapefile) => {
             await shapefile.open();
 
+            let feature1 = createPointFeature([23, 34], { 'RECID': 1, 'NAME': 'Sam' });
+            shapefile.push(feature1);
 
+            let feature2 = createPointFeature([56.9, 312.45], { 'RECID': 2, 'NAME': 'Bill' });
+            shapefile.push(feature2);
             await shapefile.close();
+
+            await shapefile.open();
+            expect(shapefile.count()).toBe(2);
+
+            const records = await shapefile.records();
+            expect(records.length).toBe(2);
+            expect(records[0].geometry).toEqual(feature1.geometry);
+            expect(records[0].properties).toEqual(feature1.properties);
+
+            expect(records[1].geometry).toEqual(feature2.geometry);
+            expect(records[1].properties).toEqual(feature2.properties);
         })
     });
 });
@@ -46,6 +62,9 @@ async function createShapefileForEditing(filePath: string, action: (f: Shapefile
     }
 }
 
-function createFeature(point: number[], props: any) {
-
+function createPointFeature(coords: number[], props: any): IFeature {
+    const point = new Point(coords[0], coords[1]);
+    const properties = new Map<string, any>();
+    Object.keys(props).forEach((v) => properties.set(v, props[v]));
+    return new Feature(point, properties);
 }
