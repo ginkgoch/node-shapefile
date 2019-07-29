@@ -48,6 +48,57 @@ describe('Shapefile create', () => {
             expect(records[1].properties).toEqual(feature2.properties);
         })
     });
+
+    it('edit feature', async () => {
+        const filePath = './tests/data/shapefile_create_new.shp';
+        await createShapefileForEditing(filePath, async (shapefile) => {
+            await shapefile.open();
+
+            let feature1 = createPointFeature([23, 34], { 'RECID': 1, 'NAME': 'Sam' }, 1);
+            shapefile.push(feature1);
+
+            let feature2 = createPointFeature([56.9, 312.45], { 'RECID': 2, 'NAME': 'Bill' }, 2);
+            shapefile.push(feature2);
+            await shapefile.close();
+
+            await shapefile.open();
+            let feature2_new = createPointFeature([61.3, 256.63], { 'RECID': 2, 'NAME': 'Will' }, 2);
+            await shapefile.update(feature2_new);
+            await shapefile.close();
+
+
+            await shapefile.open();
+            const feature1_ = await shapefile.get(1);
+            const feature2_ = await shapefile.get(2);
+            expect(feature1_).toEqual(feature1);
+            expect(feature2_).toEqual(feature2_new);
+            await shapefile.close();
+
+        })
+    });
+
+    it('delete feature', async () => {
+        const filePath = './tests/data/shapefile_create_new.shp';
+        await createShapefileForEditing(filePath, async (shapefile) => {
+            await shapefile.open();
+
+            let feature1 = createPointFeature([23, 34], { 'RECID': 1, 'NAME': 'Sam' }, 1);
+            shapefile.push(feature1);
+
+            let feature2 = createPointFeature([56.9, 312.45], { 'RECID': 2, 'NAME': 'Bill' }, 2);
+            shapefile.push(feature2);
+            await shapefile.close();
+
+            await shapefile.open();
+            
+            shapefile.removeAt(2);
+            const feature2_ = await shapefile.get(2);
+            expect(feature2_).toBeNull();
+
+            await shapefile.close();
+        })
+    });
+
 });
 
 async function createShapefileForEditing(filePath: string, action: (f: Shapefile) => Promise<void>) {

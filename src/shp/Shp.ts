@@ -230,7 +230,7 @@ export default class Shp extends StreamOpenable {
     updateAt(id: number, geometry: Geometry) {
         Validators.checkIsOpened(this.isOpened);
         
-        const record = this._pushRecord(geometry);
+        const record = this._pushRecord(geometry, id);
         this.__shx.updateAt(id, record.offset, record.geomBuff.length);
     }
 
@@ -241,11 +241,13 @@ export default class Shp extends StreamOpenable {
         this.__shx.push(record.offset, record.geomBuff.length);
     }
 
-    _pushRecord(geometry: Geometry): { geomBuff: Buffer, offset: number } {
+    _pushRecord(geometry: Geometry, id?: number): { geomBuff: Buffer, offset: number } {
         const parser = GeomParserFactory.create(this.__header.fileType);
         const geomBuff = parser.value.getGeomBuff(geometry);
         const recBuff = Buffer.alloc(geomBuff.length + 8);
-        recBuff.writeInt32BE(this.__shx.count() + 1, 0);
+
+        const currentId = id === undefined ? this.__shx.count() + 1 : id;
+        recBuff.writeInt32BE(currentId, 0);
         recBuff.writeInt32BE(geomBuff.length / 2, 4);
         geomBuff.copy(recBuff, 8);
 

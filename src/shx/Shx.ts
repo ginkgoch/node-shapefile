@@ -66,7 +66,7 @@ export default class Shx extends Openable {
      * @param length The length content.
      */
     updateAt(id: number, offset: number, length: number) {
-        Validators.checkIndexIsLessThan(id, this.count());
+        Validators.checkIndexIsLEThan(id, this.count());
 
         const buff = Shx._getRecordBuff(offset, length);
         const position = this._getOffsetById(id);
