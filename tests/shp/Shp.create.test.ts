@@ -45,7 +45,7 @@ describe('Shp - create', () => {
             shp._flag = 'rs';
             await shp.open();
             expect(shp.count()).toBe(1);
-            const polygon1_ = await shp.get(0);
+            const polygon1_ = await shp.get(1);
             expect(polygon1_).toEqual(polygon1);
             await shp.close();
         } finally {

@@ -17,7 +17,7 @@ export default class DbfIterator extends Iterator<DbfRecord> {
 
         this.done = false;
         this.fields = undefined;
-        this._index = -1;
+        this._index = 0;
         this._header = header;
         this._streamReader = streamReader;
     }

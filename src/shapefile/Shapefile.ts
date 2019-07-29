@@ -144,13 +144,13 @@ export default class Shapefile extends StreamOpenable {
 
     /**
      * Gets shapefile record by a specified id, and returnes with the given fields. If fields is not indicated, all fields will be fetched.
-     * @param {number} id The record id. Starts from 0.
-     * @param {undefined|'all'|'none'|Array.<string>} fields The fields that will be fetch from DBF file.
+     * @param {number} id The record id. Starts from 1.
+     * @param {undefined|Array<string>} fields The fields that will be fetch from DBF file.
      * @returns The record that contains the required id.
      */
-    //TODO: make sure the id are starts from 0 or 1.
     async get(id: number, fields?: string[]): Promise<Feature | null> {
         Validators.checkIsOpened(this.isOpened);
+        
         const geom = await this._shp.value.get(id);
         if (geom === null) {
             return null;
@@ -190,6 +190,10 @@ export default class Shapefile extends StreamOpenable {
         this._dbf.value.update(dbfRecord);
     }
 
+    /**
+     * Remove shapefile record by id.
+     * @param id The id to remove. Starts from 1.
+     */
     removeAt(id: number) {
         Validators.checkIsOpened(this.isOpened);
 

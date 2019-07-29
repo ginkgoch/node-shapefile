@@ -16,8 +16,8 @@ describe('shx tests', () => {
         const shx = new Shx(filePath);
         await shx.openWith(() => {
             const count = shx.count();
-            let previousRec = shx.get(0);
-            for(let i = 1; i < count; i++) {
+            let previousRec = shx.get(1);
+            for(let i = 2; i <= count; i++) {
                 const currentRec = shx.get(i);
                 expect(currentRec.offset).toBe(previousRec.offset + previousRec.length + 8);
                 previousRec = currentRec;

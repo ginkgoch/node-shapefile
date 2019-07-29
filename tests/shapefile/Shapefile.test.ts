@@ -78,7 +78,7 @@ describe('shapefile test', () => {
             let record1 = await iterator.next();
             let count = 0;
             while(!iterator.done) {
-                const record2 = await shapefile.get(count);
+                const record2 = await shapefile.get(count + 1);
                 expect(record2).toHaveProperty('geometry');
                 expect(record2).toHaveProperty('properties');
                 expect(record2).toEqual(record1.value);
@@ -86,6 +86,7 @@ describe('shapefile test', () => {
                 count++;
                 record1 = await iterator.next();
             }
+
             expect(count).toBe(51);
         });
     });
@@ -97,7 +98,7 @@ describe('shapefile test', () => {
             let record1 = await iterator.next();
             let count = 0;
             while(!iterator.done) {
-                const record2 = await shapefile.get(count, ['RECID']) as IFeature;
+                const record2 = await shapefile.get(count + 1, ['RECID']) as IFeature;
                 expect(record2).toHaveProperty('geometry');
                 expect(record2).toHaveProperty('properties');
                 expect(record2.properties.size).toBe(1);
@@ -107,6 +108,7 @@ describe('shapefile test', () => {
                 count++;
                 record1 = await iterator.next();
             }
+
             expect(count).toBe(51);
         });
     });
@@ -118,7 +120,7 @@ describe('shapefile test', () => {
             let record1 = await iterator.next();
             let count = 0;
             while(!iterator.done) {
-                const record2 = await shapefile.get(count, []) as IFeature;
+                const record2 = await shapefile.get(count + 1, []) as IFeature;
                 expect(record2).toHaveProperty('geometry');
                 expect(record2).toHaveProperty('properties');
                 expect(record2.properties.size).toBe(0);
