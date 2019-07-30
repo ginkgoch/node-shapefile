@@ -59,4 +59,11 @@ export class FileReader {
         this._requireClose = false;
         this.cache = Buffer.alloc(0);
     }
+
+    invalidCache() {
+        this.position = 0;
+        this.cacheStart = 0;
+        this.cache = Buffer.alloc(0);
+        this.total = fs.fstatSync(this.fd).size;
+    }
 }

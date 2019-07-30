@@ -83,6 +83,7 @@ export default class Shp extends StreamOpenable {
         fs.closeSync(this.__fd);
         this._fd = undefined;
         this._header = undefined;
+        this._reader = undefined;
         this._shpParser.update(undefined);
 
         if (this._shx) {
@@ -200,6 +201,8 @@ export default class Shp extends StreamOpenable {
             // write record length to  0.
             const position = recordShx.offset + 4;
             fs.writeSync(this.__fd, buff, 0, buff.length, position);
+
+            this._invalidCache();
         }
     }
 
@@ -234,8 +237,8 @@ export default class Shp extends StreamOpenable {
 
         const offset = this.__header.fileLength;
         fs.writeSync(this.__fd, recBuff, 0, recBuff.length, offset);
-
         this._updateHeader(geometry, recBuff.length);
+        this.__reader.invalidCache();
 
         return { geomBuff, offset };
     }
@@ -254,11 +257,16 @@ export default class Shp extends StreamOpenable {
         return shp;
     }
 
+    _invalidCache() {
+        this.__reader.invalidCache();
+    }
+
     private _updateHeader(geom: Geometry, geomLength: number) {
         this.__header.fileLength += geomLength;
         const geomEnvelope = geom.envelope();
         this.__header.envelope = Envelope.union(this.__header.envelope, geomEnvelope);
         this.__header.write(this.__fd);
         this.__header.write(this.__shx._fd as number);
+        this.__shx._invalidCache();
     }
 };
