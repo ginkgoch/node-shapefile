@@ -1,7 +1,7 @@
 import fs from "fs";
 import assert from 'assert';
 
-const CACHE_BLOCK_SIZE = 128;
+const CACHE_BLOCK_SIZE = 512;
 
 export class FileReader {
     fd: number;
