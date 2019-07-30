@@ -8,7 +8,6 @@ import { Envelope, IEnvelope, Geometry } from 'ginkgoch-geom';
 
 import Shx from '../shx/Shx';
 import ShpHeader from './ShpHeader';
-import ShpReader from './ShpReader';
 import ShpIterator from './ShpIterator';
 import Optional from '../base/Optional';
 import GeomParser from './parser/GeomParser';
@@ -23,11 +22,12 @@ const CONTENT_START_OFFSET = 100;
 export default class Shp extends StreamOpenable {
     filePath: string;
     _flag: string;
-    _fd: number|undefined;
-    _header: undefined|ShpHeader;
+    _fd: number | undefined;
+    _header: undefined | ShpHeader;
     _shpParser: Optional<GeomParser>;
     _shx: Optional<Shx>;
-    _eventEmitter: EventEmitter|undefined;
+    _eventEmitter: EventEmitter | undefined;
+    _reader: FileReader | undefined;
 
     constructor(filePath: string, flag = 'rs') {
         super();
@@ -53,6 +53,10 @@ export default class Shp extends StreamOpenable {
         return this._shx.value;
     }
 
+    private get __reader() {
+        return <FileReader>this._reader;
+    }
+
     /**
      * @override
      */
@@ -64,7 +68,7 @@ export default class Shp extends StreamOpenable {
         this._shpParser = GeomParserFactory.create(this.__header.fileType);
 
         const filePathShx = this.filePath.replace(extReg, '.shx');
-        if(fs.existsSync(filePathShx)) {
+        if (fs.existsSync(filePathShx)) {
             this._shx.update(new Shx(filePathShx, this._flag));
             await this.__shx.open();
         }
@@ -78,12 +82,12 @@ export default class Shp extends StreamOpenable {
         this._fd = undefined;
         this._header = undefined;
         this._shpParser.update(undefined);
-        
-        if(this._shx) {
+
+        if (this._shx) {
             await this.__shx.close();
             this._shx.update(undefined);
         }
-    } 
+    }
 
     //TODO: remove async
     async _readHeader() {
@@ -96,9 +100,9 @@ export default class Shp extends StreamOpenable {
         Validators.checkIsOpened(this.isOpened);
 
         return new Envelope(
-            this.__header.envelope.minx, 
-            this.__header.envelope.miny, 
-            this.__header.envelope.maxx, 
+            this.__header.envelope.minx,
+            this.__header.envelope.miny,
+            this.__header.envelope.maxx,
             this.__header.envelope.maxy);
     }
 
@@ -122,7 +126,7 @@ export default class Shp extends StreamOpenable {
      * Gets shp record by id.
      * @param id The record id. Starts from 1.
      */
-    async get(id: number): Promise<Geometry|null> {
+    async get(id: number): Promise<Geometry | null> {
         Validators.checkIsOpened(this.isOpened);
 
         const shxPath = this.filePath.replace(extReg, '.shx');
@@ -167,7 +171,7 @@ export default class Shp extends StreamOpenable {
         return records;
     }
 
-    static _matchFilter(filter: IQueryFilter|null|undefined, recordEnvelope: IEnvelope): boolean {
+    static _matchFilter(filter: IQueryFilter | null | undefined, recordEnvelope: IEnvelope): boolean {
         return filter === null || filter === undefined || _.isUndefined(filter.envelope) || (filter.envelope && !Envelope.disjoined(recordEnvelope, filter.envelope));
     }
 
@@ -207,7 +211,7 @@ export default class Shp extends StreamOpenable {
      */
     updateAt(id: number, geometry: Geometry) {
         Validators.checkIsOpened(this.isOpened);
-        
+
         const record = this._pushRecord(geometry, id);
         this.__shx.updateAt(id, record.offset, record.geomBuff.length);
     }
@@ -240,7 +244,7 @@ export default class Shp extends StreamOpenable {
     static createEmpty(filePath: string, fileType: ShapefileType): Shp {
         const header = new ShpHeader();
         header.fileType = fileType;
-        
+
         const headerBuff = Buffer.alloc(Constants.SIZE_OF_SHP_HEADER);
         header._write(headerBuff);
 
