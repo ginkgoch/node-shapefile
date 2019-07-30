@@ -206,6 +206,7 @@ export default class Shp extends StreamOpenable {
         }
     }
 
+    //TODO: check whether the geometry is changed. Otherwise, we should not push new geometry.
     /**
      * Update geometry by a specific record id.
      * @param id The record id to update. Starts from 1.
