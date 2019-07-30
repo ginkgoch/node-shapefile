@@ -1,9 +1,9 @@
 import { IEnvelope, Feature } from "ginkgoch-geom";
 
 import Iterator from '../base/Iterator';
+import Optional from "../base/Optional";
 import DbfIterator from "../dbf/DbfIterator";
 import ShpIterator from "../shp/ShpIterator";
-import Optional from "../base/Optional";
 
 /**
  * The Shapefile iterator.

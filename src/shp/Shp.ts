@@ -3,14 +3,14 @@ import _ from 'lodash';
 import path from 'path';
 import assert = require('assert');
 import { EventEmitter } from "events";
-import { StreamReader } from 'ginkgoch-stream-io';
 import { Envelope, IEnvelope, Geometry } from 'ginkgoch-geom';
 
 import Shx from '../shx/Shx';
 import ShpHeader from './ShpHeader';
-import ShpIterator from './ShpIterator';
 import Optional from '../base/Optional';
+import ShpIterator from './ShpIterator';
 import GeomParser from './parser/GeomParser';
+import { FileReader } from '../shared/FileReader';
 import IQueryFilter from '../shared/IQueryFilter';
 import StreamOpenable from '../base/StreamOpenable';
 import GeomParserFactory from './parser/GeomParserFactory';
@@ -66,6 +66,7 @@ export default class Shp extends StreamOpenable {
         this._fd = fs.openSync(this.filePath, this._flag);
         this._header = await this._readHeader();
         this._shpParser = GeomParserFactory.create(this.__header.fileType);
+        this._reader = new FileReader(this._fd);
 
         const filePathShx = this.filePath.replace(extReg, '.shx');
         if (fs.existsSync(filePathShx)) {
@@ -78,6 +79,7 @@ export default class Shp extends StreamOpenable {
      * @override
      */
     async _close() {
+        this.__reader.close();
         fs.closeSync(this.__fd);
         this._fd = undefined;
         this._header = undefined;
@@ -137,12 +139,12 @@ export default class Shp extends StreamOpenable {
             return null;
         }
 
-        const record = await this._get(shxRecord.offset, shxRecord.length);
+        const record = await this._get(shxRecord.offset);
         return record;
     }
 
-    async _get(offset: number, length: number, envelope?: IEnvelope) {
-        const iterator = await this._getRecordIterator(offset, offset + 8 + length);
+    async _get(offset: number, envelope?: IEnvelope) {
+        const iterator = await this._getRecordIterator(offset);
         iterator.envelope = envelope;
         const result = await iterator.next();
         return result.value;
@@ -157,7 +159,7 @@ export default class Shp extends StreamOpenable {
 
         let index = 0, total = indexRecords.length;
         for (let r of indexRecords) {
-            const record = await this._get(r.offset, r.length, filterOption.envelope);
+            const record = await this._get(r.offset, filterOption.envelope);
             if (record !== null) {
                 records.push(record);
             }
@@ -175,12 +177,9 @@ export default class Shp extends StreamOpenable {
         return filter === null || filter === undefined || _.isUndefined(filter.envelope) || (filter.envelope && !Envelope.disjoined(recordEnvelope, filter.envelope));
     }
 
-    async _getRecordIterator(start?: number, end?: number) {
-        const option = this._getStreamOption(start, end);
-        const stream = fs.createReadStream(this.filePath, option);
-        const sr = new StreamReader(stream);
-        await sr.open();
-        return new ShpIterator(sr, this.__shpParser);
+    async _getRecordIterator(start: number) {
+        this.__reader.seek(start);
+        return new ShpIterator(this.__reader, this.__shpParser);
     }
 
     //TODO: rename all removeAt to removeBy.
