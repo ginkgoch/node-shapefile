@@ -4,6 +4,7 @@ import { Validators } from '../shared';
 import IQueryFilter from '../shared/IQueryFilter';
 import StreamOpenable from '../base/StreamOpenable';
 import { FileReader } from '../shared/FileReader';
+import ShxIterator from './ShxIterator';
 
 const RECORD_LENGTH = 8;
 const HEADER_LENGTH = 100;
@@ -58,33 +59,27 @@ export default class Shx extends StreamOpenable {
     }
 
     async records(filter?: IQueryFilter): Promise<Array<ShxRecord>> {
-        const reader = fs.createReadStream(this.filePath, this._getStreamOption(100));
-        return new Promise(res => {
-            const records = new Array<ShxRecord>();
-            const filterOption = this._normalizeFilter(filter);
-            const filterTo = filterOption.from + filterOption.limit;
-            reader.on('readable', () => {
-                let id = 1;
-                let buff = reader.read(RECORD_LENGTH) as Buffer;
-                while (buff !== null && buff.length === RECORD_LENGTH) {
-                    const record = this._buffToRecord(buff, id);
-                    if (record.length > 0 && id >= filterOption.from && id < filterTo) {
-                        records.push(record);
-                    }
+        const records = new Array<ShxRecord>();
+        const count = this.count();
+        const filterOption = this._normalizeFilter(filter);
+        let to = filterOption.from + filterOption.limit;
+        if (to > count + 1) {
+            to = count + 1;
+        }
+        for (let i = filterOption.from; i < to; i++) {
+            const record = this.get(i);
+            if (record.length > 0) {
+                records.push(record);
+            }
+        }
 
-                    id++;
-                    buff = reader.read(RECORD_LENGTH);
-                }
-            }).on('end', () => {
-                res(records);
-            });
-        });
+        return Promise.resolve(records);
     }
 
-    private _buffToRecord(buff: Buffer, id: number) {
-        const offset = buff.readInt32BE(0) * 2;
-        const length = buff.readInt32BE(4) * 2;
-        return { id, offset, length };
+    async iterator() {
+        const reader = new FileReader(this.__fd);
+        reader.seek(HEADER_LENGTH);
+        return new ShxIterator(reader);
     }
 
     /**
