@@ -169,20 +169,16 @@ describe('Dbf records test', () => {
     test('read test - limit + from', async () => {
         const dbf = new Dbf(filePath);
         await dbf.openWith(async () => {
-            // const records = await dbf.records({ limit: 2, from: 2 });
-            // expect(records.length).toBe(2);
+            const records = await dbf.records({ limit: 2, from: 2 });
+            expect(records.length).toBe(2);
 
-            // const it = await dbf.iterator();
-            // await it.next(); // 0
-            // let record1 = await it.next(); // 1
+            const it = await dbf.iterator();
+            await it.next(); // 1
+            let record1 = await it.next(); // 2
+            expect(records[0]).toEqual(record1.value);
             
-            // record1 = await it.next(); // 2
-            // let record2 = records[0]; 
-            // expect(record2).toEqual(record1.value);
-            
-            // record1 = await it.next(); // 3
-            // record2 = records[1]; 
-            // expect(record2).toEqual(record1.value);
+            record1 = await it.next(); // 2
+            expect(records[1]).toEqual(record1.value);
         });
     });
 
