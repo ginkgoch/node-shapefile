@@ -1312,11 +1312,6 @@ ginkgoch-geom@^1.0.12:
     jsts "^2.0.6"
     lodash "^4.17.15"
 
-ginkgoch-stream-io@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/ginkgoch-stream-io/-/ginkgoch-stream-io-1.2.0.tgz#e3159e1a42fd5c529ccbf4cdbe7069e2e049e953"
-  integrity sha512-y/AAguSXEM5uQE2o2PrjsJpBuQ8OhwJ63iYjnKP+GNNz2pr1jvuk2sdyoD02fyW0w9wjps+e2mNsWyoRK8g5Tg==
-
 git-config-path@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/git-config-path/-/git-config-path-1.0.1.tgz#6d33f7ed63db0d0e118131503bab3aca47d54664"
