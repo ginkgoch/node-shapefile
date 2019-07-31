@@ -107,6 +107,10 @@ export default class Dbf extends Openable {
         const filterOptions = this._normalizeFilter(filter);
         const to = filterOptions.from + filterOptions.limit;
 
+        if (filterFields && filterFields.length === 0) {
+            return Promise.resolve(records);
+        }
+
         return new Promise(resolve => {
             stream.on('readable', () => {
                 const recordLength = this.__header.recordLength;
