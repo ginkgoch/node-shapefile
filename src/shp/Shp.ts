@@ -64,7 +64,7 @@ export default class Shp extends StreamOpenable {
         Validators.checkFileExists(this.filePath);
 
         this._fd = fs.openSync(this.filePath, this._flag);
-        this._header = await this._readHeader();
+        this._header = this._readHeader();
         this._shpParser = GeomParserFactory.create(this.__header.fileType);
         this._reader = new FileReader(this._fd);
 
@@ -92,11 +92,10 @@ export default class Shp extends StreamOpenable {
         }
     }
 
-    //TODO: remove async
-    async _readHeader() {
+    _readHeader() {
         Validators.checkIsOpened(this.isOpened);
         const header = ShpHeader.read(this.__fd);
-        return await Promise.resolve(header);
+        return header;
     }
 
     envelope() {
