@@ -9,9 +9,10 @@ export default class ShxIterator extends Iterator<ShxRecord> {
     reader: FileReader;
     index: number = 0;
 
-    constructor(reader: FileReader) {
+    constructor(reader: FileReader, index: number = 0) {
         super();
         this.reader = reader;
+        this.index = index;
     }
 
     async next(): Promise<Optional<ShxRecord>> {
