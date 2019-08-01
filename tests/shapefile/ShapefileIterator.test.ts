@@ -8,7 +8,7 @@ describe('ShapefileIterator', () => {
         const shapefile = new Shapefile(filePath);
         await shapefile.open();
 
-        const iterator = await shapefile.iterator_();
+        const iterator = await shapefile.iterator();
         const records = new Array<Feature>();
         while (!iterator.done) {
             const record = await iterator.next();
@@ -30,7 +30,7 @@ describe('ShapefileIterator', () => {
         const shapefile = new Shapefile(filePath);
         await shapefile.open();
 
-        const iterator = await shapefile.iterator_({ from: 2 });
+        const iterator = await shapefile.iterator({ from: 2 });
         const records = new Array<Feature>();
         while (!iterator.done) {
             const record = await iterator.next();
@@ -52,7 +52,7 @@ describe('ShapefileIterator', () => {
         const shapefile = new Shapefile(filePath);
         await shapefile.open();
 
-        const iterator = await shapefile.iterator_({ from: 2, limit: 4 });
+        const iterator = await shapefile.iterator({ from: 2, limit: 4 });
         const records = new Array<Feature>();
         while (!iterator.done) {
             const record = await iterator.next();
@@ -74,7 +74,7 @@ describe('ShapefileIterator', () => {
         const shapefile = new Shapefile(filePath);
         await shapefile.open();
 
-        const iterator = await shapefile.iterator_({ envelope: { minx: 0, maxx: 180, miny: -90, maxy: 90 } });
+        const iterator = await shapefile.iterator({ envelope: { minx: 0, maxx: 180, miny: -90, maxy: 90 } });
         const records = new Array<Feature>();
         while (!iterator.done) {
             const record = await iterator.next();
@@ -91,7 +91,7 @@ describe('ShapefileIterator', () => {
         const shapefile = new Shapefile(filePath);
         await shapefile.open();
 
-        const iterator = await shapefile.iterator_({ fields: ['RECID'] });
+        const iterator = await shapefile.iterator({ fields: ['RECID'] });
         const records = new Array<Feature>();
         while (!iterator.done) {
             const record = await iterator.next();
@@ -104,10 +104,10 @@ describe('ShapefileIterator', () => {
         expect(records[0].properties.size).toBe(1);
         expect(records[0].properties.has('RECID'));
 
-        for(let record of records) {
+        for (let record of records) {
             expect(record.properties.get('RECID')).toBe(record.id);
         }
-        
+
         await shapefile.close();
     });
 });

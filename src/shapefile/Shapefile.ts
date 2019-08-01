@@ -5,14 +5,13 @@ import { IFeature, Feature } from "ginkgoch-geom";
 
 import Shp from "../shp/Shp";
 import Dbf from "../dbf/Dbf";
+import DbfField from '../dbf/DbfField';
 import Optional from "../base/Optional";
-import { Validators, Constants, ShapefileType } from "../shared";
+import DbfRecord from '../dbf/DbfRecord';
+import IQueryFilter from "../shared/IQueryFilter";
 import ShapefileIterator from "./ShapefileIterator";
 import StreamOpenable from "../base/StreamOpenable";
-import IQueryFilter from "../shared/IQueryFilter";
-import DbfField from '../dbf/DbfField';
-import DbfRecord from '../dbf/DbfRecord';
-import ShapefileIterator_ from './ShapefileIterator_';
+import { Validators, ShapefileType } from "../shared";
 
 const extReg = /\.\w+$/;
 
@@ -119,19 +118,8 @@ export default class Shapefile extends StreamOpenable {
     async iterator(filter?: IQueryFilter) {
         Validators.checkIsOpened(this.isOpened);
 
-        const shpIt = await this._shp.value.iterator();
-        const dbfIt = await this._dbf.value.iterator();
-        const shapefileIt = new ShapefileIterator(shpIt, dbfIt);
-        shapefileIt.fields = this._normalizeFields(filter && filter.fields);
-        shapefileIt.envelope = filter && filter.envelope;
-        return shapefileIt;
-    }
-
-    async iterator_(filter?: IQueryFilter) {
-        Validators.checkIsOpened(this.isOpened);
-
         const filterNorm = this._normalizeFilter(filter);
-        const iterator = new ShapefileIterator_(this.count(), this._shp.value, this._dbf.value, filterNorm);
+        const iterator = new ShapefileIterator(this.count(), this._shp.value, this._dbf.value, filterNorm);
         return iterator;
     }
 
@@ -159,7 +147,7 @@ export default class Shapefile extends StreamOpenable {
      */
     async get(id: number, fields?: string[]): Promise<Feature | null> {
         Validators.checkIsOpened(this.isOpened);
-        
+
         const geom = await this._shp.value.get(id);
         if (geom === null) {
             return null;
