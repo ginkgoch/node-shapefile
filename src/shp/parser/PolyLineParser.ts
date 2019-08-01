@@ -84,6 +84,6 @@ export default class PolyLineParser extends GeomParser {
          * parts
          * points
          */
-        return 4 + Constants.SIZE_OF_ENVELOPE + 4 + 4 + 4 * parts.length + Constants.SIZE_OF_POINT * vertices.length;
+        return 4 + Constants.SIZE_ENVELOPE + 4 + 4 + 4 * parts.length + Constants.SIZE_POINT * vertices.length;
     }
 }

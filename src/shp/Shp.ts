@@ -16,9 +16,6 @@ import StreamOpenable from '../base/StreamOpenable';
 import GeomParserFactory from './parser/GeomParserFactory';
 import { Validators, ShapefileType, Constants } from "../shared";
 
-const extReg = /\.\w+$/;
-const CONTENT_START_OFFSET = 100;
-
 export default class Shp extends StreamOpenable {
     filePath: string;
     _flag: string;
@@ -68,7 +65,7 @@ export default class Shp extends StreamOpenable {
         this._shpParser = GeomParserFactory.create(this.__header.fileType);
         this._reader = new FileReader(this._fd);
 
-        const filePathShx = this.filePath.replace(extReg, '.shx');
+        const filePathShx = this.filePath.replace(Constants.FILE_EXT_REG, '.shx');
         if (fs.existsSync(filePathShx)) {
             this._shx.update(new Shx(filePathShx, this._flag));
             this.__shx.open();
@@ -121,7 +118,7 @@ export default class Shp extends StreamOpenable {
 
     iterator() {
         Validators.checkIsOpened(this.isOpened);
-        return this._iterator(CONTENT_START_OFFSET);
+        return this._iterator(Constants.SIZE_SHP_HEADER);
     }
 
     _iterator(offset: number) {
@@ -136,7 +133,7 @@ export default class Shp extends StreamOpenable {
     get(id: number): Geometry | null {
         Validators.checkIsOpened(this.isOpened);
 
-        const shxPath = this.filePath.replace(extReg, '.shx');
+        const shxPath = this.filePath.replace(Constants.FILE_EXT_REG, '.shx');
         assert(!_.isUndefined(this._shx), `${path.basename(shxPath)} doesn't exist.`);
 
         const shxRecord = this.__shx.get(id);
@@ -247,7 +244,7 @@ export default class Shp extends StreamOpenable {
         const header = new ShpHeader();
         header.fileType = fileType;
 
-        const headerBuff = Buffer.alloc(Constants.SIZE_OF_SHP_HEADER);
+        const headerBuff = Buffer.alloc(Constants.SIZE_SHP_HEADER);
         header._write(headerBuff);
 
         fs.writeFileSync(filePath, headerBuff);

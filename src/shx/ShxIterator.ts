@@ -2,8 +2,7 @@ import Iterator from "../base/Iterator";
 import ShxRecord from "./ShxRecord";
 import Optional from "../base/Optional";
 import { FileReader } from '../shared/FileReader'
-
-const RECORD_LENGTH = 8;
+import { Constants } from "../shared";
 
 export default class ShxIterator extends Iterator<ShxRecord> {
     reader: FileReader;
@@ -19,8 +18,8 @@ export default class ShxIterator extends Iterator<ShxRecord> {
      * @override
      */
     next(): Optional<ShxRecord> {
-        let buff = this.reader.read(RECORD_LENGTH) as Buffer;
-        if (buff === null || buff.length !== RECORD_LENGTH) {
+        let buff = this.reader.read(Constants.SIZE_SHX_RECORD) as Buffer;
+        if (buff === null || buff.length !== Constants.SIZE_SHX_RECORD) {
             return this._done();
         }
 
