@@ -78,9 +78,7 @@ export default class Shx extends StreamOpenable {
     }
 
     iterator() {
-        const reader = new FileReader(this.__fd);
-        reader.seek(Constants.SIZE_SHX_HEADER);
-        return new ShxIterator(reader);
+        return new ShxIterator(this.__fd);
     }
 
     /**
