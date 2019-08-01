@@ -6,6 +6,7 @@ import Dbf from "../dbf/Dbf";
 import Iterator from '../base/Iterator';
 import Optional from "../base/Optional";
 import IQueryFilter from "../shared/IQueryFilter";
+import FilterUtils from "../shared/FilterUtils";
 
 /**
  * The Shapefile iterator.
@@ -22,26 +23,22 @@ export default class ShapefileIterator extends Iterator<Feature | null> {
     shp: Shp;
     dbf: Dbf;
     count: number;
-    filter: IQueryFilter;
-    from: number;
-    to: number;
+    filter: { from: number, limit: number, to: number, fields?: string[], envelope?: IEnvelope };
     index: number;
 
-    constructor(count: number, shp: Shp, dbf: Dbf, filter: IQueryFilter) {
+    constructor(shp: Shp, dbf: Dbf, filter?: IQueryFilter) {
         super();
 
         this.shp = shp;
         this.dbf = dbf;
-        this.count = count;
-        this.filter = filter;
-
-        this.from = _.defaultTo(this.filter.from, 1);
-        this.index = this.from - 1;
-        let limit = _.defaultTo(this.filter.limit, this.count);
-        this.to = this.from + limit;
-        if (this.to > this.count + 1) {
-            this.to = this.count + 1;
+        this.count = shp.count();
+        let filterOption = FilterUtils.normalize(filter);
+        this.filter = _.assign(filterOption, { to: filterOption.from + filterOption.limit });
+        if (this.filter.to > this.count + 1) {
+            this.filter.to = this.count + 1;
         }
+
+        this.index = this.filter.from - 1;
     }
 
     /**
@@ -58,7 +55,7 @@ export default class ShapefileIterator extends Iterator<Feature | null> {
 
     _next(): Optional<Feature | null> {
         this.index++;
-        if (this.index >= this.to) {
+        if (this.index >= this.filter.to) {
             return this._done();
         }
 
