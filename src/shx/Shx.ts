@@ -25,14 +25,20 @@ export default class Shx extends StreamOpenable {
         this.filePath = filePath;
     }
 
-    async _open() {
+    /**
+     * @override
+     */
+    _open() {
         this._fd = fs.openSync(this.filePath, this._flag);
         const stats = fs.statSync(this.filePath);
         this._totalSize = stats.size;
         this._reader = new FileReader(this._fd);
     }
 
-    async _close() {
+    /**
+     * @override
+     */
+    _close() {
         this._totalSize = 0;
 
         this.__reader.close();
@@ -58,7 +64,7 @@ export default class Shx extends StreamOpenable {
         return { id, offset, length };
     }
 
-    async records(filter?: IQueryFilter): Promise<Array<ShxRecord>> {
+    records(filter?: IQueryFilter): Array<ShxRecord> {
         const records = new Array<ShxRecord>();
         const count = this.count();
         const filterOption = this._normalizeFilter(filter);
@@ -73,10 +79,10 @@ export default class Shx extends StreamOpenable {
             }
         }
 
-        return Promise.resolve(records);
+        return records;
     }
 
-    async iterator() {
+    iterator() {
         const reader = new FileReader(this.__fd);
         reader.seek(HEADER_LENGTH);
         return new ShxIterator(reader);

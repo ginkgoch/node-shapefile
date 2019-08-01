@@ -5,33 +5,31 @@ export default class Openable {
         this.isOpened = false;
     }
 
-    //TODO: can it be sync?
-    async open() {
+    open() {
         if (this.isOpened) return this;
 
         this.isOpened = true;
-        await this._open();
+        this._open();
         return this;
     }
 
-    protected async _open() { }
+    protected _open() { }
 
-    //TODO: can it be sync?
-    async close() {
+    close() {
         if(this.isOpened) {
-            await this._close();
+            this._close();
             this.isOpened = false;
         }
     }
 
-    protected async _close() { }
+    protected _close() { }
 
-    async openWith(action: () => void) {
+    openWith(action: () => void) {
         try {
-            await this.open();
-            await action();
+            this.open();
+            action();
         } finally {
-            await this.close();
+            this.close();
         }
     }
 }

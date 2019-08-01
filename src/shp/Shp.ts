@@ -60,7 +60,7 @@ export default class Shp extends StreamOpenable {
     /**
      * @override
      */
-    async _open() {
+    _open() {
         Validators.checkFileExists(this.filePath);
 
         this._fd = fs.openSync(this.filePath, this._flag);
@@ -71,14 +71,14 @@ export default class Shp extends StreamOpenable {
         const filePathShx = this.filePath.replace(extReg, '.shx');
         if (fs.existsSync(filePathShx)) {
             this._shx.update(new Shx(filePathShx, this._flag));
-            await this.__shx.open();
+            this.__shx.open();
         }
     }
 
     /**
      * @override
      */
-    async _close() {
+    _close() {
         this.__reader.close();
         fs.closeSync(this.__fd);
         this._fd = undefined;
@@ -87,7 +87,7 @@ export default class Shp extends StreamOpenable {
         this._shpParser.update(undefined);
 
         if (this._shx) {
-            await this.__shx.close();
+            this.__shx.close();
             this._shx.update(undefined);
         }
     }
@@ -119,16 +119,21 @@ export default class Shp extends StreamOpenable {
         return this.__header.fileType;
     }
 
-    async iterator() {
+    iterator() {
         Validators.checkIsOpened(this.isOpened);
-        return await this._getRecordIterator(CONTENT_START_OFFSET);
+        return this._iterator(CONTENT_START_OFFSET);
+    }
+
+    _iterator(offset: number) {
+        this.__reader.seek(offset);
+        return new ShpIterator(this.__reader, this.__shpParser);
     }
 
     /**
      * Gets shp record by id.
      * @param id The record id. Starts from 1.
      */
-    async get(id: number): Promise<Geometry | null> {
+    get(id: number): Geometry | null {
         Validators.checkIsOpened(this.isOpened);
 
         const shxPath = this.filePath.replace(extReg, '.shx');
@@ -139,27 +144,27 @@ export default class Shp extends StreamOpenable {
             return null;
         }
 
-        const record = await this._get(shxRecord.offset);
+        const record = this._get(shxRecord.offset);
         return record;
     }
 
-    async _get(offset: number, envelope?: IEnvelope) {
-        const iterator = await this._getRecordIterator(offset);
+    _get(offset: number, envelope?: IEnvelope): Geometry | null {
+        const iterator = this._iterator(offset);
         iterator.envelope = envelope;
-        const result = await iterator.next();
+        const result = iterator.next();
         return result.value;
     }
 
-    async records(filter?: IQueryFilter): Promise<Array<Geometry>> {
+    records(filter?: IQueryFilter): Array<Geometry> {
         Validators.checkIsOpened(this.isOpened);
 
         const filterOption = this._normalizeFilter(filter);
-        const indexRecords = await this.__shx.records(filter);
+        const indexRecords = this.__shx.records(filter);
         const records = new Array<Geometry>();
 
         let index = 0, total = indexRecords.length;
         for (let r of indexRecords) {
-            const record = await this._get(r.offset, filterOption.envelope);
+            const record = this._get(r.offset, filterOption.envelope);
             if (record !== null) {
                 records.push(record);
             }
@@ -175,11 +180,6 @@ export default class Shp extends StreamOpenable {
 
     static _matchFilter(filter: IQueryFilter | null | undefined, recordEnvelope: IEnvelope): boolean {
         return filter === null || filter === undefined || _.isUndefined(filter.envelope) || (filter.envelope && !Envelope.disjoined(recordEnvelope, filter.envelope));
-    }
-
-    async _getRecordIterator(start: number) {
-        this.__reader.seek(start);
-        return new ShpIterator(this.__reader, this.__shpParser);
     }
 
     //TODO: rename all removeAt to removeBy.

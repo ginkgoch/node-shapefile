@@ -15,7 +15,10 @@ export default class ShxIterator extends Iterator<ShxRecord> {
         this.index = index;
     }
 
-    async next(): Promise<Optional<ShxRecord>> {
+    /**
+     * @override
+     */
+    next(): Optional<ShxRecord> {
         let buff = this.reader.read(RECORD_LENGTH) as Buffer;
         if (buff === null || buff.length !== RECORD_LENGTH) {
             return this._done();

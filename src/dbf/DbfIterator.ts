@@ -26,10 +26,10 @@ export default class DbfIterator extends Iterator<DbfRecord> {
      * @override
      * @returns {Promise<Optional<DbfRecord>}
      */
-    async next(): Promise<Optional<DbfRecord>> {
+    next(): Optional<DbfRecord> {
         this._index++;
         const recordLength = this._header.recordLength;
-        const buffer = <Buffer>(await this._streamReader.read(recordLength));
+        const buffer = this._streamReader.read(recordLength);
         if (buffer === null || buffer.length < recordLength) {
             return this._done();
         }

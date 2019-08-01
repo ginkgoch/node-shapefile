@@ -9,12 +9,12 @@ import Shapefile from '../../src/shapefile/Shapefile';
 const citiesPath = './tests/data/cities_e.shp';
 
 describe('shapefile general tests', () => {
-    test('get stream option test', async () => {
+    test('get stream option test', () => {
         const citiesShp = new Shp(citiesPath);
 
         expect(citiesShp).not.toBeNullOrUndefined();
 
-        await citiesShp.open();
+        citiesShp.open();
         let opt1 = citiesShp._getStreamOption(100);
         expect(_.keys(opt1).length).toBe(2);
         expect(opt1.autoClose).toBeTruthy();
@@ -25,43 +25,43 @@ describe('shapefile general tests', () => {
         expect(opt1.autoClose).toBeTruthy();
         expect(opt1.start).toBe(100);
         expect(opt1.end).toBe(108);
-        await citiesShp.close();
+        citiesShp.close();
     });
 
-    test('open close test 1', async () => {
+    test('open close test 1', () => {
         const citiesShp = new Shp(citiesPath);
 
         expect(citiesShp.isOpened).toBeFalsy();
-        await citiesShp.open();
+        citiesShp.open();
         expect(citiesShp.isOpened).toBeTruthy();
         expect(citiesShp._fd).not.toBeUndefined();
 
-        await citiesShp.close();
+        citiesShp.close();
         expect(citiesShp.isOpened).toBeFalsy();
         expect(citiesShp._fd).toBeUndefined();
     });
 
-    test('open close test 2', async () => {
+    test('open close test 2', () => {
         const citiesShp = new Shp(citiesPath);
 
         expect(citiesShp.isOpened).toBeFalsy();
-        await citiesShp.open();
-        await citiesShp.open();
+        citiesShp.open();
+        citiesShp.open();
         expect(citiesShp.isOpened).toBeTruthy();
         expect(citiesShp._fd).not.toBeUndefined();
 
-        await citiesShp.close();
-        await citiesShp.close();
+        citiesShp.close();
+        citiesShp.close();
         expect(citiesShp.isOpened).toBeFalsy();
         expect(citiesShp._fd).toBeUndefined();
     });
 
-    test('read header test 1', async () => {
+    test('read header test 1', () => {
         const citiesShp = new Shp(citiesPath);
 
         try {
-            await citiesShp.open();
-            const header = await citiesShp._readHeader();
+            citiesShp.open();
+            const header = citiesShp._readHeader();
 
             expect(header.fileCode).toBe(9994);
             expect(header.fileLength).toBe(533024);
@@ -72,14 +72,14 @@ describe('shapefile general tests', () => {
             expect(header.envelope.maxx).toBeCloseTo(173.2376, 4);
             expect(header.envelope.maxy).toBeCloseTo(70.6355, 4);
         } finally {
-            await citiesShp.close();
+            citiesShp.close();
         }
     });
 
-    test('read header test 2', async () => {
+    test('read header test 2', () => {
         try {
             const citiesShp = new Shp(citiesPath);
-            await citiesShp._readHeader();
+            citiesShp._readHeader();
         } catch (err) {
             expect(err).toMatch(/Shapefile not opened/);
         }
@@ -89,42 +89,42 @@ describe('shapefile general tests', () => {
 describe('shapefile test - polyline', () => {
     const lineShpPath = './tests/data/Austinstreets.shp';
 
-    test('read records test - polyline loop', async () => {
+    test('read records test - polyline loop', () => {
         const callbackMock = jest.fn();
-        await loopRecords(lineShpPath, callbackMock);
+        loopRecords(lineShpPath, callbackMock);
         expect(callbackMock.mock.calls.length).toBe(13843);
     });
 
-    test('read records test - polyline read first record', async () => {
+    test('read records test - polyline read first record', () => {
         const lineShp = new Shp(lineShpPath);
-        await lineShp.open();
+        lineShp.open();
 
-        const records = await lineShp.iterator();
-        let record = await records.next();
+        const records = lineShp.iterator();
+        let record = records.next();
 
         expect(record.value).not.toBeNullOrUndefined();
         expect(record.value).toBeGeneralRecord(1);
 
         const line = record.value as LineString;
-        const coordinates = new Array<Number[]>(); 
-        line.coordinatesFlat().forEach(c => { 
+        const coordinates = new Array<Number[]>();
+        line.coordinatesFlat().forEach(c => {
             coordinates.push([c.x, c.y]);
         });
         expect({ coordinates }).toBeClosePolyLineTo([-97.731192, 30.349088, -97.731584, 30.349305], 4);
 
-        await lineShp.close();
+        lineShp.close();
     });
 });
 
 describe('shapefile test - point', () => {
-    test('read records test - point loop', async () => {
+    test('read records test - point loop', () => {
         const callbackMock = jest.fn();
-        await loopRecords(citiesPath, callbackMock);
+        loopRecords(citiesPath, callbackMock);
         expect(callbackMock.mock.calls.length).toBe(19033);
     });
 
-    test('read records test - point read first record', async () => {
-        const record = await getFirstRecord(citiesPath) as Geometry;
+    test('read records test - point read first record', () => {
+        const record = getFirstRecord(citiesPath) as Geometry;
         expect(record).toBeGeneralRecord(1);
 
         const coordinates = record.coordinates();
@@ -135,14 +135,14 @@ describe('shapefile test - point', () => {
 describe('shapefile test - polygon', () => {
     const shpPath = './tests/data/USStates.shp';
 
-    test('read records test - polygon loop', async () => {
+    test('read records test - polygon loop', () => {
         const callbackMock = jest.fn();
-        await loopRecords(shpPath, callbackMock);
+        loopRecords(shpPath, callbackMock);
         expect(callbackMock.mock.calls.length).toBe(51);
     });
 
-    test('read records test - polygon read first record', async () => {
-        let recordOpt = await getFirstRecord(shpPath);
+    test('read records test - polygon read first record', () => {
+        let recordOpt = getFirstRecord(shpPath);
         expect(recordOpt).toBeGeneralRecord(1);
 
         const record = recordOpt as Polygon;
@@ -158,16 +158,16 @@ describe('shapefile test - polygon', () => {
 });
 
 describe('read by id tests', () => {
-    test('read single test', async () => {
+    test('read single test', () => {
         const shpPath = './tests/data/USStates.shp';
         const shp = new Shp(shpPath);
-        await shp.openWith(async () => {
-            const recordIterator = await shp.iterator();
+        shp.openWith(() => {
+            const recordIterator = shp.iterator();
 
             let index = 1, ri = undefined;
-            while ((ri = await recordIterator.next()) && !recordIterator.done) {
+            while ((ri = recordIterator.next()) && !recordIterator.done) {
                 ri = ri.value;
-                const r = await shp.get(index);
+                const r = shp.get(index);
                 expect(r).toEqual(ri);
                 index++;
             }
@@ -175,41 +175,41 @@ describe('read by id tests', () => {
     });
 });
 
-async function loopRecords(path: string, callback: () => void) {
+function loopRecords(path: string, callback: () => void) {
     const shapefile = new Shp(path);
-    await shapefile.open();
-    const records = await shapefile.iterator();
+    shapefile.open();
+    const records = shapefile.iterator();
 
     let record;
-    while ((record = await records.next()) && !records.done) {
+    while ((record = records.next()) && !records.done) {
         callback();
     }
-    await shapefile.close();
+    shapefile.close();
 }
 
-async function getFirstRecord(path: string): Promise<Geometry|null> {
+function getFirstRecord(path: string): Geometry | null {
     const shapefile = new Shp(path);
-    await shapefile.open();
+    shapefile.open();
 
-    const records = await shapefile.iterator();
-    const record = await records.next();
-    await shapefile.close();
+    const records = shapefile.iterator();
+    const record = records.next();
+    shapefile.close();
 
-    return await Promise.resolve(record.value);
+    return record.value;
 }
 
 describe('Read shp records tests', () => {
-    test('read shp records - all', async () => {
+    test('read shp records - all', () => {
         const shpPath = './tests/data/USStates.shp';
         const shp = new Shp(shpPath);
-        await shp.openWith(async () => {
-            const features = await shp.records();
+        shp.openWith(() => {
+            const features = shp.records();
             expect(features.length).toBe(51);
 
-            const recordIterator = await shp.iterator();
+            const recordIterator = shp.iterator();
 
             let index = 0, ri = undefined;
-            while ((ri = await recordIterator.next()) && !recordIterator.done) {
+            while ((ri = recordIterator.next()) && !recordIterator.done) {
                 const r = features[index];
                 expect(r.id).toBe(index + 1);
                 expect(r).toEqual(ri.value);
@@ -219,17 +219,17 @@ describe('Read shp records tests', () => {
 
     });
 
-    test('read shp records - from', async () => {
+    test('read shp records - from', () => {
         const shpPath = './tests/data/USStates.shp';
         const shp = new Shp(shpPath);
-        await shp.openWith(async () => {
-            const features = await shp.records({ from: 20 });
+        shp.openWith(() => {
+            const features = shp.records({ from: 20 });
             expect(features.length).toBe(32);
 
-            const recordIterator = await shp.iterator();
+            const recordIterator = shp.iterator();
 
             let index = 0, ri = undefined;
-            while ((ri = await recordIterator.next()) && !recordIterator.done) {
+            while ((ri = recordIterator.next()) && !recordIterator.done) {
                 ri = ri.value;
 
                 if (index >= 20) {
@@ -242,17 +242,17 @@ describe('Read shp records tests', () => {
         });
     });
 
-    test('read shp records - limit', async () => {
+    test('read shp records - limit', () => {
         const shpPath = './tests/data/USStates.shp';
         const shp = new Shp(shpPath);
-        await shp.openWith(async () => {
-            const features = await shp.records({ limit: 20 });
+        shp.openWith(() => {
+            const features = shp.records({ limit: 20 });
             expect(features.length).toBe(20);
 
-            const recordIterator = await shp.iterator();
+            const recordIterator = shp.iterator();
 
             let index = 0, ri = undefined;
-            while ((ri = await recordIterator.next()) && !recordIterator.done) {
+            while ((ri = recordIterator.next()) && !recordIterator.done) {
                 ri = ri.value;
 
                 if (index < 20) {
@@ -264,17 +264,17 @@ describe('Read shp records tests', () => {
         });
     });
 
-    test('read shp records - from + limit', async () => {
+    test('read shp records - from + limit', () => {
         const shpPath = './tests/data/USStates.shp';
         const shp = new Shp(shpPath);
-        await shp.openWith(async () => {
-            const features = await shp.records({ from: 10, limit: 20 });
+        shp.openWith(() => {
+            const features = shp.records({ from: 10, limit: 20 });
             expect(features.length).toBe(20);
 
-            const recordIterator = await shp.iterator();
+            const recordIterator = shp.iterator();
 
             let index = 0, ri = undefined;
-            while ((ri = await recordIterator.next()) && !recordIterator.done) {
+            while ((ri = recordIterator.next()) && !recordIterator.done) {
                 ri = ri.value;
 
                 if (index >= 10 && index < 30) {
@@ -287,29 +287,29 @@ describe('Read shp records tests', () => {
         });
     });
 
-    test('read shp records - envelope', async () => {
+    test('read shp records - envelope', () => {
         const shpPath = './tests/data/USStates.shp';
         const shp = new Shp(shpPath);
-        await shp.openWith(async () => {
-            const features = await shp.records({ envelope: new Envelope(-1, -1, 1, 1) });
+        shp.openWith(() => {
+            const features = shp.records({ envelope: new Envelope(-1, -1, 1, 1) });
             expect(features.length).toBe(0);
         });
     });
 
     const fs = require('fs');
     const path = require('path');
-    test('delete shp record', async () => {
+    test('delete shp record', () => {
         const shpPathSrc = './tests/data/USStates.shp';
         const shpPath = './tests/data/USStates_delete_test.shp';
         Shapefile.copyFiles(shpPathSrc, shpPath, true);
 
         const shp = new Shp(shpPath, 'rs+');
-        await shp.openWith(async () => {
+        shp.openWith(() => {
             const id = 30;
 
             try {
                 shp.removeAt(id);
-                const record = await shp.get(id);
+                const record = shp.get(id);
                 expect(record).toBeNull();
             } finally {
                 ['.shp', '.shx', '.dbf'].forEach(ext => {
@@ -338,7 +338,7 @@ describe('Read shp records tests', () => {
         match = Shp._matchFilter(undefined, envelope);
         expect(match).toBeTruthy();
 
-        match = Shp._matchFilter({envelope: { minx: -40, miny: -40, maxx: 40, maxy: 40 }}, envelope);
+        match = Shp._matchFilter({ envelope: { minx: -40, miny: -40, maxx: 40, maxy: 40 } }, envelope);
         expect(match).toBeTruthy();
     });
 });
