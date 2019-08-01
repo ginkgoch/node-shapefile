@@ -21,7 +21,7 @@ export default class ShxIterator extends Iterator<ShxRecord> {
         this.filter = _.assign(filterNorm, { to: filterNorm.from + filterNorm.limit });
 
         this.index = this.filter.from - 1;
-        let position = Constants.SIZE_SHX_HEADER + Constants.SIZE_SHX_RECORD * (this.filter.from - 1);
+        let position = Constants.SIZE_SHX_HEADER + Constants.SIZE_SHX_RECORD * this.index;
         this.reader.seek(position);
     }
 

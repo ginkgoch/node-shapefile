@@ -61,11 +61,7 @@ export default class Dbf extends Openable {
         Validators.checkIsOpened(this.isOpened);
         Validators.checkIndexIsGEZero(id);
 
-        const offset = this._getOffsetById(id);
-        const iterator = this._iterator(offset, offset + this.__header.recordLength);
-        iterator.fields = fields;
-        iterator._index = id - 1;
-
+        const iterator = new DbfIterator(this.__fd, this.__header, { from: id, limit: 1, fields });
         const record = iterator.next();
         return record.value;
     }
@@ -73,22 +69,7 @@ export default class Dbf extends Openable {
     iterator(fields?: string[]) {
         Validators.checkIsOpened(this.isOpened);
 
-        const iterator = this._iterator(this.__header.headerLength);
-        iterator.fields = fields;
-        return iterator;
-    }
-
-    /**
-     *
-     * @param start
-     * @param end
-     * @returns {Promise<DbfIterator>}
-     * @private
-     */
-    _iterator(start?: number, end?: number): DbfIterator {
-        const reader = new FileReader(this.__fd);
-        start !== undefined && reader.seek(start);
-        return new DbfIterator(reader, this.__header);
+        return new DbfIterator(this.__fd, this.__header, { fields });
     }
 
     /**
