@@ -6,7 +6,7 @@ import * as Utils from '../utils/Utils';
 import { Polygon, LinearRing } from 'ginkgoch-geom';
 
 describe('Shp - create', () => {
-    it('createEmpty', async () => {
+    it('createEmpty', () => {
         const filePathShp = './tests/data/new_polygons_tmp.shp';
 
         try {
@@ -16,20 +16,20 @@ describe('Shp - create', () => {
             const filePathShx = filePathShp.replace(/.shp$/g, '.shx');
             expect(fs.existsSync(filePathShx)).toBeTruthy();
 
-            await shp.open();
+            shp.open();
             expect(shp.count()).toBe(0);
-            await shp.close();
+            shp.close();
 
         } finally {
             Utils.clearShapefiles(filePathShp);
         }
     });
 
-    it('create and push', async () => {
+    it('create and push', () => {
         const filePathShp = './tests/data/new_push_polygons_tmp.shp';
         try {
             const shp = Shp.createEmpty(filePathShp, ShapefileType.polygon);
-            await shp.open();
+            shp.open();
 
             const polygon1 = new Polygon(new LinearRing([
                 { x: 0, y: 0 },
@@ -40,14 +40,14 @@ describe('Shp - create', () => {
             ]));
             polygon1.id = 1;
             shp.push(polygon1);
-            await shp.close();
+            shp.close();
 
             shp._flag = 'rs';
-            await shp.open();
+            shp.open();
             expect(shp.count()).toBe(1);
-            const polygon1_ = await shp.get(1);
+            const polygon1_ = shp.get(1);
             expect(polygon1_).toEqual(polygon1);
-            await shp.close();
+            shp.close();
         } finally {
             Utils.clearShapefiles(filePathShp);
         }

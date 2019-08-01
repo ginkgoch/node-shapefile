@@ -24,10 +24,9 @@ export default class Dbf extends Openable {
     /**
      * @override
      */
-    async _open() {
+    _open() {
         this._fd = fs.openSync(this.filePath, this._flag, fs.constants.S_IROTH);
         this._header = this._readHeader();
-        await Promise.resolve();
     }
 
     fields(detail: boolean = false): DbfField[] | string[] {
@@ -42,7 +41,7 @@ export default class Dbf extends Openable {
     /**
      * @override
      */
-    async _close() {
+    _close() {
         fs.closeSync(this.__fd);
         this._fd = undefined;
     }
@@ -58,23 +57,23 @@ export default class Dbf extends Openable {
      * @param id Index of the record. Starts from 1.
      * @param fields The fields to fetch in the row.
      */
-    async get(id: number, fields?: string[]): Promise<DbfRecord> {
+    get(id: number, fields?: string[]): DbfRecord {
         Validators.checkIsOpened(this.isOpened);
         Validators.checkIndexIsGEZero(id);
 
         const offset = this._getOffsetById(id);
-        const iterator = await this._getRecordIterator(offset, offset + this.__header.recordLength);
+        const iterator = this._iterator(offset, offset + this.__header.recordLength);
         iterator.fields = fields;
         iterator._index = id - 1;
 
-        const record = await iterator.next();
+        const record = iterator.next();
         return record.value;
     }
 
-    async iterator(fields?: string[]) {
+    iterator(fields?: string[]) {
         Validators.checkIsOpened(this.isOpened);
 
-        const iterator = await this._getRecordIterator(this.__header.headerLength);
+        const iterator = this._iterator(this.__header.headerLength);
         iterator.fields = fields;
         return iterator;
     }
@@ -86,7 +85,7 @@ export default class Dbf extends Openable {
      * @returns {Promise<DbfIterator>}
      * @private
      */
-    _getRecordIterator(start?: number, end?: number): DbfIterator {
+    _iterator(start?: number, end?: number): DbfIterator {
         const reader = new FileReader(this.__fd);
         start !== undefined && reader.seek(start);
         return new DbfIterator(reader, this.__header);

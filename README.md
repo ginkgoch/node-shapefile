@@ -16,14 +16,14 @@ All the code below are using typescript. It is easy to translate to pure js by r
 
 ### Loops all records and print the vertices
 ```typescript
-async function loopUSStates(callback: (rec: Optional<IFeature>) => void) {
-    const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
-    const iterator = await statesShp.iterator();
+function loopUSStates(callback: (rec: Optional<IFeature>) => void) {
+    const statesShp = new Shapefile('./tests/data/USStates.shp').open();
+    const iterator = statesShp.iterator();
     let record = undefined;
-    while ((record = await iterator.next()) && !iterator.done) {
+    while ((record = iterator.next()) && !iterator.done) {
         callback(record);
     }
-    await statesShp.close();
+    statesShp.close();
 }
 ```
 
@@ -31,10 +31,10 @@ async function loopUSStates(callback: (rec: Optional<IFeature>) => void) {
 
 Gets records by id with all fields.
 ```typescript
-async function getRecordById(id: number) {
-    const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
-    const record = await statesShp.get(0);
-    await statesShp.close();
+function getRecordById(id: number) {
+    const statesShp = new Shapefile('./tests/data/USStates.shp').open();
+    const record = statesShp.get(0);
+    statesShp.close();
 
     return record;
 }
@@ -42,10 +42,10 @@ async function getRecordById(id: number) {
 
 Gets records by id with none fields. Specify the fields to fetch from DBF to ignore reading unnecessary field values.
 ```typescript
-async function getRecordById(id: number) {
-    const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
-    const record = await statesShp.get(0, []);
-    await statesShp.close();
+function getRecordById(id: number) {
+    const statesShp = new Shapefile('./tests/data/USStates.shp').open();
+    const record = statesShp.get(0, []);
+    statesShp.close();
 
     return record;
 }
@@ -54,10 +54,10 @@ async function getRecordById(id: number) {
 ### Gets matched features one time - Update v1.0.16
 If you don't like to use iterator way, here is a normal way to get all features back.
 ```typescript
-async function getAllRecords() {
-    const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
-    const record = await statesShp.records();
-    await statesShp.close();
+function getAllRecords() {
+    const statesShp = new Shapefile('./tests/data/USStates.shp').open();
+    const record = statesShp.records();
+    statesShp.close();
 
     return record;
 }
@@ -73,10 +73,10 @@ We also provide the filters that you could control the returned value. Here is t
 Let's take a look at a demo. Says I want to paging my features. My page size is 10. I want to return all the features from my second page with only properties whose names are RECID and STATE_NAME. Here is the code.
 
 ```typescript
-async function getAllRecords() {
-    const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
-    const record = await statesShp.records({ from: 10, limit: 10, fields: ['RECID', 'STATE_NAME'] });
-    await statesShp.close();
+function getAllRecords() {
+    const statesShp = new Shapefile('./tests/data/USStates.shp').open();
+    const record = statesShp.records({ from: 10, limit: 10, fields: ['RECID', 'STATE_NAME'] });
+    statesShp.close();
 
     return record;
 }

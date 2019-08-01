@@ -28,15 +28,15 @@ export default class ShpIterator extends Iterator<Geometry | null> {
     /**
      * @override
      */
-    async next(): Promise<Optional<Geometry | null>> {
-        let buffer = <Buffer>await this._reader.read(8);
+    next(): Optional<Geometry | null> {
+        let buffer = this._reader.read(8);
         if (buffer === null || buffer.length === 0) {
             return this._done();
         }
 
         const id = buffer.readInt32BE(0);
         const length = buffer.readInt32BE(4) * 2;
-        let contentBuffer = <Buffer>await this._reader.read(length);
+        let contentBuffer = this._reader.read(length);
         if (contentBuffer === null || contentBuffer.length === 0) {
             return this._done();
         }

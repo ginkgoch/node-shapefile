@@ -47,22 +47,22 @@ export default class ShapefileIterator extends Iterator<Feature | null> {
     /**
      * Moves to and return the next record. The last record will return with a field { done: true } for a complete reading flag.
      */
-    async next(): Promise<Optional<Feature | null>> {
-        let record = await this._next();
+    next(): Optional<Feature | null> {
+        let record = this._next();
         while(!this.done && !record.hasValue) {
-            record = await this._next();
+            record = this._next();
         }
 
         return record;
     }
 
-    async _next(): Promise<Optional<Feature | null>> {
+    _next(): Optional<Feature | null> {
         this.index++;
         if (this.index >= this.to) {
             return this._done();
         }
 
-        const recordShp = await this.shp.get(this.index);
+        const recordShp = this.shp.get(this.index);
         if (recordShp === null) {
             return this._dirty(null);
         } else if (!this._intersects(recordShp, this.filter.envelope)) {
@@ -70,7 +70,7 @@ export default class ShapefileIterator extends Iterator<Feature | null> {
         } else {
             const feature = new Feature(recordShp);
             if (this.filter.fields === undefined || this.filter.fields.length > 0) {
-                const properties = await this.dbf.get(this.index, this.filter.fields);
+                const properties = this.dbf.get(this.index, this.filter.fields);
                 properties.values.forEach((v, k) => {
                     feature.properties.set(k, v);
                 });

@@ -11,9 +11,9 @@ import dbf_usstates_record51 from '../data/dbf_usstates_record51.json'
 describe('Dbf tests', () => {
     const filePath = './tests/data/USStates.dbf';
 
-    test('read header test', async () => {
+    test('read header test', () => {
         const dbf = new Dbf(filePath);
-        await dbf.openWith(() => {
+        dbf.openWith(() => {
             const header = dbf.__header;
             const actual = JSON.stringify(header.json());
             const expected = JSON.stringify(dbf_usstates_header);
@@ -22,11 +22,11 @@ describe('Dbf tests', () => {
         });
     });
 
-    test('read record - first', async () => {
+    test('read record - first', () => {
         const dbf = new Dbf(filePath);
-        await dbf.openWith(async () => {
-            const records = await dbf.iterator();
-            const record = await records.next();
+        dbf.openWith(() => {
+            const records = dbf.iterator();
+            const record = records.next();
 
             const actualJson = JSON.stringify(record.value.json());
             const expectJson = JSON.stringify(dbf_usstates_record1)
@@ -35,28 +35,28 @@ describe('Dbf tests', () => {
         });
     });
     
-    test('read record - second', async () => {
+    test('read record - second', () => {
         const dbf = new Dbf(filePath);
-        await dbf.openWith(async () => {
-            const records = await dbf.iterator();
-            await records.next();
-            let record = await records.next();
+        dbf.openWith(() => {
+            const records = dbf.iterator();
+            records.next();
+            let record = records.next();
             expect(JSON.stringify(record.value.json())).toBe(JSON.stringify(dbf_usstates_record2));
             expect(record.value.id).toBe(2);
         });
     });
     
-    test('read record - final', async () => {
+    test('read record - final', () => {
         const dbf = new Dbf(filePath);
-        await dbf.openWith(async () => {
-            const records = await dbf.iterator();
-            let temp = await records.next();
+        dbf.openWith(() => {
+            const records = dbf.iterator();
+            let temp = records.next();
             let record = new Optional<DbfRecord>(undefined);
             let count = 0;
             while (!records.done) {
                 record = temp;
                 count++;
-                temp = await records.next();
+                temp = records.next();
             }
             
             expect(count).toBe(51);
@@ -65,19 +65,19 @@ describe('Dbf tests', () => {
         });
     });
 
-    test('read record - by id', async () => {
+    test('read record - by id', () => {
         const dbf = new Dbf(filePath);
-        await dbf.openWith(async () => {
-            const records = await dbf.iterator();
-            let record1 = await records.next();
+        dbf.openWith(() => {
+            const records = dbf.iterator();
+            let record1 = records.next();
             let count = 1;
             while (!records.done) {
-                const record2 = await dbf.get(count); 
+                const record2 = dbf.get(count); 
                 expect(record2).toEqual(record1.value);
                 expect(record2.id).toBe(count);
 
                 count++;
-                record1 = await records.next();
+                record1 = records.next();
             }
 
             count--;
@@ -86,22 +86,22 @@ describe('Dbf tests', () => {
         });
     });
 
-    test('read austin dbf - 1', async () => {
+    test('read austin dbf - 1', () => {
         const dbf = new Dbf('./tests/data/Austinstreets.dbf');
-        await dbf.openWith(async () => {
-            const records = await dbf.records();
+        dbf.openWith(() => {
+            const records = dbf.records();
             expect(records.length).toBe(13843);
         });
     });
 
-    test('read austin dbf - 2', async () => {
+    test('read austin dbf - 2', () => {
         const dbf = new Dbf('./tests/data/Austinstreets.dbf');
-        await dbf.openWith(async () => {
-            const records = await dbf.iterator();
-            let record1 = await records.next();
+        dbf.openWith(() => {
+            const records = dbf.iterator();
+            let record1 = records.next();
             let count = 1;
             while (!records.done) {
-                const record2 = await dbf.get(count);
+                const record2 = dbf.get(count);
 
                 if (count % 100 === 0) {
                     expect(record1.value).toStrictEqual(record2);
@@ -110,7 +110,7 @@ describe('Dbf tests', () => {
                 if (count === 500) break;
 
                 count++;
-                record1 = await records.next();
+                record1 = records.next();
             }
         });
     });
@@ -119,14 +119,14 @@ describe('Dbf tests', () => {
 describe('Dbf records test', () => {
     const filePath = './tests/data/USStates.dbf';
 
-    test('read test', async () => {
+    test('read test', () => {
         const dbf = new Dbf(filePath);
-        await dbf.openWith(async () => {
-            const records = await dbf.records();
+        dbf.openWith(() => {
+            const records = dbf.records();
             expect(records.length).toBe(51);
 
-            const it = await dbf.iterator();
-            let record1 = await it.next();
+            const it = dbf.iterator();
+            let record1 = it.next();
             let count = 1;
             while (!it.done) {
                 const record2 = records[count - 1]; 
@@ -134,15 +134,15 @@ describe('Dbf records test', () => {
                 expect(record2.id).toBe(count);
 
                 count++;
-                record1 = await it.next();
+                record1 = it.next();
             }
         });
     });
 
-    test('read test - fields', async () => {
+    test('read test - fields', () => {
         const dbf = new Dbf(filePath);
-        await dbf.openWith(async () => {
-            const records = await dbf.records({ fields: ['RECID'] });
+        dbf.openWith(() => {
+            const records = dbf.records({ fields: ['RECID'] });
             expect(records.length).toBe(51);
 
             records.forEach(r => {
@@ -152,40 +152,40 @@ describe('Dbf records test', () => {
         });
     });
 
-    test('read test - limit', async () => {
+    test('read test - limit', () => {
         const dbf = new Dbf(filePath);
-        await dbf.openWith(async () => {
-            const records = await dbf.records({ limit: 1 });
+        dbf.openWith(() => {
+            const records = dbf.records({ limit: 1 });
             expect(records.length).toBe(1);
 
-            const it = await dbf.iterator();
-            let record1 = await it.next();
+            const it = dbf.iterator();
+            let record1 = it.next();
 
             const record2 = records[0]; 
             expect(record2).toEqual(record1.value);
         });
     });
 
-    test('read test - limit + from', async () => {
+    test('read test - limit + from', () => {
         const dbf = new Dbf(filePath);
-        await dbf.openWith(async () => {
-            const records = await dbf.records({ limit: 2, from: 2 });
+        dbf.openWith(() => {
+            const records = dbf.records({ limit: 2, from: 2 });
             expect(records.length).toBe(2);
 
-            const it = await dbf.iterator();
-            await it.next(); // 1
-            let record1 = await it.next(); // 2
+            const it = dbf.iterator();
+            it.next(); // 1
+            let record1 = it.next(); // 2
             expect(records[0]).toEqual(record1.value);
             
-            record1 = await it.next(); // 2
+            record1 = it.next(); // 2
             expect(records[1]).toEqual(record1.value);
         });
     });
 
-    test('read test - limit + from + fields', async () => {
+    test('read test - limit + from + fields', () => {
         const dbf = new Dbf(filePath);
-        await dbf.openWith(async () => {
-            const records = await dbf.records({ limit: 2, from: 2, fields: ['RECID'] });
+        dbf.openWith(() => {
+            const records = dbf.records({ limit: 2, from: 2, fields: ['RECID'] });
             expect(records.length).toBe(2);
 
             records.forEach(r => {

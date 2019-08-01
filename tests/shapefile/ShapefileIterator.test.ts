@@ -4,14 +4,14 @@ import Shapefile from "../../src/shapefile/Shapefile";
 describe('ShapefileIterator', () => {
     const filePath = './tests/data/USStates.shp';
 
-    it('iterator - 1', async () => {
+    it('iterator - 1', () => {
         const shapefile = new Shapefile(filePath);
-        await shapefile.open();
+        shapefile.open();
 
-        const iterator = await shapefile.iterator();
+        const iterator = shapefile.iterator();
         const records = new Array<Feature>();
         while (!iterator.done) {
-            const record = await iterator.next();
+            const record = iterator.next();
             if (record.hasValue && record.value !== null) {
                 records.push(record.value)
             }
@@ -23,17 +23,17 @@ describe('ShapefileIterator', () => {
             expect(records[i].id).toBe(i + 1);
         }
 
-        await shapefile.close();
+        shapefile.close();
     });
 
-    it('iterator - 2', async () => {
+    it('iterator - 2', () => {
         const shapefile = new Shapefile(filePath);
-        await shapefile.open();
+        shapefile.open();
 
-        const iterator = await shapefile.iterator({ from: 2 });
+        const iterator = shapefile.iterator({ from: 2 });
         const records = new Array<Feature>();
         while (!iterator.done) {
-            const record = await iterator.next();
+            const record = iterator.next();
             if (record.hasValue && record.value !== null) {
                 records.push(record.value)
             }
@@ -45,17 +45,17 @@ describe('ShapefileIterator', () => {
             expect(records[i - 2].id).toBe(i);
         }
 
-        await shapefile.close();
+        shapefile.close();
     });
 
-    it('iterator - 3', async () => {
+    it('iterator - 3', () => {
         const shapefile = new Shapefile(filePath);
-        await shapefile.open();
+        shapefile.open();
 
-        const iterator = await shapefile.iterator({ from: 2, limit: 4 });
+        const iterator = shapefile.iterator({ from: 2, limit: 4 });
         const records = new Array<Feature>();
         while (!iterator.done) {
-            const record = await iterator.next();
+            const record = iterator.next();
             if (record.hasValue && record.value !== null) {
                 records.push(record.value)
             }
@@ -67,34 +67,34 @@ describe('ShapefileIterator', () => {
             expect(records[i].id).toBe(i + 2);
         }
 
-        await shapefile.close();
+        shapefile.close();
     });
 
-    it('iterator - 4', async () => {
+    it('iterator - 4', () => {
         const shapefile = new Shapefile(filePath);
-        await shapefile.open();
+        shapefile.open();
 
-        const iterator = await shapefile.iterator({ envelope: { minx: 0, maxx: 180, miny: -90, maxy: 90 } });
+        const iterator = shapefile.iterator({ envelope: { minx: 0, maxx: 180, miny: -90, maxy: 90 } });
         const records = new Array<Feature>();
         while (!iterator.done) {
-            const record = await iterator.next();
+            const record = iterator.next();
             if (record.hasValue && record.value !== null) {
                 records.push(record.value)
             }
         }
 
         expect(records.length).toBe(0);
-        await shapefile.close();
+        shapefile.close();
     });
 
-    it('iterator - 5', async () => {
+    it('iterator - 5', () => {
         const shapefile = new Shapefile(filePath);
-        await shapefile.open();
+        shapefile.open();
 
-        const iterator = await shapefile.iterator({ fields: ['RECID'] });
+        const iterator = shapefile.iterator({ fields: ['RECID'] });
         const records = new Array<Feature>();
         while (!iterator.done) {
-            const record = await iterator.next();
+            const record = iterator.next();
             if (record.hasValue && record.value !== null) {
                 records.push(record.value)
             }
@@ -108,6 +108,6 @@ describe('ShapefileIterator', () => {
             expect(record.properties.get('RECID')).toBe(record.id);
         }
 
-        await shapefile.close();
+        shapefile.close();
     });
 });

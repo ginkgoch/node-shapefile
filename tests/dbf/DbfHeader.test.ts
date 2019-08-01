@@ -10,7 +10,7 @@ import DbfField from '../../src/dbf/DbfField';
 describe('DbfHeader tests', () => {
     const filePath = './tests/data/USStates.dbf';
 
-    test('read header test', async () => {
+    test('read header test', () => {
         const _fd = fs.openSync(filePath, 'rs', fs.constants.S_IROTH);
         const header = new DbfHeader();
         header.read(_fd);

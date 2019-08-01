@@ -6,7 +6,7 @@ export default abstract class Iterator<T> {
         this.done = false;
     }
 
-    abstract async next(): Promise<Optional<T>>;
+    abstract next(): Optional<T>;
 
     protected _done(): Optional<T> {
         this.done = true
@@ -21,5 +21,13 @@ export default abstract class Iterator<T> {
     _dirty(obj: null|undefined) {
         this.done = false
         return new Optional<T>(undefined);
+    }
+
+    /**
+     * Close iterator and free the cached resources.
+     * @virtual
+     */
+    close() {
+
     }
 };

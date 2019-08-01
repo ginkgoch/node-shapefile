@@ -3,17 +3,17 @@ import Openable from '../../src/base/Openable';
 class TestOpener extends Openable { }
 
 describe('base.Openable', () => {
-    it('constructor', async () => {
+    it('constructor', () => {
         const t = new TestOpener();
         expect(t.isOpened).toBeFalsy();
         
-        await t.open();
+        t.open();
         expect(t.isOpened).toBeTruthy();
         
-        await t.close();
+        t.close();
         expect(t.isOpened).toBeFalsy();
 
-        await t.openWith(() => {
+        t.openWith(() => {
             expect(t.isOpened).toBeTruthy();
         });
 
