@@ -28,8 +28,7 @@
     "@types/lodash": "^4.14.136",
     "@types/node": "^12.6.8",
     "ginkgoch-buffer-io": "^1.1.0",
-    "ginkgoch-geom": "^1.0.12",
-    "ginkgoch-stream-io": "^1.2.0",
+    "ginkgoch-geom": "^1.0.13",
     "lodash": "^4.17.14"
   },
   "devDependencies": {

@@ -1,5 +1,6 @@
 import fs from 'fs';
 import Shx from '../../src/shx/Shx';
+import ShxRecord from '../../src/shx/ShxRecord';
 
 describe('shx tests', () => {
     const filePath = './tests/data/USStates.shx';
@@ -63,5 +64,48 @@ describe('shx tests', () => {
                 fs.unlinkSync(filePathToDelete);
             }
         });
+    });
+
+    it('records - 1', async () => {
+        const shx = new Shx(filePath, 'rs');
+        await shx.open();
+
+        const records = await shx.records();
+        expect(records.length).toBe(51);
+        expect(records[0].id).toBe(1);
+        expect(records[records.length - 1].id).toBe(51);
+        expect(records[records.length - 1].length).not.toBe(0);
+        await shx.close();
+    });
+
+    it('records - 2', async () => {
+        const shx = new Shx(filePath, 'rs');
+        await shx.open();
+
+        const records = await shx.records({ from: 20, limit: 10 });
+        expect(records.length).toBe(10);
+        expect(records[0].id).toBe(20);
+        expect(records[records.length - 1].id).toBe(29);
+        expect(records[records.length - 1].length).not.toBe(0);
+        await shx.close();
+    });
+
+    it('iterator', async () => {
+        const shx = new Shx(filePath, 'rs');
+        await shx.open();
+        const it = await shx.iterator();
+
+        const records = new Array<ShxRecord>();
+        while(!it.done) {
+            const record = await it.next();
+            if (record.hasValue && record.value.length !== 0) {
+                records.push(record.value);
+            }
+        }
+
+        expect(records.length).toBe(51);
+        for (let i = 0; i < records.length; i++) {
+            expect(records[i].id).toBe(i + 1);
+        }
     });
 });

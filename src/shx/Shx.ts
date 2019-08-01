@@ -1,17 +1,22 @@
 import fs from 'fs';
-import Openable from '../base/Openable';
+import ShxRecord from './ShxRecord';
 import { Validators } from '../shared';
+import IQueryFilter from '../shared/IQueryFilter';
+import StreamOpenable from '../base/StreamOpenable';
+import { FileReader } from '../shared/FileReader';
+import ShxIterator from './ShxIterator';
 
 const RECORD_LENGTH = 8;
 const HEADER_LENGTH = 100;
 const OFFSET_LENGTH = 4;
 const CONTENT_LENGTH = 4;
 
-export default class Shx extends Openable {
+export default class Shx extends StreamOpenable {
     filePath: string
     _flag: string
     _fd?: number
     _totalSize: number
+    _reader?: FileReader
 
     constructor(filePath: string, flag = 'rs') {
         super();
@@ -24,12 +29,17 @@ export default class Shx extends Openable {
         this._fd = fs.openSync(this.filePath, this._flag);
         const stats = fs.statSync(this.filePath);
         this._totalSize = stats.size;
+        this._reader = new FileReader(this._fd);
     }
 
     async _close() {
+        this._totalSize = 0;
+
+        this.__reader.close();
+        this._reader = undefined;
+
         this._fd && fs.closeSync(this._fd);
         this._fd = undefined;
-        this._totalSize = 0;
     }
 
     count() {
@@ -41,11 +51,35 @@ export default class Shx extends Openable {
      * @param id The id of shx record. Starts from 1.
      */
     get(id: number) {
-        const buffer = Buffer.alloc(8);
-        fs.readSync(this.__fd, buffer, 0, 8, this._getOffsetById(id));
+        this.__reader.seek(this._getOffsetById(id));
+        const buffer = this.__reader.read(RECORD_LENGTH);
         const offset = buffer.readInt32BE(0) * 2;
         const length = buffer.readInt32BE(4) * 2;
-        return { offset, length };
+        return { id, offset, length };
+    }
+
+    async records(filter?: IQueryFilter): Promise<Array<ShxRecord>> {
+        const records = new Array<ShxRecord>();
+        const count = this.count();
+        const filterOption = this._normalizeFilter(filter);
+        let to = filterOption.from + filterOption.limit;
+        if (to > count + 1) {
+            to = count + 1;
+        }
+        for (let i = filterOption.from; i < to; i++) {
+            const record = this.get(i);
+            if (record.length > 0) {
+                records.push(record);
+            }
+        }
+
+        return Promise.resolve(records);
+    }
+
+    async iterator() {
+        const reader = new FileReader(this.__fd);
+        reader.seek(HEADER_LENGTH);
+        return new ShxIterator(reader);
     }
 
     /**
@@ -57,6 +91,7 @@ export default class Shx extends Openable {
         const buff = Buffer.alloc(CONTENT_LENGTH);
         buff.writeInt32BE(0, 0);
         fs.writeSync(this.__fd, buff, 0, buff.length, position);
+        this._invalidCache();
     }
 
     /**
@@ -71,27 +106,37 @@ export default class Shx extends Openable {
         const buff = Shx._getRecordBuff(offset, length);
         const position = this._getOffsetById(id);
         fs.writeSync(this.__fd, buff, 0, buff.length, position);
+        this._invalidCache();
     }
 
     push(offset: number, length: number) {
         const buff = Shx._getRecordBuff(offset, length);
         fs.writeSync(this.__fd, buff, 0, buff.length, this._totalSize);
-        
+        this._invalidCache();
+
         this._totalSize += buff.length;
     }
 
-    private static _getRecordBuff(offset: number,  length: number): Buffer {
+    _invalidCache() {
+        this.__reader.invalidCache();
+    }
+
+    private static _getRecordBuff(offset: number, length: number): Buffer {
         const buff = Buffer.alloc(RECORD_LENGTH);
         buff.writeInt32BE(offset * .5, 0);
         buff.writeInt32BE(length * .5, 4);
         return buff
     }
 
+    private _getOffsetById(id: number): number {
+        return HEADER_LENGTH + (id - 1) * 8
+    }
+
     private get __fd() {
         return <number>this._fd;
     }
 
-    private _getOffsetById(id: number): number {
-        return HEADER_LENGTH + (id - 1) * 8
+    private get __reader() {
+        return <FileReader>this._reader;
     }
 };

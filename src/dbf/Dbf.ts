@@ -1,13 +1,13 @@
 import fs from 'fs'
 import _ from 'lodash'
-import { StreamReader } from 'ginkgoch-stream-io'
+import DbfField from './DbfField'
+import DbfHeader from './DbfHeader'
+import DbfRecord from './DbfRecord'
+import DbfIterator from './DbfIterator'
 import Openable from '../base/StreamOpenable'
 import Validators from '../shared/Validators'
-import DbfIterator from './DbfIterator'
-import DbfHeader from './DbfHeader'
-import DbfField from './DbfField'
-import DbfRecord from './DbfRecord'
 import IQueryFilter from '../shared/IQueryFilter';
+import { FileReader } from "../shared/FileReader";
 
 export default class Dbf extends Openable {
     filePath: string
@@ -54,7 +54,7 @@ export default class Dbf extends Openable {
     }
 
     /**
-     * Gets Dbase record at a specific row index.
+     * Gets D-base record at a specific row index.
      * @param id Index of the record. Starts from 1.
      * @param fields The fields to fetch in the row.
      */
@@ -86,54 +86,46 @@ export default class Dbf extends Openable {
      * @returns {Promise<DbfIterator>}
      * @private
      */
-    async _getRecordIterator(start?: number, end?: number): Promise<DbfIterator> {
-        const option = this._getStreamOption(start, end);
-        const stream = fs.createReadStream(this.filePath, option);
-        const sr = new StreamReader(stream);
-        await sr.open();
-        return new DbfIterator(sr, this.__header);
+    _getRecordIterator(start?: number, end?: number): DbfIterator {
+        const reader = new FileReader(this.__fd);
+        start !== undefined && reader.seek(start);
+        return new DbfIterator(reader, this.__header);
     }
 
     /**
      * @param {Object.<{ from: number|undefined, limit: number|undefined, fields: Array.<string>|undefined }>} filter
      * @returns {Array<DbfRecord>}}
      */
-    async records(filter?: IQueryFilter): Promise<Array<DbfRecord>> {
-        const option = this._getStreamOption(this.__header.headerLength);
-        const stream = fs.createReadStream(this.filePath, option);
+    records(filter?: IQueryFilter): Array<DbfRecord> {
         const records = new Array<DbfRecord>();
 
         const filterFields = filter && filter.fields;
         const filterOptions = this._normalizeFilter(filter);
         const to = filterOptions.from + filterOptions.limit;
 
-        return new Promise(resolve => {
-            stream.on('readable', () => {
-                const recordLength = this.__header.recordLength;
-                
-                let index = 0;
-                let buffer = stream.read(recordLength);
-                while (null !== buffer) {
-                    index++;
-                    if (buffer.length < recordLength) {
-                        break;
-                    }
+        if (filterFields && filterFields.length === 0) {
+            return records;
+        }
 
-                    const currentBuff = buffer;
-                    buffer = stream.read(recordLength);
+        const recordLength = this.__header.recordLength;
+        let index = filterOptions.from;
+        const reader = new FileReader(this.__fd);
+        const position = this.__header.headerLength + recordLength * (filterOptions.from - 1);
+        reader.seek(position);
+        while (index < to) {
+            const buff = reader.read(recordLength);
+            if (buff.length !== recordLength) {
+                break;
+            }
 
-                    if (index < filterOptions.from || index >= to) {
-                        continue;
-                    }
+            const record = DbfIterator._readRecord(buff, this.__header, filterFields);
+            record.id = index;
+            records.push(record);
 
-                    const record = DbfIterator._readRecord(currentBuff, this.__header, filterFields);
-                    record.id = index;
-                    records.push(record);
-                }
-            }).on('end', () => {
-                resolve(records);
-            });
-        });
+            index++;
+        }
+
+        return records;
     }
 
     /**
@@ -190,7 +182,7 @@ export default class Dbf extends Openable {
      * @example
      * dbf.pushRows([{ rec:1, name:'china'}, {rec:2, name:'usa'}]);
      */
-    pushAll(records: Array<DbfRecord|any>) {
+    pushAll(records: Array<DbfRecord | any>) {
         //TODO: update docs around...
         records.forEach(r => {
             let record: DbfRecord;

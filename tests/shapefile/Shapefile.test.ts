@@ -223,6 +223,27 @@ describe('shapefile filters', () => {
             expect(actionForAll.mock.calls.length).toBe(51);
         });
     });
+
+    it('records - no fields', async () => {
+        const shapefile = new Shapefile(filePath);
+        await shapefile.openWith(async () => {
+            const records = await shapefile.records({ fields: [] });
+            expect(records.length).toBe(51);
+            expect(records[0].properties.size).toBe(0);
+        });
+    });
+
+    it('records - one fields', async () => {
+        const shapefile = new Shapefile(filePath);
+        await shapefile.openWith(async () => {
+            const records = await shapefile.records({ fields: ['RECID'] });
+            expect(records.length).toBe(51);
+            expect(records[0].properties.size).toBe(1);
+            for(let rec of records) {
+                expect(rec.id).toEqual(rec.properties.get('RECID'));
+            }
+        });
+    });
 });
 
 describe('shapefile read records tests', () => {

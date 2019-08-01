@@ -340,5 +340,5 @@ describe('Read shp records tests', () => {
 
         match = Shp._matchFilter({envelope: { minx: -40, miny: -40, maxx: 40, maxy: 40 }}, envelope);
         expect(match).toBeTruthy();
-    })
+    });
 });
