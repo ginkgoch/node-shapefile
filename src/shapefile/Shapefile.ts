@@ -11,9 +11,7 @@ import DbfRecord from '../dbf/DbfRecord';
 import IQueryFilter from "../shared/IQueryFilter";
 import ShapefileIterator from "./ShapefileIterator";
 import StreamOpenable from "../base/StreamOpenable";
-import { Validators, ShapefileType } from "../shared";
-
-const extReg = /\.\w+$/;
+import { Validators, ShapefileType, Constants } from "../shared";
 
 /**
  * The Shapefile class.
@@ -58,7 +56,7 @@ export default class Shapefile extends StreamOpenable {
         this._shp.value._eventEmitter = this._eventEmitter;
         this._shp.value.open();
 
-        const filePathDbf = this.filePath.replace(extReg, '.dbf');
+        const filePathDbf = this.filePath.replace(Constants.FILE_EXT_REG, '.dbf');
         this._dbf = new Optional(new Dbf(filePathDbf, this._flag));
         this._dbf.value.open();
     }
@@ -208,7 +206,7 @@ export default class Shapefile extends StreamOpenable {
     static createEmpty(filePath: string, fileType: ShapefileType, fields: DbfField[]) {
         Shp.createEmpty(filePath, fileType);
 
-        const dbfFilePath = filePath.replace(/\.shp$/, '.dbf');
+        const dbfFilePath = filePath.replace(Constants.FILE_EXT_REG, '.dbf');
         Dbf.createEmpty(dbfFilePath, fields);
 
         const shapefile = new Shapefile(filePath, 'rs+');
@@ -222,8 +220,8 @@ export default class Shapefile extends StreamOpenable {
         let extensions = ['.shp', '.shx', '.dbf'];
 
         extensions.forEach(ext => {
-            const sourceFilePath = sourceFilename.replace(/\.shp$/, ext);
-            const targetFilePath = targetFilename.replace(/\.shp$/, ext);
+            const sourceFilePath = sourceFilename.replace(Constants.FILE_EXT_REG, ext);
+            const targetFilePath = targetFilename.replace(Constants.FILE_EXT_REG, ext);
             if (fs.existsSync(targetFilePath)) {
                 if (!fs.existsSync(sourceFilePath)) {
                     return;

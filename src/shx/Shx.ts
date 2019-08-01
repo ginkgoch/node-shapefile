@@ -1,15 +1,10 @@
 import fs from 'fs';
 import ShxRecord from './ShxRecord';
-import { Validators } from '../shared';
+import { Validators, Constants } from '../shared';
 import IQueryFilter from '../shared/IQueryFilter';
 import StreamOpenable from '../base/StreamOpenable';
 import { FileReader } from '../shared/FileReader';
 import ShxIterator from './ShxIterator';
-
-const RECORD_LENGTH = 8;
-const HEADER_LENGTH = 100;
-const OFFSET_LENGTH = 4;
-const CONTENT_LENGTH = 4;
 
 export default class Shx extends StreamOpenable {
     filePath: string
@@ -49,7 +44,7 @@ export default class Shx extends StreamOpenable {
     }
 
     count() {
-        return (this._totalSize - HEADER_LENGTH) / RECORD_LENGTH;
+        return (this._totalSize - Constants.SIZE_SHX_HEADER) / Constants.SIZE_SHX_RECORD;
     }
 
     /**
@@ -58,7 +53,7 @@ export default class Shx extends StreamOpenable {
      */
     get(id: number) {
         this.__reader.seek(this._getOffsetById(id));
-        const buffer = this.__reader.read(RECORD_LENGTH);
+        const buffer = this.__reader.read(Constants.SIZE_SHX_RECORD);
         const offset = buffer.readInt32BE(0) * 2;
         const length = buffer.readInt32BE(4) * 2;
         return { id, offset, length };
@@ -84,7 +79,7 @@ export default class Shx extends StreamOpenable {
 
     iterator() {
         const reader = new FileReader(this.__fd);
-        reader.seek(HEADER_LENGTH);
+        reader.seek(Constants.SIZE_SHX_HEADER);
         return new ShxIterator(reader);
     }
 
@@ -93,8 +88,8 @@ export default class Shx extends StreamOpenable {
      * @param {number} id The id of shx record. Starts from 1.
      */
     removeAt(id: number) {
-        const position = this._getOffsetById(id) + OFFSET_LENGTH;
-        const buff = Buffer.alloc(CONTENT_LENGTH);
+        const position = this._getOffsetById(id) + Constants.SIZE_SHX_OFFSET;
+        const buff = Buffer.alloc(Constants.SIZE_SHX_CONTENT);
         buff.writeInt32BE(0, 0);
         fs.writeSync(this.__fd, buff, 0, buff.length, position);
         this._invalidCache();
@@ -128,14 +123,14 @@ export default class Shx extends StreamOpenable {
     }
 
     private static _getRecordBuff(offset: number, length: number): Buffer {
-        const buff = Buffer.alloc(RECORD_LENGTH);
+        const buff = Buffer.alloc(Constants.SIZE_SHX_RECORD);
         buff.writeInt32BE(offset * .5, 0);
         buff.writeInt32BE(length * .5, 4);
         return buff
     }
 
     private _getOffsetById(id: number): number {
-        return HEADER_LENGTH + (id - 1) * 8
+        return Constants.SIZE_SHX_HEADER + (id - 1) * 8
     }
 
     private get __fd() {

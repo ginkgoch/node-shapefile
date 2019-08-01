@@ -40,6 +40,6 @@ export default class MultiPointParser extends GeomParser {
          * point count - 4
          * points
          */
-        return 4 + Constants.SIZE_OF_ENVELOPE + 4 + Constants.SIZE_OF_POINT * vertices.length;
+        return 4 + Constants.SIZE_ENVELOPE + 4 + Constants.SIZE_POINT * vertices.length;
     }
 }

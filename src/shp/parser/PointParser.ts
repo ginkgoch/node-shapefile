@@ -30,6 +30,6 @@ export default class PointParser extends GeomParser {
     }
 
     protected _size(coordinates: any): number {
-        return 4 + Constants.SIZE_OF_POINT;
+        return 4 + Constants.SIZE_POINT;
     }
 }

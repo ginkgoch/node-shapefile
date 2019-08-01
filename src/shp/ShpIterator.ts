@@ -1,9 +1,9 @@
 import _ from "lodash";
 import { Envelope, IEnvelope, Geometry } from 'ginkgoch-geom';
 
+import ShpReader from "./ShpReader";
 import Iterator from "../base/Iterator";
 import Optional from "../base/Optional";
-import ShpReader from "./ShpReader";
 import GeomParser from "./parser/GeomParser";
 import { FileReader } from "../shared/FileReader";
 
