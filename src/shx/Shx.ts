@@ -54,6 +54,7 @@ export default class Shx extends StreamOpenable {
     get(id: number) {
         this.__reader.seek(this._getOffsetById(id));
         const buffer = this.__reader.read(Constants.SIZE_SHX_RECORD);
+
         const offset = buffer.readInt32BE(0) * 2;
         const length = buffer.readInt32BE(4) * 2;
         return { id, offset, length };
@@ -78,9 +79,7 @@ export default class Shx extends StreamOpenable {
     }
 
     iterator() {
-        const reader = new FileReader(this.__fd);
-        reader.seek(Constants.SIZE_SHX_HEADER);
-        return new ShxIterator(reader);
+        return new ShxIterator(this.__fd);
     }
 
     /**

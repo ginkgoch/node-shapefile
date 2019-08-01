@@ -116,8 +116,7 @@ export default class Shapefile extends StreamOpenable {
     iterator(filter?: IQueryFilter) {
         Validators.checkIsOpened(this.isOpened);
 
-        const filterNorm = this._normalizeFilter(filter);
-        const iterator = new ShapefileIterator(this.count(), this._shp.value, this._dbf.value, filterNorm);
+        const iterator = new ShapefileIterator(this._shp.value, this._dbf.value, filter);
         return iterator;
     }
 

@@ -116,14 +116,10 @@ export default class Shp extends StreamOpenable {
         return this.__header.fileType;
     }
 
-    iterator() {
+    iterator(filter?: IQueryFilter) {
         Validators.checkIsOpened(this.isOpened);
-        return this._iterator(Constants.SIZE_SHP_HEADER);
-    }
 
-    _iterator(offset: number) {
-        this.__reader.seek(offset);
-        return new ShpIterator(this.__reader, this.__shpParser);
+        return new ShpIterator(this.__fd, this.__shx, this.__shpParser, filter);
     }
 
     /**
@@ -133,6 +129,7 @@ export default class Shp extends StreamOpenable {
     get(id: number): Geometry | null {
         Validators.checkIsOpened(this.isOpened);
 
+        //TODO: remove those two lines. Check it in open method.
         const shxPath = this.filePath.replace(Constants.FILE_EXT_REG, '.shx');
         assert(!_.isUndefined(this._shx), `${path.basename(shxPath)} doesn't exist.`);
 
@@ -141,35 +138,35 @@ export default class Shp extends StreamOpenable {
             return null;
         }
 
-        const record = this._get(shxRecord.offset);
-        return record;
-    }
-
-    _get(offset: number, envelope?: IEnvelope): Geometry | null {
-        const iterator = this._iterator(offset);
-        iterator.envelope = envelope;
-        const result = iterator.next();
-        return result.value;
+        const iterator = this.iterator({ from: id, limit: 1 });
+        const record = iterator.next();
+        return record.value;
     }
 
     records(filter?: IQueryFilter): Array<Geometry> {
         Validators.checkIsOpened(this.isOpened);
 
-        const filterOption = this._normalizeFilter(filter);
-        const indexRecords = this.__shx.records(filter);
+        const count = this.count();
         const records = new Array<Geometry>();
+        const iterator = this.iterator(filter);
+        const from = iterator._filter.from;
+        const to = iterator._filter.to > count + 1 ? count + 1 : iterator._filter.to;
+        
+        let index = 0;
+        const total = to - from;
 
-        let index = 0, total = indexRecords.length;
-        for (let r of indexRecords) {
-            const record = this._get(r.offset, filterOption.envelope);
-            if (record !== null) {
-                records.push(record);
+        let record = iterator.next();
+        while (!iterator.done) {
+            index++;
+            if (record.value !== null) {
+                records.push(record.value);
             }
 
-            index++;
             if (this._eventEmitter) {
                 this._eventEmitter.emit('progress', index, total);
             }
+
+            record = iterator.next();
         }
 
         return records;

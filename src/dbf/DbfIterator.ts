@@ -4,22 +4,27 @@ import Iterator from "../../src/base/Iterator"
 import DbfRecord from '../../src/dbf/DbfRecord'
 import DbfHeader from '../../src/dbf/DbfHeader'
 import { FileReader } from "../shared/FileReader";
+import IQueryFilter from '../shared/IQueryFilter';
+import FilterUtils from '../shared/FilterUtils';
 
 export default class DbfIterator extends Iterator<DbfRecord> {
-    fields?: string[]
     _index: number
     _header: DbfHeader
-    _streamReader: FileReader
-    done: boolean
+    _reader: FileReader
+    _filter: { from: number, limit: number, to: number, fields?: string[] };
 
-    constructor(streamReader: FileReader, header: DbfHeader) {
+    constructor(fd: number, header: DbfHeader, filter?: IQueryFilter) {
         super();
 
-        this.done = false;
-        this.fields = undefined;
-        this._index = 0;
+        let filterOption = FilterUtils.normalize(filter);
+        this._filter = _.assign(filterOption, { to: filterOption.from + filterOption.limit });
+
+        this._index = this._filter.from - 1;
         this._header = header;
-        this._streamReader = streamReader;
+        this._reader = new FileReader(fd);
+
+        let position = this._header.headerLength + this._header.recordLength * this._index;
+        this._reader.seek(position);
     }
 
     /**
@@ -28,13 +33,18 @@ export default class DbfIterator extends Iterator<DbfRecord> {
      */
     next(): Optional<DbfRecord> {
         this._index++;
+
+        if (this._index >= this._filter.to) {
+            return this._done();
+        }
+
         const recordLength = this._header.recordLength;
-        const buffer = this._streamReader.read(recordLength);
+        const buffer = this._reader.read(recordLength);
         if (buffer === null || buffer.length < recordLength) {
             return this._done();
         }
 
-        const record = DbfIterator._readRecord(buffer, this._header, this.fields);
+        const record = DbfIterator._readRecord(buffer, this._header, this._filter.fields);
         record.id = this._index;
         return this._continue(record);
     }
