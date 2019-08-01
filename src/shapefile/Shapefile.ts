@@ -12,6 +12,7 @@ import StreamOpenable from "../base/StreamOpenable";
 import IQueryFilter from "../shared/IQueryFilter";
 import DbfField from '../dbf/DbfField';
 import DbfRecord from '../dbf/DbfRecord';
+import ShapefileIterator_ from './ShapefileIterator_';
 
 const extReg = /\.\w+$/;
 
@@ -124,6 +125,14 @@ export default class Shapefile extends StreamOpenable {
         shapefileIt.fields = this._normalizeFields(filter && filter.fields);
         shapefileIt.envelope = filter && filter.envelope;
         return shapefileIt;
+    }
+
+    async iterator_(filter?: IQueryFilter) {
+        Validators.checkIsOpened(this.isOpened);
+
+        const filterNorm = this._normalizeFilter(filter);
+        const iterator = new ShapefileIterator_(this.count(), this._shp.value, this._dbf.value, filterNorm);
+        return iterator;
     }
 
     /**
