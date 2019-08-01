@@ -1,6 +1,6 @@
-import * as Utils from './Utils'
-import Shp from "../../src/shp/Shp"
-import Shapefile from "../../src/shapefile/Shapefile"
+import * as Utils from '../utils/Utils';
+import Shp from "../../src/shp/Shp";
+import Shapefile from "../../src/shapefile/Shapefile";
 import { Polygon, GeometryFactory } from 'ginkgoch-geom';
 
 describe('Shp edit', () => {
@@ -17,7 +17,7 @@ describe('Shp edit', () => {
             const shp = new Shp(filePath, 'rs+');
             await shp.open()
             const oldCount = shp.count()
-            const lastRec1 = await shp.get(oldCount - 1);
+            const lastRec1 = await shp.get(oldCount);
 
             shp.push(polygon1)
             await shp.close()
@@ -25,8 +25,8 @@ describe('Shp edit', () => {
             await shp.open()
             const recordCount = shp.count()
             expect(recordCount).toBe(oldCount + 1)
-            const lastRec1_new = await shp.get(oldCount - 1) as any
-            const polygon1_new = await shp.get(oldCount) as any
+            const lastRec1_new = await shp.get(oldCount) as any
+            const polygon1_new = await shp.get(oldCount + 1) as any
 
             expect(lastRec1_new).not.toBe(null);
             expect(polygon1_new).not.toBe(null);

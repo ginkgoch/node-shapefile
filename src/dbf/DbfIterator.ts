@@ -1,23 +1,23 @@
 import _ from 'lodash'
-import {StreamReader} from 'ginkgoch-stream-io'
+import Optional from '../base/Optional';
 import Iterator from "../../src/base/Iterator"
 import DbfRecord from '../../src/dbf/DbfRecord'
 import DbfHeader from '../../src/dbf/DbfHeader'
-import Optional from '../base/Optional';
+import { FileReader } from "../shared/FileReader";
 
 export default class DbfIterator extends Iterator<DbfRecord> {
     fields?: string[]
     _index: number
     _header: DbfHeader
-    _streamReader: StreamReader
+    _streamReader: FileReader
     done: boolean
 
-    constructor(streamReader: StreamReader, header: DbfHeader) {
+    constructor(streamReader: FileReader, header: DbfHeader) {
         super();
 
         this.done = false;
         this.fields = undefined;
-        this._index = -1;
+        this._index = 0;
         this._header = header;
         this._streamReader = streamReader;
     }
@@ -30,7 +30,7 @@ export default class DbfIterator extends Iterator<DbfRecord> {
         this._index++;
         const recordLength = this._header.recordLength;
         const buffer = <Buffer>(await this._streamReader.read(recordLength));
-        if(buffer === null || buffer.length < recordLength) {
+        if (buffer === null || buffer.length < recordLength) {
             return this._done();
         }
 
@@ -48,7 +48,7 @@ export default class DbfIterator extends Iterator<DbfRecord> {
      */
     static _readRecord(buffer: Buffer, header: DbfHeader, fieldNames?: string[]): DbfRecord {
         const record = new DbfRecord(header).read(buffer);
-        if(fieldNames) {
+        if (fieldNames) {
             record.filter(fieldNames);
         }
         return record;

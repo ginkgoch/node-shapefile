@@ -28,14 +28,37 @@ describe('create dbf', () => {
         }
     });
 
-    it('create dbf with records', async () => {
+    it('create dbf with records - 1', async () => {
         const filePath = './tests/data/USStates_create_test1.dbf';
 
         try {
             const dbf = Dbf.createEmpty(filePath, dbf_create_fields.map(f => DbfField.fromJson(f)));
             await dbf.open();
 
-            dbf.pushRecords(dbf_create_records.map(r => DbfRecord.fromJson({ values: r })));
+            dbf.pushAll(dbf_create_records.map(r => DbfRecord.fromJson({ values: r })));
+            dbf.close();
+
+            const dbfNew = new Dbf(filePath);
+            await dbfNew.open();
+
+            const records = await dbfNew.records();
+            expect(records.length).toBe(51);
+
+            await _compare('./tests/data/USStates.dbf', filePath);
+        }
+        finally {
+            fs.unlinkSync(filePath);
+        }
+    });
+
+    it('create dbf with records - 2', async () => {
+        const filePath = './tests/data/USStates_create_test1.dbf';
+
+        try {
+            const dbf = Dbf.createEmpty(filePath, dbf_create_fields.map(f => DbfField.fromJson(f)));
+            await dbf.open();
+
+            dbf.pushAll(dbf_create_records);
             dbf.close();
 
             const dbfNew = new Dbf(filePath);
@@ -88,13 +111,13 @@ describe('dbf deletion test', () => {
             await dbf.open();
 
             const idToRemove = 20;
-            dbf.removeRecordAt(idToRemove);
+            dbf.removeAt(idToRemove);
             let r = await dbf.get(idToRemove);
 
             expect(r.id).toBe(20);
             expect(r.deleted).toBeTruthy();
 
-            dbf.recoverRecordAt(idToRemove);
+            dbf.recoverAt(idToRemove);
             r = await dbf.get(idToRemove);
             expect(r.id).toBe(20);
             expect(r.deleted).toBeFalsy();
@@ -120,9 +143,9 @@ describe('dbf update test', () => {
             const idToUpdate = 20;
             let record = await dbf.get(idToUpdate);
             expect(record.values.get('CAPITAL')).toBe('N');
-            expect(record.values.get('PLACEFIP')).toBe('65000');
+            expect(record.values.get('PLACEFIP')).toBe('35000');
 
-            dbf.updateRecord(DbfRecord.fromJson(dbf_update_record));
+            dbf.update(DbfRecord.fromJson(dbf_update_record));
 
             record = await dbf.get(idToUpdate);
             expect(record.values.get('CAPITAL')).toBe('Y');

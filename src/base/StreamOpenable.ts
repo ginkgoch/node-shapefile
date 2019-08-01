@@ -10,7 +10,7 @@ export default class StreamOpenable extends Openable {
 
     _normalizeFilter(filter: IQueryFilter | null | undefined): {from: number, limit: number, fields?: string[], envelope?: IEnvelope} {
         filter = _.defaultTo(filter, { });
-        filter = _.defaults(filter, { from: 0, limit: Number.MAX_SAFE_INTEGER });
+        filter = _.defaults(filter, { from: 1, limit: Number.MAX_SAFE_INTEGER });
         return <{from: number, limit: number, fields?: string[], envelope?: IEnvelope}>filter;
     }
 };

@@ -1,42 +1,42 @@
 import _ from "lodash";
-import { StreamReader } from "ginkgoch-stream-io";
-
-import Iterator from "../../src/base/Iterator";
-import Optional from "../../src/base/Optional";
-import ShpReader from "../../src/shp/ShpReader";
 import { Envelope, IEnvelope, Geometry } from 'ginkgoch-geom';
-import GeomParser from "../../src/shp/parser/GeomParser";
 
-export default class ShpIterator extends Iterator<Geometry|null> {
-    envelope: IEnvelope|undefined;
-    _streamReader: StreamReader;
+import Iterator from "../base/Iterator";
+import Optional from "../base/Optional";
+import ShpReader from "./ShpReader";
+import GeomParser from "./parser/GeomParser";
+import { FileReader } from "../shared/FileReader";
+
+export default class ShpIterator extends Iterator<Geometry | null> {
+    envelope: IEnvelope | undefined;
+    _reader: FileReader;
     _shpParser: GeomParser;
 
     /**
      * 
-     * @param {StreamReader} streamReader 
+     * @param {FileReader} reader 
      * @param {ShpParser} shpParser
      */
-    constructor(streamReader: StreamReader, shpParser: GeomParser) {
+    constructor(reader: FileReader, shpParser: GeomParser) {
         super();
 
         this.envelope = undefined;
-        this._streamReader = streamReader;
+        this._reader = reader;
         this._shpParser = shpParser;
     }
 
     /**
      * @override
      */
-    async next(): Promise<Optional<Geometry|null>> {
-        let buffer = <Buffer>await this._streamReader.read(8);
+    async next(): Promise<Optional<Geometry | null>> {
+        let buffer = <Buffer>await this._reader.read(8);
         if (buffer === null || buffer.length === 0) {
             return this._done();
         }
 
         const id = buffer.readInt32BE(0);
         const length = buffer.readInt32BE(4) * 2;
-        let contentBuffer = <Buffer>await this._streamReader.read(length);
+        let contentBuffer = <Buffer>await this._reader.read(length);
         if (contentBuffer === null || contentBuffer.length === 0) {
             return this._done();
         }
@@ -47,12 +47,12 @@ export default class ShpIterator extends Iterator<Geometry|null> {
             return this._dirty(content);
         }
 
-        let geometry: Geometry|null = null;
+        let geometry: Geometry | null = null;
         if (_.isUndefined(this.envelope) || (this.envelope && !Envelope.disjoined(content.envelope, this.envelope))) {
             geometry = content.readGeom();
             geometry.id = id;
         }
 
-        return this._continue(geometry); 
+        return this._continue(geometry);
     }
 };

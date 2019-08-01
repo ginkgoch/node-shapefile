@@ -1,9 +1,11 @@
-import IFeature from "./IFeature";
-import { Constants } from "../shared";
+import { IEnvelope, Feature, Geometry, Envelope } from "ginkgoch-geom";
+
+import _ from "lodash";
+import Shp from "../shp/Shp";
+import Dbf from "../dbf/Dbf";
 import Iterator from '../base/Iterator';
-import { IEnvelope } from "ginkgoch-geom";
-import DbfIterator from "../dbf/DbfIterator";
-import ShpIterator from "../shp/ShpIterator";
+import Optional from "../base/Optional";
+import IQueryFilter from "../shared/IQueryFilter";
 
 /**
  * The Shapefile iterator.
@@ -16,68 +18,74 @@ import ShpIterator from "../shp/ShpIterator";
  *      console.log(record);
  * }
  */
-export default class ShapefileIterator extends Iterator<IFeature> {
-    _shpIt: ShpIterator
-    _dbfIt: DbfIterator
+export default class ShapefileIterator extends Iterator<Feature | null> {
+    shp: Shp;
+    dbf: Dbf;
+    count: number;
+    filter: IQueryFilter;
+    from: number;
+    to: number;
+    index: number;
 
-    /**
-     * @constructor Creates a ShapefileIterator instance.
-     * @param {ShpIterator} shpIt The ShpIterator for iterating shp file.
-     * @param {DbfIterator} dbfIt The DbfIterator for iterating dbf file.
-     */
-    constructor(shpIt: ShpIterator, dbfIt: DbfIterator) {
+    constructor(count: number, shp: Shp, dbf: Dbf, filter: IQueryFilter) {
         super();
-        this._shpIt = shpIt;
-        this._dbfIt = dbfIt;
-    }
 
-    /**
-     * Sets the field filter for iterator.
-     */
-    set fields(v: string[]) {
-        this._dbfIt.fields = v;
-    }
+        this.shp = shp;
+        this.dbf = dbf;
+        this.count = count;
+        this.filter = filter;
 
-    /**
-     * Sets the envelope filter for iterator.
-     */
-    set envelope(v: IEnvelope|undefined) {
-        this._shpIt.envelope = v;
+        this.from = _.defaultTo(this.filter.from, 1);
+        this.index = this.from - 1;
+        let limit = _.defaultTo(this.filter.limit, this.count);
+        this.to = this.from + limit;
+        if (this.to > this.count + 1) {
+            this.to = this.count + 1;
+        }
     }
 
     /**
      * Moves to and return the next record. The last record will return with a field { done: true } for a complete reading flag.
      */
-    async next() {
+    async next(): Promise<Optional<Feature | null>> {
         let record = await this._next();
-        while(!this.done && record.value && (record.value.geometry === undefined || record.value.geometry === null)) {
+        while(!this.done && !record.hasValue) {
             record = await this._next();
         }
 
         return record;
     }
 
-    /**
-     * @private
-     */
-    async _next() {
-        let shpRecordOpt = await this._shpIt.next();
-        let dbfRecordOpt = await this._dbfIt.next();
-        if (!this._shpIt.done && !this._dbfIt.done) {
-            let record = {} as IFeature;
-            let shpRecord = shpRecordOpt.value;
-            if (shpRecord !== null) {
-                record.id = shpRecord.id;
-                record.geometry = shpRecord;
-                record.properties = dbfRecordOpt.value.values;
-                record.type = Constants.FEATURE_TYPE;
-            }
-            
-            return this._continue(record);
-        } else if (this._shpIt.done && this._dbfIt.done) {
+    async _next(): Promise<Optional<Feature | null>> {
+        this.index++;
+        if (this.index >= this.to) {
             return this._done();
-        } else {
-            throw 'Record count not matched.';
         }
+
+        const recordShp = await this.shp.get(this.index);
+        if (recordShp === null) {
+            return this._dirty(null);
+        } else if (!this._intersects(recordShp, this.filter.envelope)) {
+            return this._dirty(null);
+        } else {
+            const feature = new Feature(recordShp);
+            if (this.filter.fields === undefined || this.filter.fields.length > 0) {
+                const properties = await this.dbf.get(this.index, this.filter.fields);
+                properties.values.forEach((v, k) => {
+                    feature.properties.set(k, v);
+                });
+            }
+
+            return this._continue(feature);
+        }
+    }
+
+    _intersects(geom: Geometry, envelope?: IEnvelope) {
+        if (envelope === undefined) {
+            return true;
+        } 
+
+        const disjoined = Envelope.disjoined(geom.envelope(), envelope);
+        return !disjoined;
     }
 };

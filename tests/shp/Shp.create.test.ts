@@ -2,7 +2,7 @@ import fs from 'fs';
 
 import Shp from "../../src/shp/Shp";
 import { ShapefileType } from "../../src/shared";
-import * as Utils from './Utils';
+import * as Utils from '../utils/Utils';
 import { Polygon, LinearRing } from 'ginkgoch-geom';
 
 describe('Shp - create', () => {
@@ -45,7 +45,7 @@ describe('Shp - create', () => {
             shp._flag = 'rs';
             await shp.open();
             expect(shp.count()).toBe(1);
-            const polygon1_ = await shp.get(0);
+            const polygon1_ = await shp.get(1);
             expect(polygon1_).toEqual(polygon1);
             await shp.close();
         } finally {

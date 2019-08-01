@@ -164,7 +164,7 @@ describe('read by id tests', () => {
         await shp.openWith(async () => {
             const recordIterator = await shp.iterator();
 
-            let index = 0, ri = undefined;
+            let index = 1, ri = undefined;
             while ((ri = await recordIterator.next()) && !recordIterator.done) {
                 ri = ri.value;
                 const r = await shp.get(index);
@@ -224,7 +224,7 @@ describe('Read shp records tests', () => {
         const shp = new Shp(shpPath);
         await shp.openWith(async () => {
             const features = await shp.records({ from: 20 });
-            expect(features.length).toBe(31);
+            expect(features.length).toBe(32);
 
             const recordIterator = await shp.iterator();
 
@@ -340,5 +340,5 @@ describe('Read shp records tests', () => {
 
         match = Shp._matchFilter({envelope: { minx: -40, miny: -40, maxx: 40, maxy: 40 }}, envelope);
         expect(match).toBeTruthy();
-    })
+    });
 });

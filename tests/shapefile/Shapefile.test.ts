@@ -1,8 +1,7 @@
 import Shapefile from "../../src/shapefile/Shapefile";
 import _ from "lodash";
 import DbfField from "../../src/dbf/DbfField";
-import IFeature from "../../src/shapefile/IFeature";
-import { Envelope } from 'ginkgoch-geom';
+import { Envelope, IFeature } from 'ginkgoch-geom';
 import { EventEmitter } from "events";
 
 // const Shapefile = require('../../libs/Shapefile');
@@ -79,7 +78,7 @@ describe('shapefile test', () => {
             let record1 = await iterator.next();
             let count = 0;
             while(!iterator.done) {
-                const record2 = await shapefile.get(count);
+                const record2 = await shapefile.get(count + 1);
                 expect(record2).toHaveProperty('geometry');
                 expect(record2).toHaveProperty('properties');
                 expect(record2).toEqual(record1.value);
@@ -87,6 +86,7 @@ describe('shapefile test', () => {
                 count++;
                 record1 = await iterator.next();
             }
+
             expect(count).toBe(51);
         });
     });
@@ -98,7 +98,7 @@ describe('shapefile test', () => {
             let record1 = await iterator.next();
             let count = 0;
             while(!iterator.done) {
-                const record2 = await shapefile.get(count, ['RECID']) as IFeature;
+                const record2 = await shapefile.get(count + 1, ['RECID']) as IFeature;
                 expect(record2).toHaveProperty('geometry');
                 expect(record2).toHaveProperty('properties');
                 expect(record2.properties.size).toBe(1);
@@ -108,6 +108,7 @@ describe('shapefile test', () => {
                 count++;
                 record1 = await iterator.next();
             }
+
             expect(count).toBe(51);
         });
     });
@@ -119,7 +120,7 @@ describe('shapefile test', () => {
             let record1 = await iterator.next();
             let count = 0;
             while(!iterator.done) {
-                const record2 = await shapefile.get(count, []) as IFeature;
+                const record2 = await shapefile.get(count + 1, []) as IFeature;
                 expect(record2).toHaveProperty('geometry');
                 expect(record2).toHaveProperty('properties');
                 expect(record2.properties.size).toBe(0);
@@ -170,7 +171,7 @@ describe('shapefile filters', () => {
             const actionForGeom = jest.fn();
             const actionForGeomNull = jest.fn();
             while((rec = await iterator.next()) && !iterator.done) {
-                if(rec.value.geometry !== null) {
+                if(rec.value !== null) {
                     actionForGeom();
                 } else {
                     actionForGeomNull();
@@ -193,7 +194,7 @@ describe('shapefile filters', () => {
             const actionForAll = jest.fn();
             while((rec = await iterator.next()) && !iterator.done) {
                 actionForAll();
-                if(rec.value.geometry !== null) {
+                if(rec.value !== null) {
                     actionForGeom();
                 }
             }
@@ -213,13 +214,34 @@ describe('shapefile filters', () => {
             const actionForAll = jest.fn();
             while((rec = await iterator.next()) && !iterator.done) {
                 actionForAll();
-                if(rec.value.geometry !== null) {
+                if(rec.value !== null) {
                     actionForGeom();
                 }
             }
 
             expect(actionForGeom.mock.calls.length).toBe(51);
             expect(actionForAll.mock.calls.length).toBe(51);
+        });
+    });
+
+    it('records - no fields', async () => {
+        const shapefile = new Shapefile(filePath);
+        await shapefile.openWith(async () => {
+            const records = await shapefile.records({ fields: [] });
+            expect(records.length).toBe(51);
+            expect(records[0].properties.size).toBe(0);
+        });
+    });
+
+    it('records - one fields', async () => {
+        const shapefile = new Shapefile(filePath);
+        await shapefile.openWith(async () => {
+            const records = await shapefile.records({ fields: ['RECID'] });
+            expect(records.length).toBe(51);
+            expect(records[0].properties.size).toBe(1);
+            for(let rec of records) {
+                expect(rec.id).toEqual(rec.properties.get('RECID'));
+            }
         });
     });
 });

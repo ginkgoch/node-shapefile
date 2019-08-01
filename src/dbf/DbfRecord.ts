@@ -10,15 +10,25 @@ export default class DbfRecord {
     values: Map<string, any>
     header: DbfHeader|undefined
 
-    /**
-     *
-     * @param {DbfHeader} header
-     */
-    constructor(header?: DbfHeader) {
-        this.header = header;
+    constructor(props?: any)
+    constructor(props?: Map<string, any>)
+    constructor(header?: DbfHeader) 
+    constructor(param?: DbfHeader | Map<string, any> | any ) {
         this.id = -1;
         this.values = new Map<string, any>();
         this.deleted = false;
+
+        if (param instanceof DbfHeader) {
+            this.header = param as DbfHeader;
+        } else if (param instanceof Map) {
+            (<Map<string, any>>param).forEach((v, k, m) => {
+                this.values.set(k, v);
+            });
+        } else if (param instanceof Object) {
+            Object.keys(param).forEach((k, i, arr) => {
+                this.values.set(k, param[k]);
+            });
+        }
     }
 
     read(buffer: Buffer): DbfRecord {

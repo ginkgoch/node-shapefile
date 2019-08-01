@@ -59,20 +59,6 @@ describe('parser tests', () => {
         expect(parsePointBuffer).toThrow(/Not a point record/);
     });
 
-    test('vertices', () => {
-        let geom: any = [24, 85];
-        let vertices = GeomParser.vertices(geom);
-        expect(vertices).toEqual([[24, 85]]);
-
-        geom = [[24, 85], [45, 98]];
-        vertices = GeomParser.vertices(geom);
-        expect(vertices).toEqual([[24, 85], [45, 98]]);
-
-        geom = [[[24, 85], [45, 98]], [34, 81]];
-        vertices = GeomParser.vertices(geom);
-        expect(vertices).toEqual([[24, 85], [45, 98], [34, 81]]);
-    });
-
     it('write - point', () => {
         const point1 = [45, 56];
 

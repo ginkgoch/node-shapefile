@@ -1,5 +1,4 @@
 import Optional from "./Optional";
-import { isNullOrUndefined } from "util";
 
 export default abstract class Iterator<T> {
     done: boolean;
