@@ -4,7 +4,7 @@ import ShxIterator from './ShxIterator';
 import FilterUtils from '../shared/FilterUtils';
 import { Validators, Constants } from '../shared';
 import IQueryFilter from '../shared/IQueryFilter';
-import Opener from '../base/Openable';
+import Opener from '../base/Opener';
 import { FileStream } from '../shared/FileStream';
 
 export default class Shx extends Opener {
