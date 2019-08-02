@@ -1,12 +1,13 @@
 import fs from 'fs';
 import ShxRecord from './ShxRecord';
+import ShxIterator from './ShxIterator';
+import FilterUtils from '../shared/FilterUtils';
 import { Validators, Constants } from '../shared';
 import IQueryFilter from '../shared/IQueryFilter';
-import StreamOpenable from '../base/StreamOpenable';
+import Openable from '../base/Openable';
 import { FileReader } from '../shared/FileReader';
-import ShxIterator from './ShxIterator';
 
-export default class Shx extends StreamOpenable {
+export default class Shx extends Openable {
     filePath: string
     _flag: string
     _fd?: number
@@ -63,7 +64,7 @@ export default class Shx extends StreamOpenable {
     records(filter?: IQueryFilter): Array<ShxRecord> {
         const records = new Array<ShxRecord>();
         const count = this.count();
-        const filterOption = this._normalizeFilter(filter);
+        const filterOption = FilterUtils.normalizeFilter(filter);
         let to = filterOption.from + filterOption.limit;
         if (to > count + 1) {
             to = count + 1;

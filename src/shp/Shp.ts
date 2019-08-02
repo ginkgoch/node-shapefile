@@ -9,14 +9,14 @@ import Shx from '../shx/Shx';
 import ShpHeader from './ShpHeader';
 import Optional from '../base/Optional';
 import ShpIterator from './ShpIterator';
+import Openable from '../base/Openable';
 import GeomParser from './parser/GeomParser';
 import { FileReader } from '../shared/FileReader';
 import IQueryFilter from '../shared/IQueryFilter';
-import StreamOpenable from '../base/StreamOpenable';
 import GeomParserFactory from './parser/GeomParserFactory';
 import { Validators, ShapefileType, Constants } from "../shared";
 
-export default class Shp extends StreamOpenable {
+export default class Shp extends Openable {
     filePath: string;
     _flag: string;
     _fd: number | undefined;
