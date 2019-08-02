@@ -32,7 +32,7 @@ export default class ShapefileIterator extends Iterator<Feature | null> {
         this.shp = shp;
         this.dbf = dbf;
         this.count = shp.count();
-        let filterOption = FilterUtils.normalize(filter);
+        let filterOption = FilterUtils.normalizeFilter(filter, () => dbf.__header.fields.map(f => f.name));
         this.filter = _.assign(filterOption, { to: filterOption.from + filterOption.limit });
         if (this.filter.to > this.count + 1) {
             this.filter.to = this.count + 1;

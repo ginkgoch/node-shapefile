@@ -17,7 +17,7 @@ export default class ShxIterator extends Iterator<ShxRecord> {
 
         this.reader = new FileReader(fd);
 
-        let filterNorm = FilterUtils.normalize(filter);
+        let filterNorm = FilterUtils.normalizeFilter(filter);
         this.filter = _.assign(filterNorm, { to: filterNorm.from + filterNorm.limit });
 
         this.index = this.filter.from - 1;

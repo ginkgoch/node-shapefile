@@ -30,7 +30,7 @@ export default class ShpIterator extends Iterator<Geometry | null> {
         this._shpParser = shpParser;
         this._reader = new FileReader(fd);
 
-        let filterOption = FilterUtils.normalize(filter);
+        let filterOption = FilterUtils.normalizeFilter(filter);
         this._filter = _.assign(filterOption, { to: filterOption.from + filterOption.limit });
 
         const count = this._shx.count();

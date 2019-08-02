@@ -16,7 +16,7 @@ export default class DbfIterator extends Iterator<DbfRecord> {
     constructor(fd: number, header: DbfHeader, filter?: IQueryFilter) {
         super();
 
-        let filterOption = FilterUtils.normalize(filter);
+        let filterOption = FilterUtils.normalizeFilter(filter, () => header.fields.map(f => f.name));
         this._filter = _.assign(filterOption, { to: filterOption.from + filterOption.limit });
 
         this._index = this._filter.from - 1;

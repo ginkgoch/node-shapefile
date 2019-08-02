@@ -8,6 +8,7 @@ import Openable from '../base/StreamOpenable'
 import Validators from '../shared/Validators'
 import IQueryFilter from '../shared/IQueryFilter';
 import { FileReader } from "../shared/FileReader";
+import FilterUtils from '../shared/FilterUtils';
 
 export default class Dbf extends Openable {
     filePath: string
@@ -57,7 +58,7 @@ export default class Dbf extends Openable {
      * @param id Index of the record. Starts from 1.
      * @param fields The fields to fetch in the row.
      */
-    get(id: number, fields?: string[]): DbfRecord {
+    get(id: number, fields?: string[] | 'all' | 'none'): DbfRecord {
         Validators.checkIsOpened(this.isOpened);
         Validators.checkIndexIsGEZero(id);
 
@@ -66,7 +67,8 @@ export default class Dbf extends Openable {
         return record.value;
     }
 
-    iterator(fields?: string[]) {
+    //TODO: IQueryFilter.
+    iterator(fields?: string[] | 'all' | 'none') {
         Validators.checkIsOpened(this.isOpened);
 
         return new DbfIterator(this.__fd, this.__header, { fields });
@@ -79,11 +81,10 @@ export default class Dbf extends Openable {
     records(filter?: IQueryFilter): Array<DbfRecord> {
         const records = new Array<DbfRecord>();
 
-        const filterFields = filter && filter.fields;
-        const filterOptions = this._normalizeFilter(filter);
+        const filterOptions = FilterUtils.normalizeFilter(filter, this._fieldNames.bind(this));
         const to = filterOptions.from + filterOptions.limit;
 
-        if (filterFields && filterFields.length === 0) {
+        if (filterOptions.fields && filterOptions.fields.length === 0) {
             return records;
         }
 
@@ -98,7 +99,7 @@ export default class Dbf extends Openable {
                 break;
             }
 
-            const record = DbfIterator._readRecord(buff, this.__header, filterFields);
+            const record = DbfIterator._readRecord(buff, this.__header, filterOptions.fields);
             record.id = index;
             records.push(record);
 
@@ -271,5 +272,9 @@ export default class Dbf extends Openable {
 
     private _getOffsetById(id: number): number {
         return this.__header.headerLength + (id - 1) * this.__header.recordLength;
+    }
+
+    private _fieldNames() {
+        return this.__header.fields.map(f => f.name);
     }
 };

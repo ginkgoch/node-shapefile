@@ -140,7 +140,7 @@ export default class Shapefile extends StreamOpenable {
     /**
      * Gets shapefile record by a specified id, and returns with the given fields. If fields is not indicated, all fields will be fetched.
      * @param {number} id The record id. Starts from 1.
-     * @param {undefined|Array<string>} fields The fields that will be fetch from DBF file.
+     * @param {undefined|Array<string>|'all'|'none'} fields The fields that will be fetch from DBF file.
      * @returns The record that contains the required id.
      */
     get(id: number, fields?: string[] | 'all' | 'none'): Feature | null {
