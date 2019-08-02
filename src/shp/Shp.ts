@@ -58,7 +58,7 @@ export default class Shp extends StreamOpenable {
      * @override
      */
     _open() {
-        Validators.checkFileExists(this.filePath);
+        Validators.checkFileExists(this.filePath, ['.shp', '.shx']);
 
         this._fd = fs.openSync(this.filePath, this._flag);
         this._header = this._readHeader();
@@ -128,10 +128,6 @@ export default class Shp extends StreamOpenable {
      */
     get(id: number): Geometry | null {
         Validators.checkIsOpened(this.isOpened);
-
-        //TODO: remove those two lines. Check it in open method.
-        const shxPath = this.filePath.replace(Constants.FILE_EXT_REG, '.shx');
-        assert(!_.isUndefined(this._shx), `${path.basename(shxPath)} doesn't exist.`);
 
         const shxRecord = this.__shx.get(id);
         if (shxRecord.length === 0) {
