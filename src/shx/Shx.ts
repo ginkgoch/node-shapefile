@@ -4,15 +4,15 @@ import ShxIterator from './ShxIterator';
 import FilterUtils from '../shared/FilterUtils';
 import { Validators, Constants } from '../shared';
 import IQueryFilter from '../shared/IQueryFilter';
-import Openable from '../base/Openable';
-import { FileReader } from '../shared/FileReader';
+import Opener from '../base/Openable';
+import { FileStream } from '../shared/FileStream';
 
-export default class Shx extends Openable {
+export default class Shx extends Opener {
     filePath: string
     _flag: string
     _fd?: number
     _totalSize: number
-    _reader?: FileReader
+    _reader?: FileStream
 
     constructor(filePath: string, flag = 'rs') {
         super();
@@ -28,7 +28,7 @@ export default class Shx extends Openable {
         this._fd = fs.openSync(this.filePath, this._flag);
         const stats = fs.statSync(this.filePath);
         this._totalSize = stats.size;
-        this._reader = new FileReader(this._fd);
+        this._reader = new FileStream(this._fd);
     }
 
     /**
@@ -139,6 +139,6 @@ export default class Shx extends Openable {
     }
 
     private get __reader() {
-        return <FileReader>this._reader;
+        return <FileStream>this._reader;
     }
 };

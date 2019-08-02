@@ -6,7 +6,7 @@ import { IFeature, Feature } from "ginkgoch-geom";
 import Shp from "../shp/Shp";
 import Dbf from "../dbf/Dbf";
 import DbfField from '../dbf/DbfField';
-import Openable from "../base/Openable";
+import Opener from "../base/Openable";
 import Optional from "../base/Optional";
 import DbfRecord from '../dbf/DbfRecord';
 import IQueryFilter from "../shared/IQueryFilter";
@@ -16,7 +16,7 @@ import { Validators, ShapefileType, Constants } from "../shared";
 /**
  * The Shapefile class.
  */
-export default class Shapefile extends Openable {
+export default class Shapefile extends Opener {
     filePath: string;
     _flag: string;
     _shp: Optional<Shp>;

@@ -1,6 +1,6 @@
-import Openable from '../../src/base/Openable';
+import Opener from '../../src/base/Openable';
 
-class TestOpener extends Openable { }
+class TestOpener extends Opener { }
 
 describe('base.Openable', () => {
     it('constructor', () => {

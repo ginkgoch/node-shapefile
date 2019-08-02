@@ -3,14 +3,14 @@ import Optional from '../base/Optional';
 import Iterator from "../../src/base/Iterator"
 import DbfRecord from '../../src/dbf/DbfRecord'
 import DbfHeader from '../../src/dbf/DbfHeader'
-import { FileReader } from "../shared/FileReader";
+import { FileStream } from "../shared/FileStream";
 import IQueryFilter from '../shared/IQueryFilter';
 import FilterUtils from '../shared/FilterUtils';
 
 export default class DbfIterator extends Iterator<DbfRecord> {
     _index: number
     _header: DbfHeader
-    _reader: FileReader
+    _reader: FileStream
     _filter: { from: number, limit: number, to: number, fields?: string[] };
 
     constructor(fd: number, header: DbfHeader, filter?: IQueryFilter) {
@@ -21,7 +21,7 @@ export default class DbfIterator extends Iterator<DbfRecord> {
 
         this._index = this._filter.from - 1;
         this._header = header;
-        this._reader = new FileReader(fd);
+        this._reader = new FileStream(fd);
 
         let position = this._header.headerLength + this._header.recordLength * this._index;
         this._reader.seek(position);

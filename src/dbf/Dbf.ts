@@ -4,13 +4,13 @@ import DbfField from './DbfField'
 import DbfHeader from './DbfHeader'
 import DbfRecord from './DbfRecord'
 import DbfIterator from './DbfIterator'
-import Openable from '../base/Openable'
+import Opener from '../base/Openable'
 import Validators from '../shared/Validators'
 import IQueryFilter from '../shared/IQueryFilter';
-import { FileReader } from "../shared/FileReader";
+import { FileStream } from "../shared/FileStream";
 import FilterUtils from '../shared/FilterUtils';
 
-export default class Dbf extends Openable {
+export default class Dbf extends Opener {
     filePath: string
     _fd?: number
     _header?: DbfHeader
@@ -89,7 +89,7 @@ export default class Dbf extends Openable {
 
         const recordLength = this.__header.recordLength;
         let index = filterOptions.from;
-        const reader = new FileReader(this.__fd);
+        const reader = new FileStream(this.__fd);
         const position = this.__header.headerLength + recordLength * (filterOptions.from - 1);
         reader.seek(position);
         while (index < to) {

@@ -1,21 +1,21 @@
 import Iterator from "../base/Iterator";
 import ShxRecord from "./ShxRecord";
 import Optional from "../base/Optional";
-import { FileReader } from '../shared/FileReader'
+import { FileStream } from '../shared/FileStream'
 import { Constants } from "../shared";
 import IQueryFilter from "../shared/IQueryFilter";
 import FilterUtils from "../shared/FilterUtils";
 import _ from "lodash";
 
 export default class ShxIterator extends Iterator<ShxRecord> {
-    reader: FileReader;
+    reader: FileStream;
     index: number = 0;
     filter: { from: number, limit: number, to: number };
 
     constructor(fd: number, filter?: IQueryFilter) {
         super();
 
-        this.reader = new FileReader(fd);
+        this.reader = new FileStream(fd);
 
         let filterNorm = FilterUtils.normalizeFilter(filter);
         this.filter = _.assign(filterNorm, { to: filterNorm.from + filterNorm.limit });

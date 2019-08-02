@@ -9,14 +9,14 @@ import Shx from '../shx/Shx';
 import ShpHeader from './ShpHeader';
 import Optional from '../base/Optional';
 import ShpIterator from './ShpIterator';
-import Openable from '../base/Openable';
+import Opener from '../base/Openable';
 import GeomParser from './parser/GeomParser';
-import { FileReader } from '../shared/FileReader';
+import { FileStream } from '../shared/FileStream';
 import IQueryFilter from '../shared/IQueryFilter';
 import GeomParserFactory from './parser/GeomParserFactory';
 import { Validators, ShapefileType, Constants } from "../shared";
 
-export default class Shp extends Openable {
+export default class Shp extends Opener {
     filePath: string;
     _flag: string;
     _fd: number | undefined;
@@ -24,7 +24,7 @@ export default class Shp extends Openable {
     _shpParser: Optional<GeomParser>;
     _shx: Optional<Shx>;
     _eventEmitter: EventEmitter | undefined;
-    _reader: FileReader | undefined;
+    _reader: FileStream | undefined;
 
     constructor(filePath: string, flag = 'rs') {
         super();
@@ -51,7 +51,7 @@ export default class Shp extends Openable {
     }
 
     private get __reader() {
-        return <FileReader>this._reader;
+        return <FileStream>this._reader;
     }
 
     /**
@@ -63,7 +63,7 @@ export default class Shp extends Openable {
         this._fd = fs.openSync(this.filePath, this._flag);
         this._header = this._readHeader();
         this._shpParser = GeomParserFactory.create(this.__header.fileType);
-        this._reader = new FileReader(this._fd);
+        this._reader = new FileStream(this._fd);
 
         const filePathShx = this.filePath.replace(Constants.FILE_EXT_REG, '.shx');
         if (fs.existsSync(filePathShx)) {

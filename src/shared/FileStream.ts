@@ -3,7 +3,7 @@ import assert from 'assert';
 
 const CACHE_BLOCK_SIZE = 512;
 
-export class FileReader {
+export class FileStream {
     fd: number;
     cache: Buffer;
     cacheStart = 0;

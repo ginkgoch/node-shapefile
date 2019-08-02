@@ -5,7 +5,7 @@ import ShpReader from "./ShpReader";
 import Iterator from "../base/Iterator";
 import Optional from "../base/Optional";
 import GeomParser from "./parser/GeomParser";
-import { FileReader } from "../shared/FileReader";
+import { FileStream } from "../shared/FileStream";
 import Shx from "../shx/Shx";
 import IQueryFilter from "../shared/IQueryFilter";
 import FilterUtils from "../shared/FilterUtils";
@@ -14,13 +14,13 @@ export default class ShpIterator extends Iterator<Geometry | null> {
     
     _shx: Shx;
     _index: number;
-    _reader: FileReader;
+    _reader: FileStream;
     _shpParser: GeomParser;
     _filter: { from: number, limit: number, to: number, envelope?: IEnvelope };
 
     /**
      * 
-     * @param {FileReader} reader 
+     * @param {FileStream} reader 
      * @param {ShpParser} shpParser
      */
     constructor(fd: number, shx: Shx, shpParser: GeomParser, filter?: IQueryFilter) {
@@ -28,7 +28,7 @@ export default class ShpIterator extends Iterator<Geometry | null> {
 
         this._shx = shx;
         this._shpParser = shpParser;
-        this._reader = new FileReader(fd);
+        this._reader = new FileStream(fd);
 
         let filterOption = FilterUtils.normalizeFilter(filter);
         this._filter = _.assign(filterOption, { to: filterOption.from + filterOption.limit });
