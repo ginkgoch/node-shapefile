@@ -1,4 +1,4 @@
-# Shapefile Reader
+# Ginkgoch Shapefile
 This is a NodeJs library to help to read/write [Shapefile](https://en.wikipedia.org/wiki/Shapefile) from your disk.  
 
 ## Feature List
