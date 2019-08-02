@@ -9,25 +9,6 @@ import Shapefile from '../../src/shapefile/Shapefile';
 const citiesPath = './tests/data/cities_e.shp';
 
 describe('shapefile general tests', () => {
-    test('get stream option test', () => {
-        const citiesShp = new Shp(citiesPath);
-
-        expect(citiesShp).not.toBeNullOrUndefined();
-
-        citiesShp.open();
-        let opt1 = citiesShp._getStreamOption(100);
-        expect(_.keys(opt1).length).toBe(2);
-        expect(opt1.autoClose).toBeTruthy();
-        expect(opt1.start).toBe(100);
-
-        opt1 = citiesShp._getStreamOption(100, 108);
-        expect(_.keys(opt1).length).toBe(3);
-        expect(opt1.autoClose).toBeTruthy();
-        expect(opt1.start).toBe(100);
-        expect(opt1.end).toBe(108);
-        citiesShp.close();
-    });
-
     test('open close test 1', () => {
         const citiesShp = new Shp(citiesPath);
 
@@ -308,7 +289,7 @@ describe('Read shp records tests', () => {
             const id = 30;
 
             try {
-                shp.removeAt(id);
+                shp.remove(id);
                 const record = shp.get(id);
                 expect(record).toBeNull();
             } finally {

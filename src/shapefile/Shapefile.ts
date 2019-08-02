@@ -6,17 +6,17 @@ import { IFeature, Feature } from "ginkgoch-geom";
 import Shp from "../shp/Shp";
 import Dbf from "../dbf/Dbf";
 import DbfField from '../dbf/DbfField';
+import Opener from "../base/Openable";
 import Optional from "../base/Optional";
 import DbfRecord from '../dbf/DbfRecord';
 import IQueryFilter from "../shared/IQueryFilter";
 import ShapefileIterator from "./ShapefileIterator";
-import StreamOpenable from "../base/StreamOpenable";
 import { Validators, ShapefileType, Constants } from "../shared";
 
 /**
  * The Shapefile class.
  */
-export default class Shapefile extends StreamOpenable {
+export default class Shapefile extends Opener {
     filePath: string;
     _flag: string;
     _shp: Optional<Shp>;
@@ -136,13 +136,14 @@ export default class Shapefile extends StreamOpenable {
         return this._shp.value.shapeType();
     }
 
+    //TODO: refine the fields normalization.
     /**
-     * Gets shapefile record by a specified id, and returnes with the given fields. If fields is not indicated, all fields will be fetched.
+     * Gets shapefile record by a specified id, and returns with the given fields. If fields is not indicated, all fields will be fetched.
      * @param {number} id The record id. Starts from 1.
-     * @param {undefined|Array<string>} fields The fields that will be fetch from DBF file.
+     * @param {undefined|Array<string>|'all'|'none'} fields The fields that will be fetch from DBF file.
      * @returns The record that contains the required id.
      */
-    get(id: number, fields?: string[]): Feature | null {
+    get(id: number, fields?: string[] | 'all' | 'none'): Feature | null {
         Validators.checkIsOpened(this.isOpened);
 
         const geom = this._shp.value.get(id);
@@ -177,7 +178,7 @@ export default class Shapefile extends StreamOpenable {
     update(feature: IFeature) {
         Validators.checkIsOpened(this.isOpened);
 
-        this._shp.value.updateAt(feature.id, feature.geometry);
+        this._shp.value.update(feature.id, feature.geometry);
 
         const dbfRecord = new DbfRecord(feature.properties);
         dbfRecord.id = feature.id;
@@ -188,10 +189,10 @@ export default class Shapefile extends StreamOpenable {
      * Remove shapefile record by id.
      * @param id The id to remove. Starts from 1.
      */
-    removeAt(id: number) {
+    remove(id: number) {
         Validators.checkIsOpened(this.isOpened);
 
-        this._shp.value.removeAt(id);
+        this._shp.value.remove(id);
         this._dbf.value.removeAt(id);
     }
 

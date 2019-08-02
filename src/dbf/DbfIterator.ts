@@ -3,28 +3,28 @@ import Optional from '../base/Optional';
 import Iterator from "../../src/base/Iterator"
 import DbfRecord from '../../src/dbf/DbfRecord'
 import DbfHeader from '../../src/dbf/DbfHeader'
-import { FileReader } from "../shared/FileReader";
+import { FileStream } from "../shared/FileStream";
 import IQueryFilter from '../shared/IQueryFilter';
 import FilterUtils from '../shared/FilterUtils';
 
 export default class DbfIterator extends Iterator<DbfRecord> {
     _index: number
     _header: DbfHeader
-    _reader: FileReader
+    _stream: FileStream
     _filter: { from: number, limit: number, to: number, fields?: string[] };
 
     constructor(fd: number, header: DbfHeader, filter?: IQueryFilter) {
         super();
 
-        let filterOption = FilterUtils.normalize(filter);
+        let filterOption = FilterUtils.normalizeFilter(filter, () => header.fields.map(f => f.name));
         this._filter = _.assign(filterOption, { to: filterOption.from + filterOption.limit });
 
         this._index = this._filter.from - 1;
         this._header = header;
-        this._reader = new FileReader(fd);
+        this._stream = new FileStream(fd);
 
         let position = this._header.headerLength + this._header.recordLength * this._index;
-        this._reader.seek(position);
+        this._stream.seek(position);
     }
 
     /**
@@ -39,7 +39,7 @@ export default class DbfIterator extends Iterator<DbfRecord> {
         }
 
         const recordLength = this._header.recordLength;
-        const buffer = this._reader.read(recordLength);
+        const buffer = this._stream.read(recordLength);
         if (buffer === null || buffer.length < recordLength) {
             return this._done();
         }

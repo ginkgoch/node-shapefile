@@ -1,18 +1,18 @@
-import { FileReader } from "../../src/shared/FileReader";
+import { FileStream } from "../../src/shared/FileStream";
 import fs from 'fs';
 
 describe('FileReader', () => {
     const filePath = './tests/data/file_reader_demo.dat';
     it('constructor - 1', () => {
         const fd = fs.openSync(filePath, 'rs');
-        const stream = new FileReader(fd);
+        const stream = new FileStream(fd);
 
         expect(stream.fd).not.toBeNaN();
         expect(stream.cache.length).toBe(0);
     });
 
     it('constructor - 2', () => {
-        const stream = new FileReader(filePath);
+        const stream = new FileStream(filePath);
 
         expect(stream.fd).not.toBeNaN();
         expect(stream.cache.length).toBe(0);
@@ -20,7 +20,7 @@ describe('FileReader', () => {
     });
 
     it('read - 1', () => {
-        const stream = new FileReader(filePath);
+        const stream = new FileStream(filePath);
         let buff = stream.read(20);
         expect(buff.length).toBe(20);
         expect(buff.toString()).toEqual('Hello World.Hello Wo');
@@ -36,7 +36,7 @@ describe('FileReader', () => {
     });
 
     it('read all', () => {
-        const stream = new FileReader(filePath);
+        const stream = new FileStream(filePath);
         let content = '';
         let buff: Buffer;
         while ((buff = stream.read(20)).length > 0) {

@@ -1,17 +1,18 @@
 import fs from 'fs';
 import ShxRecord from './ShxRecord';
+import ShxIterator from './ShxIterator';
+import FilterUtils from '../shared/FilterUtils';
 import { Validators, Constants } from '../shared';
 import IQueryFilter from '../shared/IQueryFilter';
-import StreamOpenable from '../base/StreamOpenable';
-import { FileReader } from '../shared/FileReader';
-import ShxIterator from './ShxIterator';
+import Opener from '../base/Openable';
+import { FileStream } from '../shared/FileStream';
 
-export default class Shx extends StreamOpenable {
+export default class Shx extends Opener {
     filePath: string
     _flag: string
     _fd?: number
     _totalSize: number
-    _reader?: FileReader
+    _stream?: FileStream
 
     constructor(filePath: string, flag = 'rs') {
         super();
@@ -27,7 +28,7 @@ export default class Shx extends StreamOpenable {
         this._fd = fs.openSync(this.filePath, this._flag);
         const stats = fs.statSync(this.filePath);
         this._totalSize = stats.size;
-        this._reader = new FileReader(this._fd);
+        this._stream = new FileStream(this._fd);
     }
 
     /**
@@ -37,7 +38,7 @@ export default class Shx extends StreamOpenable {
         this._totalSize = 0;
 
         this.__reader.close();
-        this._reader = undefined;
+        this._stream = undefined;
 
         this._fd && fs.closeSync(this._fd);
         this._fd = undefined;
@@ -63,7 +64,7 @@ export default class Shx extends StreamOpenable {
     records(filter?: IQueryFilter): Array<ShxRecord> {
         const records = new Array<ShxRecord>();
         const count = this.count();
-        const filterOption = this._normalizeFilter(filter);
+        const filterOption = FilterUtils.normalizeFilter(filter);
         let to = filterOption.from + filterOption.limit;
         if (to > count + 1) {
             to = count + 1;
@@ -83,10 +84,10 @@ export default class Shx extends StreamOpenable {
     }
 
     /**
-     * Remove record at a specific index.
+     * Remove record by id.
      * @param {number} id The id of shx record. Starts from 1.
      */
-    removeAt(id: number) {
+    remove(id: number) {
         const position = this._getOffsetById(id) + Constants.SIZE_SHX_OFFSET;
         const buff = Buffer.alloc(Constants.SIZE_SHX_CONTENT);
         buff.writeInt32BE(0, 0);
@@ -95,12 +96,13 @@ export default class Shx extends StreamOpenable {
     }
 
     /**
-     * Update record at a specific index.
+     * Update record by id.
      * @param id The id of shx record. Starts from 1.
      * @param offset The offset content.
      * @param length The length content.
      */
-    updateAt(id: number, offset: number, length: number) {
+    update(record: ShxRecord) {
+        let { id, offset, length } = record;
         Validators.checkIndexIsLEThan(id, this.count());
 
         const buff = Shx._getRecordBuff(offset, length);
@@ -137,6 +139,6 @@ export default class Shx extends StreamOpenable {
     }
 
     private get __reader() {
-        return <FileReader>this._reader;
+        return <FileStream>this._stream;
     }
 };

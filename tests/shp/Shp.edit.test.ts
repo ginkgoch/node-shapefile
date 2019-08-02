@@ -53,7 +53,7 @@ describe('Shp edit', () => {
 
             const updateIndex = 35;
 
-            shp.updateAt(updateIndex, polygon1)
+            shp.update(updateIndex, polygon1)
             shp.close()
             
             shp.open()

@@ -1,46 +1,46 @@
 import Iterator from "../base/Iterator";
 import ShxRecord from "./ShxRecord";
 import Optional from "../base/Optional";
-import { FileReader } from '../shared/FileReader'
+import { FileStream } from '../shared/FileStream'
 import { Constants } from "../shared";
 import IQueryFilter from "../shared/IQueryFilter";
 import FilterUtils from "../shared/FilterUtils";
 import _ from "lodash";
 
 export default class ShxIterator extends Iterator<ShxRecord> {
-    reader: FileReader;
-    index: number = 0;
-    filter: { from: number, limit: number, to: number };
+    _stream: FileStream;
+    _index: number = 0;
+    _filter: { from: number, limit: number, to: number };
 
     constructor(fd: number, filter?: IQueryFilter) {
         super();
 
-        this.reader = new FileReader(fd);
+        this._stream = new FileStream(fd);
 
-        let filterNorm = FilterUtils.normalize(filter);
-        this.filter = _.assign(filterNorm, { to: filterNorm.from + filterNorm.limit });
+        let filterNorm = FilterUtils.normalizeFilter(filter);
+        this._filter = _.assign(filterNorm, { to: filterNorm.from + filterNorm.limit });
 
-        this.index = this.filter.from - 1;
-        let position = Constants.SIZE_SHX_HEADER + Constants.SIZE_SHX_RECORD * this.index;
-        this.reader.seek(position);
+        this._index = this._filter.from - 1;
+        let position = Constants.SIZE_SHX_HEADER + Constants.SIZE_SHX_RECORD * this._index;
+        this._stream.seek(position);
     }
 
     /**
      * @override
      */
     next(): Optional<ShxRecord> {
-        this.index++;
+        this._index++;
 
-        if (this.index >= this.filter.to) {
+        if (this._index >= this._filter.to) {
             return this._done();
         }
 
-        let buff = this.reader.read(Constants.SIZE_SHX_RECORD) as Buffer;
+        let buff = this._stream.read(Constants.SIZE_SHX_RECORD) as Buffer;
         if (buff === null || buff.length !== Constants.SIZE_SHX_RECORD) {
             return this._done();
         }
 
-        const record = this._readRecord(buff, this.index);
+        const record = this._readRecord(buff, this._index);
         return this._continue(record);
     }
 

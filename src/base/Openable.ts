@@ -1,4 +1,4 @@
-export default class Openable {
+export default class Opener {
     isOpened : boolean;
 
     constructor() {

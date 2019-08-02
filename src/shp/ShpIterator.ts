@@ -1,12 +1,12 @@
 import _ from "lodash";
 import { Envelope, IEnvelope, Geometry } from 'ginkgoch-geom';
 
+import Shx from "../shx/Shx";
 import ShpReader from "./ShpReader";
 import Iterator from "../base/Iterator";
 import Optional from "../base/Optional";
 import GeomParser from "./parser/GeomParser";
-import { FileReader } from "../shared/FileReader";
-import Shx from "../shx/Shx";
+import { FileStream } from "../shared/FileStream";
 import IQueryFilter from "../shared/IQueryFilter";
 import FilterUtils from "../shared/FilterUtils";
 
@@ -14,13 +14,13 @@ export default class ShpIterator extends Iterator<Geometry | null> {
     
     _shx: Shx;
     _index: number;
-    _reader: FileReader;
+    _stream: FileStream;
     _shpParser: GeomParser;
     _filter: { from: number, limit: number, to: number, envelope?: IEnvelope };
 
     /**
      * 
-     * @param {FileReader} reader 
+     * @param {FileStream} reader 
      * @param {ShpParser} shpParser
      */
     constructor(fd: number, shx: Shx, shpParser: GeomParser, filter?: IQueryFilter) {
@@ -28,9 +28,9 @@ export default class ShpIterator extends Iterator<Geometry | null> {
 
         this._shx = shx;
         this._shpParser = shpParser;
-        this._reader = new FileReader(fd);
+        this._stream = new FileStream(fd);
 
-        let filterOption = FilterUtils.normalize(filter);
+        let filterOption = FilterUtils.normalizeFilter(filter);
         this._filter = _.assign(filterOption, { to: filterOption.from + filterOption.limit });
 
         const count = this._shx.count();
@@ -52,16 +52,16 @@ export default class ShpIterator extends Iterator<Geometry | null> {
         }
 
         const shxRecord = this._shx.get(this._index);
-        this._reader.seek(shxRecord.offset);
+        this._stream.seek(shxRecord.offset);
 
-        let buffer = this._reader.read(8);
+        let buffer = this._stream.read(8);
         if (buffer === null || buffer.length !== 8) {
             return this._done();
         }
 
         const id = buffer.readInt32BE(0);
         const length = buffer.readInt32BE(4) * 2;
-        let contentBuffer = this._reader.read(length);
+        let contentBuffer = this._stream.read(length);
         if (contentBuffer === null || contentBuffer.length !== length) {
             return this._done();
         }

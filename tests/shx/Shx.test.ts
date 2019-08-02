@@ -37,7 +37,7 @@ describe('shx tests', () => {
                 expect(count).toBe(51);
 
                 const id = 30;
-                shx.removeAt(id);
+                shx.remove(id);
                 const record = shx.get(id);
                 expect(record.length).toBe(0);
             } finally {
@@ -55,7 +55,7 @@ describe('shx tests', () => {
             try {
                 const id = 30, offset = 356, length = 488;
                 
-                shx.updateAt(id, offset, length);
+                shx.update({ id, offset, length });
 
                 const record = shx.get(id);
                 expect(record.offset).toBe(offset);
