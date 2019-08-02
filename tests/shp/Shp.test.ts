@@ -308,7 +308,7 @@ describe('Read shp records tests', () => {
             const id = 30;
 
             try {
-                shp.removeAt(id);
+                shp.remove(id);
                 const record = shp.get(id);
                 expect(record).toBeNull();
             } finally {

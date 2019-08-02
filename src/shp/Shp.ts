@@ -177,12 +177,12 @@ export default class Shp extends StreamOpenable {
      * Remove record by a specific id.
      * @param {number} id The shp record id. Starts from 1.
      */
-    removeAt(id: number) {
+    remove(id: number) {
         Validators.checkIsOpened(this.isOpened);
 
         const recordShx = this.__shx.get(id);
         if (recordShx && recordShx.length > 0) {
-            this.__shx.removeAt(id);
+            this.__shx.remove(id);
 
             const buff = Buffer.alloc(4);
             buff.writeInt32LE(0, 0);
@@ -205,7 +205,7 @@ export default class Shp extends StreamOpenable {
         Validators.checkIsOpened(this.isOpened);
 
         const record = this._pushRecord(geometry, id);
-        this.__shx.updateAt(id, record.offset, record.geomBuff.length);
+        this.__shx.update({ id, offset: record.offset, length: record.geomBuff.length });
     }
 
     push(geometry: Geometry) {

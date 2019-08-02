@@ -191,7 +191,7 @@ export default class Shapefile extends StreamOpenable {
     removeAt(id: number) {
         Validators.checkIsOpened(this.isOpened);
 
-        this._shp.value.removeAt(id);
+        this._shp.value.remove(id);
         this._dbf.value.removeAt(id);
     }
 

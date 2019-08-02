@@ -83,10 +83,10 @@ export default class Shx extends StreamOpenable {
     }
 
     /**
-     * Remove record at a specific index.
+     * Remove record by id.
      * @param {number} id The id of shx record. Starts from 1.
      */
-    removeAt(id: number) {
+    remove(id: number) {
         const position = this._getOffsetById(id) + Constants.SIZE_SHX_OFFSET;
         const buff = Buffer.alloc(Constants.SIZE_SHX_CONTENT);
         buff.writeInt32BE(0, 0);
@@ -95,12 +95,13 @@ export default class Shx extends StreamOpenable {
     }
 
     /**
-     * Update record at a specific index.
+     * Update record by id.
      * @param id The id of shx record. Starts from 1.
      * @param offset The offset content.
      * @param length The length content.
      */
-    updateAt(id: number, offset: number, length: number) {
+    update(record: ShxRecord) {
+        let { id, offset, length } = record;
         Validators.checkIndexIsLEThan(id, this.count());
 
         const buff = Shx._getRecordBuff(offset, length);
