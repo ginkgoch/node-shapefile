@@ -1,4 +1,4 @@
-import Opener from '../../src/base/Openable';
+import Opener from '../../src/base/Opener';
 
 class TestOpener extends Opener { }
 
