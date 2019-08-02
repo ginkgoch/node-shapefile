@@ -1,107 +1,142 @@
-# Shapefile Reader
-This is a NodeJs library to help to read shapefiles from your disk.  
+# Ginkgoch Shapefile
+This is a NodeJs library to help to read/write [Shapefile](https://en.wikipedia.org/wiki/Shapefile) from your disk.  
 
-## Install
+## Feature List
+1. Query records from Shapefile
+1. Append new records into Shapefile
+1. Update a specified record in Shapefile
+1. Remove a record
+1. Create an empty Shapefile by a specified shape type.
+
+## Tutorial
+### Prerequisite
+1. Node.js installed in your machine.
+1. Install `ginkgoch-shapefile` package.
 ```terminal
-npm i ginkgoch-shapefile-reader
+yarn add ginkgoch-shapefile
 ```
 
-## Test
-```terminal
-npm test
-```
+### Code template for querying
+In this section, we are going to operate the Shapefile. Before kick off, we need to open the shapefile in case we have everything prepared. We provide three ways to open the shapefile. Choose either one as you use to.
+1. Regular way
+    ```typescript
+    const statesShp = new Shapefile('./tests/data/USStates.shp');
+    statesShp.open();
 
-## Sample
-All the code below are using typescript. It is easy to translate to pure js by removing the type definition.
+    // put your business logic here.
 
-### Loops all records and print the vertices
-```typescript
-function loopUSStates(callback: (rec: Optional<IFeature>) => void) {
-    const statesShp = new Shapefile('./tests/data/USStates.shp').open();
-    const iterator = statesShp.iterator();
-    let record = undefined;
-    while ((record = iterator.next()) && !iterator.done) {
-        callback(record);
-    }
     statesShp.close();
-}
-```
-
-### Gets specific record by id
-
-Gets records by id with all fields.
-```typescript
-function getRecordById(id: number) {
+    ```
+1. Fluent way to open
+    ```typescript
     const statesShp = new Shapefile('./tests/data/USStates.shp').open();
-    const record = statesShp.get(0);
+
+    // put your business logic here.
+
     statesShp.close();
+    ```
+1. Callback way to open (auto close when callback complete)
+    ```typescript
+    const statesShp = new Shapefile('./tests/data/USStates.shp').openWith(() => {
+        // put your business logic here.
+    });
+    ```
 
-    return record;
-}
-```
+###  Query Records
+In this section, we are going to show you how to iterate shapefile records, get a specific record by id, and how to work with querying filters.
 
-Gets records by id with none fields. Specify the fields to fetch from DBF to ignore reading unnecessary field values.
+#### Query record by id
+Let's start from a normal case - get record by id.
 ```typescript
-function getRecordById(id: number) {
-    const statesShp = new Shapefile('./tests/data/USStates.shp').open();
-    const record = statesShp.get(0, []);
-    statesShp.close();
-
-    return record;
-}
+const statesShp = new Shapefile('./tests/data/USStates.shp').open();
+const record = statesShp.get(1); // all ids are started from 1.
 ```
 
-### Gets matched features one time - Update v1.0.16
-If you don't like to use iterator way, here is a normal way to get all features back.
+| Note: record is a structure formed with `geometry` and `properties`.
+
+#### Get all records
+This method fetches all records at once.
 ```typescript
-function getAllRecords() {
-    const statesShp = new Shapefile('./tests/data/USStates.shp').open();
-    const record = statesShp.records();
-    statesShp.close();
+const records = statesShp.records();
+console.log(records.length);
+```
 
-    return record;
+#### Iterate records
+In previous section, we get all the records at once. It is convenient but it will take much memory usage for sure. Iterator allows to get all features in another way to get records one after another.
+```typescript
+const iterator = statesShp.iterator();
+let record = undefined;
+while ((record = iterator.next()) && !iterator.done) {
+    console.log(record);
 }
 ```
 
-We also provide the filters that you could control the returned value. Here is the default filter structure.
+#### Use filter
+We allow to filter the records by following conditions.
+1. from - The start id of the record to fetch. Default is 1.
+1. limit - The limited record count to fetch. Default is Number.Max.
+1. envelope - The envelope structure that all the records within will be fetched. e.g. `{ minx: -180, miny: -90, maxx: 180, maxy: 90 }`.
+1. fields - The fields to fetch from dbf file. Options are:
+    - `undefined` - Not defined, by default, all fields will be fetched.
+    - `all` - Same as `undefined`.
+    - `none` - Ignore the dbf querying.
+    - `string[]` - A specified field name list to fetch. e.g. `["RECID", "NAME"]`.
 
-* `from` {Number} means the start index of the records. Default value is 0. e.g. { from: 20 } means the returned feature is start from position 20.
-* `limit` {Number} means the features count includes in the returned features. Default value is Number.MAX_SAVE_INTEGER
-* `envelope` {Envelope} means the returned features must intersect with the given envelope; default value is undefined, which means no envelope check.
-* `fields` {Array.<<string>>} means the properties that returned with the features.
+Here is a demo to fetch records from id `10` to `19`, properties include `RECID` and `STATE_NAME`.
+```typescript
+const records = statesShp.records({ from: 10, limit: 10, fields: ['RECID', 'STATE_NAME'] });
+```
 
-Let's take a look at a demo. Says I want to paging my features. My page size is 10. I want to return all the features from my second page with only properties whose names are RECID and STATE_NAME. Here is the code.
+### Code template for editing
+Before appending new record, we need to do a little change before opening the `Shapefile`. Specify the file flag to 'rs+' or whatever flags to allow the file is able to edit.
+```typescript
+const shapefile = new Shapefile(filePath, 'rs+');
+shapefile.open();
+
+// put your business logic here.
+
+shapefile.close();
+```
+
+### Append new record
+A `record` is named as `Feature` in Ginkgoch. Let's create a feature first. Then push this feature into `shapefile` instance. Then Done.
+```typescript
+const feature = new Feature(new Point(0, 0), { NAME: 'Tokyo', POP: 1.268 });
+shapefile.push(feature);
+```
+
+### Update a record
+Updating a record is similar as appending a new record. The only difference is that, the feature to update requires a valid id.
 
 ```typescript
-function getAllRecords() {
-    const statesShp = new Shapefile('./tests/data/USStates.shp').open();
-    const record = statesShp.records({ from: 10, limit: 10, fields: ['RECID', 'STATE_NAME'] });
-    statesShp.close();
-
-    return record;
-}
+const feature = new Feature(new Point(0, 0), { NAME: 'Tokyo', POP: 1.268 }, 1 /* the record id to update */);
+shapefile.update(feature);
 ```
 
-## Changelog
-### July 22 - v2.0.0
-- The major change is to translate the original source code to *typescript*. To have future concern.
-- Performance improved.
-- ShapefileIterator adds a `done` property to replace one on `record` instance. 
-```diff
-async function loopUSStatesV2(callback: (rec: Optional<IFeature>) => void) {
-    const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
-    const iterator = await statesShp.iterator();
-    let record = undefined;
-+   while ((record = await iterator.next()) && !iterator.done) {
--   while ((record = await iterator.next()) && !record.done) {
-        callback(record);
-    }
-    await statesShp.close();
-}
+### Remove a record
+Specify an id to delete.
+
+```typescript
+shapefile.remove(1); // remove the record whose id is 1.
+```
+
+### Create new shapefile
+To create a new shapefile, we need to prepare the following factors.
+1. The new shapefile path to store.
+1. The shape type to contain inside. Options are: `point`, `polyLine`, `polygon` and `multiPoint`.
+1. The fields info.
+
+```typescript
+const fields = new Array<DbfField>();
+fields.push(new DbfField('RECID', DbfFieldType.number));
+fields.push(new DbfField('NAME', DbfFieldType.character, 10));
+
+const shapefile = Shapefile.createEmpty(filePath, ShapefileType.point, fields);
+// here the shapefile instance is created with flag 'rs+'. Call open() method to continue appending new records.
 ```
 
 ## Issues
-Contact [ginkgoch@outlook.com](mailto:ginkgoch@outlook.com) or [sumbit an issue](https://github.com/ginkgoch/node-shapefile-reader/issues).
+Contact [ginkgoch@outlook.com](mailto:ginkgoch@outlook.com) or [submit an issue](https://github.com/ginkgoch/node-shapefile/issues).
 
 
 
