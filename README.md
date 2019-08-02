@@ -1,107 +1,94 @@
 # Shapefile Reader
-This is a NodeJs library to help to read shapefiles from your disk.  
+This is a NodeJs library to help to read/write [Shapefile](https://en.wikipedia.org/wiki/Shapefile) from your disk.  
 
-## Install
+## Feature List
+1. Query records from Shapefile
+2. Append new records into Shapefile
+3. Update a specified record in Shapefile
+4. Create an empty Shapefile by a specified shape type.
+
+
+## Tutorial
+### Prerequisite
+1. Node.js installed in your machine.
+1. Install `ginkgoch-shapefile` package.
 ```terminal
-npm i ginkgoch-shapefile-reader
+yarn add ginkgoch-shapefile
 ```
 
-## Test
-```terminal
-npm test
-```
+### Code template for all cases below
+In this section, we are going to operate the Shapefile. Before kick off, we need to open the shapefile in case we have everything prepared. We provide three ways to open the shapefile. Choose either one as you use to.
+1. Regular way
+    ```typescript
+    const statesShp = new Shapefile('./tests/data/USStates.shp');
+    statesShp.open();
 
-## Sample
-All the code below are using typescript. It is easy to translate to pure js by removing the type definition.
+    // put your business logic here.
 
-### Loops all records and print the vertices
-```typescript
-function loopUSStates(callback: (rec: Optional<IFeature>) => void) {
-    const statesShp = new Shapefile('./tests/data/USStates.shp').open();
-    const iterator = statesShp.iterator();
-    let record = undefined;
-    while ((record = iterator.next()) && !iterator.done) {
-        callback(record);
-    }
     statesShp.close();
-}
-```
-
-### Gets specific record by id
-
-Gets records by id with all fields.
-```typescript
-function getRecordById(id: number) {
+    ```
+1. Fluent way to open
+    ```typescript
     const statesShp = new Shapefile('./tests/data/USStates.shp').open();
-    const record = statesShp.get(0);
+
+    // put your business logic here.
+
     statesShp.close();
+    ```
+1. Callback way to open (auto close when callback complete)
+    ```typescript
+    const statesShp = new Shapefile('./tests/data/USStates.shp').openWith(() => {
+        // put your business logic here.
+    });
+    ```
 
-    return record;
-}
-```
+###  Query Records
+In this section, we are going to show you how to iterate shapefile records, get a specific record by id, and how to work with querying filters.
 
-Gets records by id with none fields. Specify the fields to fetch from DBF to ignore reading unnecessary field values.
+#### Query record by id
+Let's start from a normal case - get record by id.
 ```typescript
-function getRecordById(id: number) {
-    const statesShp = new Shapefile('./tests/data/USStates.shp').open();
-    const record = statesShp.get(0, []);
-    statesShp.close();
-
-    return record;
-}
+const statesShp = new Shapefile('./tests/data/USStates.shp').open();
+const record = statesShp.get(1); // all ids are started from 1.
 ```
 
-### Gets matched features one time - Update v1.0.16
-If you don't like to use iterator way, here is a normal way to get all features back.
+| Note: record is a structure formed with `geometry` and `properties`.
+
+#### Get all records
+This method fetches all records at once.
 ```typescript
-function getAllRecords() {
-    const statesShp = new Shapefile('./tests/data/USStates.shp').open();
-    const record = statesShp.records();
-    statesShp.close();
-
-    return record;
-}
+const records = statesShp.records();
+console.log(records.length);
 ```
 
-We also provide the filters that you could control the returned value. Here is the default filter structure.
-
-* `from` {Number} means the start index of the records. Default value is 0. e.g. { from: 20 } means the returned feature is start from position 20.
-* `limit` {Number} means the features count includes in the returned features. Default value is Number.MAX_SAVE_INTEGER
-* `envelope` {Envelope} means the returned features must intersect with the given envelope; default value is undefined, which means no envelope check.
-* `fields` {Array.<<string>>} means the properties that returned with the features.
-
-Let's take a look at a demo. Says I want to paging my features. My page size is 10. I want to return all the features from my second page with only properties whose names are RECID and STATE_NAME. Here is the code.
-
+#### Iterate records
+In previous section, we get all the records at once. It is convenient but it will take much memory usage for sure. Iterator allows to get all features in another way to get records one after another.
 ```typescript
-function getAllRecords() {
-    const statesShp = new Shapefile('./tests/data/USStates.shp').open();
-    const record = statesShp.records({ from: 10, limit: 10, fields: ['RECID', 'STATE_NAME'] });
-    statesShp.close();
-
-    return record;
+const iterator = statesShp.iterator();
+let record = undefined;
+while ((record = iterator.next()) && !iterator.done) {
+    console.log(record);
 }
 ```
 
-## Changelog
-### July 22 - v2.0.0
-- The major change is to translate the original source code to *typescript*. To have future concern.
-- Performance improved.
-- ShapefileIterator adds a `done` property to replace one on `record` instance. 
-```diff
-async function loopUSStatesV2(callback: (rec: Optional<IFeature>) => void) {
-    const statesShp = await new Shapefile('./tests/data/USStates.shp').open();
-    const iterator = await statesShp.iterator();
-    let record = undefined;
-+   while ((record = await iterator.next()) && !iterator.done) {
--   while ((record = await iterator.next()) && !record.done) {
-        callback(record);
-    }
-    await statesShp.close();
-}
+#### Use filter
+We allow to filter the records by following conditions.
+1. from - The start id of the record to fetch. Default is 1.
+1. limit - The limited record count to fetch. Default is Number.Max.
+1. envelope - The envelope structure that all the records within will be fetched. e.g. `{ minx: -180, miny: -90, maxx: 180, maxy: 90 }`.
+1. fields - The fields to fetch from dbf file. Options are:
+    - `undefined` - Not defined, by default, all fields will be fetched.
+    - `all` - Same as `undefined`.
+    - `none` - Ignore the dbf querying.
+    - `string[]` - A specified field name list to fetch. e.g. `["RECID", "NAME"]`.
+
+Here is a demo to fetch records from id 10 to 19, properties include `RECID` and `STATE_NAME`.
+```typescript
+const records = statesShp.records({ from: 10, limit: 10, fields: ['RECID', 'STATE_NAME'] });
 ```
 
 ## Issues
-Contact [ginkgoch@outlook.com](mailto:ginkgoch@outlook.com) or [sumbit an issue](https://github.com/ginkgoch/node-shapefile-reader/issues).
+Contact [ginkgoch@outlook.com](mailto:ginkgoch@outlook.com) or [submit an issue](https://github.com/ginkgoch/node-shapefile/issues).
 
 
 
