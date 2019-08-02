@@ -67,11 +67,10 @@ export default class Dbf extends Openable {
         return record.value;
     }
 
-    //TODO: IQueryFilter.
-    iterator(fields?: string[] | 'all' | 'none') {
+    iterator(filter?: IQueryFilter) {
         Validators.checkIsOpened(this.isOpened);
 
-        return new DbfIterator(this.__fd, this.__header, { fields });
+        return new DbfIterator(this.__fd, this.__header, filter);
     }
 
     /**
