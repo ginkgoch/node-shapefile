@@ -12,7 +12,7 @@ export default class Shx extends Opener {
     _flag: string
     _fd?: number
     _totalSize: number
-    _reader?: FileStream
+    _stream?: FileStream
 
     constructor(filePath: string, flag = 'rs') {
         super();
@@ -28,7 +28,7 @@ export default class Shx extends Opener {
         this._fd = fs.openSync(this.filePath, this._flag);
         const stats = fs.statSync(this.filePath);
         this._totalSize = stats.size;
-        this._reader = new FileStream(this._fd);
+        this._stream = new FileStream(this._fd);
     }
 
     /**
@@ -38,7 +38,7 @@ export default class Shx extends Opener {
         this._totalSize = 0;
 
         this.__reader.close();
-        this._reader = undefined;
+        this._stream = undefined;
 
         this._fd && fs.closeSync(this._fd);
         this._fd = undefined;
@@ -139,6 +139,6 @@ export default class Shx extends Opener {
     }
 
     private get __reader() {
-        return <FileStream>this._reader;
+        return <FileStream>this._stream;
     }
 };

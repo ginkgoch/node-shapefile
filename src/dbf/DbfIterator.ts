@@ -10,7 +10,7 @@ import FilterUtils from '../shared/FilterUtils';
 export default class DbfIterator extends Iterator<DbfRecord> {
     _index: number
     _header: DbfHeader
-    _reader: FileStream
+    _stream: FileStream
     _filter: { from: number, limit: number, to: number, fields?: string[] };
 
     constructor(fd: number, header: DbfHeader, filter?: IQueryFilter) {
@@ -21,10 +21,10 @@ export default class DbfIterator extends Iterator<DbfRecord> {
 
         this._index = this._filter.from - 1;
         this._header = header;
-        this._reader = new FileStream(fd);
+        this._stream = new FileStream(fd);
 
         let position = this._header.headerLength + this._header.recordLength * this._index;
-        this._reader.seek(position);
+        this._stream.seek(position);
     }
 
     /**
@@ -39,7 +39,7 @@ export default class DbfIterator extends Iterator<DbfRecord> {
         }
 
         const recordLength = this._header.recordLength;
-        const buffer = this._reader.read(recordLength);
+        const buffer = this._stream.read(recordLength);
         if (buffer === null || buffer.length < recordLength) {
             return this._done();
         }

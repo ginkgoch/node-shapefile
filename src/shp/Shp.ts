@@ -24,7 +24,7 @@ export default class Shp extends Opener {
     _shpParser: Optional<GeomParser>;
     _shx: Optional<Shx>;
     _eventEmitter: EventEmitter | undefined;
-    _reader: FileStream | undefined;
+    _stream: FileStream | undefined;
 
     constructor(filePath: string, flag = 'rs') {
         super();
@@ -51,7 +51,7 @@ export default class Shp extends Opener {
     }
 
     private get __reader() {
-        return <FileStream>this._reader;
+        return <FileStream>this._stream;
     }
 
     /**
@@ -63,7 +63,7 @@ export default class Shp extends Opener {
         this._fd = fs.openSync(this.filePath, this._flag);
         this._header = this._readHeader();
         this._shpParser = GeomParserFactory.create(this.__header.fileType);
-        this._reader = new FileStream(this._fd);
+        this._stream = new FileStream(this._fd);
 
         const filePathShx = this.filePath.replace(Constants.FILE_EXT_REG, '.shx');
         if (fs.existsSync(filePathShx)) {
@@ -80,7 +80,7 @@ export default class Shp extends Opener {
         fs.closeSync(this.__fd);
         this._fd = undefined;
         this._header = undefined;
-        this._reader = undefined;
+        this._stream = undefined;
         this._shpParser.update(undefined);
 
         if (this._shx) {

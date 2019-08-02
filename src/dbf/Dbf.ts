@@ -89,11 +89,11 @@ export default class Dbf extends Opener {
 
         const recordLength = this.__header.recordLength;
         let index = filterOptions.from;
-        const reader = new FileStream(this.__fd);
+        const stream = new FileStream(this.__fd);
         const position = this.__header.headerLength + recordLength * (filterOptions.from - 1);
-        reader.seek(position);
+        stream.seek(position);
         while (index < to) {
-            const buff = reader.read(recordLength);
+            const buff = stream.read(recordLength);
             if (buff.length !== recordLength) {
                 break;
             }
