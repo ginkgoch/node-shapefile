@@ -1,0 +1,46 @@
+{
+  "name": "ginkgoch-shapefile",
+  "version": "2.1.2",
+  "description": "This is a NodeJs library to help to read/write shapefile from your disk.",
+  "main": "./index.js",
+  "keywords": [
+    "shapefile for nodejs",
+    "shapefile reader",
+    "create shapefile",
+    "shapefile sdk",
+    "shapefile source",
+    "gis"
+  ],
+  "scripts": {
+    "test": "./node_modules/.bin/jest",
+    "build": "./node_modules/.bin/tsc",
+    "doc": "rm -rf docs && ./node_modules/.bin/typedoc --includes src/shapefile --out docs --module commonjs --mode file ./src"
+  },
+  "author": {
+    "name": "Ginkgoch",
+    "email": "ginkgoch@outlook.com",
+    "url": "https://github.com/ginkgoch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ginkgoch/node-shapefile"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@types/jsts": "^0.17.0",
+    "@types/lodash": "^4.14.136",
+    "@types/node": "^12.6.8",
+    "ginkgoch-buffer-io": "^1.1.0",
+    "ginkgoch-geom": "^1.0.13",
+    "lodash": "^4.17.14",
+    "typedoc": "^0.15.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.15",
+    "dts-gen": "^0.5.8",
+    "jest": "^24.8.0",
+    "jest-cli": "^24.8.0",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.5.3"
+  }
+}
