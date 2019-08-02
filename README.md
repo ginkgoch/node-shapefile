@@ -1,5 +1,5 @@
 # Ginkgoch Shapefile
-This is a NodeJs library to help to read/write [Shapefile](https://en.wikipedia.org/wiki/Shapefile) from your disk.  
+This is a NodeJs library to help to read/write [Shapefile](https://en.wikipedia.org/wiki/Shapefile) from your disk. [API Reference](https://ginkgoch.com/node-shapefile/).
 
 ## Feature List
 1. Query records from Shapefile

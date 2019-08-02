@@ -14,7 +14,7 @@
   "scripts": {
     "test": "./node_modules/.bin/jest",
     "build": "./node_modules/.bin/tsc",
-    "doc": "rm -rf docs && ./node_modules/.bin/typedoc --out docs --module commonjs --mode file ./src"
+    "doc": "rm -rf docs && ./node_modules/.bin/typedoc --includes src/shapefile --out docs --module commonjs --mode file ./src"
   },
   "author": {
     "name": "Ginkgoch",
