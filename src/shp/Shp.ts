@@ -172,7 +172,6 @@ export default class Shp extends StreamOpenable {
         return filter === null || filter === undefined || _.isUndefined(filter.envelope) || (filter.envelope && !Envelope.disjoined(recordEnvelope, filter.envelope));
     }
 
-    //TODO: rename all removeAt to removeBy.
     /**
      * Remove record by a specific id.
      * @param {number} id The shp record id. Starts from 1.
@@ -201,21 +200,21 @@ export default class Shp extends StreamOpenable {
      * @param id The record id to update. Starts from 1.
      * @param geometry The geometry to update.
      */
-    updateAt(id: number, geometry: Geometry) {
+    update(id: number, geometry: Geometry) {
         Validators.checkIsOpened(this.isOpened);
 
-        const record = this._pushRecord(geometry, id);
+        const record = this._push(geometry, id);
         this.__shx.update({ id, offset: record.offset, length: record.geomBuff.length });
     }
 
     push(geometry: Geometry) {
         Validators.checkIsOpened(this.isOpened);
 
-        const record = this._pushRecord(geometry);
+        const record = this._push(geometry);
         this.__shx.push(record.offset, record.geomBuff.length);
     }
 
-    _pushRecord(geometry: Geometry, id?: number): { geomBuff: Buffer, offset: number } {
+    _push(geometry: Geometry, id?: number): { geomBuff: Buffer, offset: number } {
         const parser = GeomParserFactory.create(this.__header.fileType);
         const geomBuff = parser.value.getGeomBuff(geometry);
         const recBuff = Buffer.alloc(geomBuff.length + 8);

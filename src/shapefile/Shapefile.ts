@@ -136,13 +136,14 @@ export default class Shapefile extends StreamOpenable {
         return this._shp.value.shapeType();
     }
 
+    //TODO: refine the fields normalization.
     /**
-     * Gets shapefile record by a specified id, and returnes with the given fields. If fields is not indicated, all fields will be fetched.
+     * Gets shapefile record by a specified id, and returns with the given fields. If fields is not indicated, all fields will be fetched.
      * @param {number} id The record id. Starts from 1.
      * @param {undefined|Array<string>} fields The fields that will be fetch from DBF file.
      * @returns The record that contains the required id.
      */
-    get(id: number, fields?: string[]): Feature | null {
+    get(id: number, fields?: string[] | 'all' | 'none'): Feature | null {
         Validators.checkIsOpened(this.isOpened);
 
         const geom = this._shp.value.get(id);
@@ -177,7 +178,7 @@ export default class Shapefile extends StreamOpenable {
     update(feature: IFeature) {
         Validators.checkIsOpened(this.isOpened);
 
-        this._shp.value.updateAt(feature.id, feature.geometry);
+        this._shp.value.update(feature.id, feature.geometry);
 
         const dbfRecord = new DbfRecord(feature.properties);
         dbfRecord.id = feature.id;
@@ -188,7 +189,7 @@ export default class Shapefile extends StreamOpenable {
      * Remove shapefile record by id.
      * @param id The id to remove. Starts from 1.
      */
-    removeAt(id: number) {
+    remove(id: number) {
         Validators.checkIsOpened(this.isOpened);
 
         this._shp.value.remove(id);

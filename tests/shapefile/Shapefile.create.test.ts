@@ -91,7 +91,7 @@ describe('Shapefile create', () => {
 
             shapefile.open();
             
-            shapefile.removeAt(2);
+            shapefile.remove(2);
             const feature2_ = shapefile.get(2);
             expect(feature2_).toBeNull();
 
