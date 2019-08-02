@@ -1,7 +1,5 @@
 import fs from 'fs';
 import _ from 'lodash';
-import path from 'path';
-import assert = require('assert');
 import { EventEmitter } from "events";
 import { Envelope, IEnvelope, Geometry } from 'ginkgoch-geom';
 
@@ -32,26 +30,6 @@ export default class Shp extends Opener {
         this._flag = flag;
         this._shpParser = new Optional<GeomParser>();
         this._shx = new Optional<Shx>();
-    }
-
-    private get __fd() {
-        return <number>this._fd;
-    }
-
-    private get __header() {
-        return <ShpHeader>this._header;
-    }
-
-    private get __shpParser() {
-        return this._shpParser.value;
-    }
-
-    private get __shx() {
-        return this._shx.value;
-    }
-
-    private get __reader() {
-        return <FileStream>this._stream;
     }
 
     /**
@@ -232,6 +210,10 @@ export default class Shp extends Opener {
         return { geomBuff, offset };
     }
 
+    _invalidCache() {
+        this.__reader.invalidCache();
+    }
+
     static createEmpty(filePath: string, fileType: ShapefileType): Shp {
         const header = new ShpHeader();
         header.fileType = fileType;
@@ -246,10 +228,6 @@ export default class Shp extends Opener {
         return shp;
     }
 
-    _invalidCache() {
-        this.__reader.invalidCache();
-    }
-
     private _updateHeader(geom: Geometry, geomLength: number) {
         this.__header.fileLength += geomLength;
         const geomEnvelope = geom.envelope();
@@ -257,5 +235,25 @@ export default class Shp extends Opener {
         this.__header.write(this.__fd);
         this.__header.write(this.__shx._fd as number);
         this.__shx._invalidCache();
+    }
+
+    private get __fd() {
+        return <number>this._fd;
+    }
+
+    private get __header() {
+        return <ShpHeader>this._header;
+    }
+
+    private get __shpParser() {
+        return this._shpParser.value;
+    }
+
+    private get __shx() {
+        return this._shx.value;
+    }
+
+    private get __reader() {
+        return <FileStream>this._stream;
     }
 };

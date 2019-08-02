@@ -1,12 +1,12 @@
 import _ from "lodash";
 import { Envelope, IEnvelope, Geometry } from 'ginkgoch-geom';
 
+import Shx from "../shx/Shx";
 import ShpReader from "./ShpReader";
 import Iterator from "../base/Iterator";
 import Optional from "../base/Optional";
 import GeomParser from "./parser/GeomParser";
 import { FileStream } from "../shared/FileStream";
-import Shx from "../shx/Shx";
 import IQueryFilter from "../shared/IQueryFilter";
 import FilterUtils from "../shared/FilterUtils";
 
