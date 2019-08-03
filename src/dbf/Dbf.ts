@@ -4,7 +4,7 @@ import DbfField from './DbfField'
 import DbfHeader from './DbfHeader'
 import DbfRecord from './DbfRecord'
 import DbfIterator from './DbfIterator'
-import Opener from '../base/Openable'
+import Opener from '../base/Opener'
 import Validators from '../shared/Validators'
 import IQueryFilter from '../shared/IQueryFilter';
 import { FileStream } from "../shared/FileStream";

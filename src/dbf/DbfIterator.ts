@@ -1,8 +1,8 @@
 import _ from 'lodash'
 import Optional from '../base/Optional';
-import Iterator from "../../src/base/Iterator"
-import DbfRecord from '../../src/dbf/DbfRecord'
-import DbfHeader from '../../src/dbf/DbfHeader'
+import Iterator from "../base/Iterator"
+import DbfRecord from '../dbf/DbfRecord'
+import DbfHeader from '../dbf/DbfHeader'
 import { FileStream } from "../shared/FileStream";
 import IQueryFilter from '../shared/IQueryFilter';
 import FilterUtils from '../shared/FilterUtils';

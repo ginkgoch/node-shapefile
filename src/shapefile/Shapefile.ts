@@ -6,7 +6,7 @@ import { IFeature, Feature } from "ginkgoch-geom";
 import Shp from "../shp/Shp";
 import Dbf from "../dbf/Dbf";
 import DbfField from '../dbf/DbfField';
-import Opener from "../base/Openable";
+import Opener from "../base/Opener";
 import Optional from "../base/Optional";
 import DbfRecord from '../dbf/DbfRecord';
 import IQueryFilter from "../shared/IQueryFilter";
