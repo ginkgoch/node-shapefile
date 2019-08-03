@@ -2842,20 +2842,20 @@ getpass@^0.1.1:
   dependencies:
     assert-plus "^1.0.0"
 
-ginkgoch-buffer-io@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/ginkgoch-buffer-io/-/ginkgoch-buffer-io-1.1.0.tgz#7d5a5780c483ad59c25d1bf7b3405327abe2399f"
-  integrity sha512-w0B2hfzW0MlidR4mKtj4cjUtT/2fF1qeufNUdejjMnC8DiAjb1SR+m1+fo51UXqsBwh8NDU1NWpPhmMObMZbQw==
+ginkgoch-buffer-io@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/ginkgoch-buffer-io/-/ginkgoch-buffer-io-1.1.1.tgz#21301bbf38fe65f8da7c4fdf3fea6d68eeda2d69"
+  integrity sha512-JTZ5eNmtHrr3xAArjhbpHi/8Ki2EIjO3m2wtd3/YI77KadN97GQN94bemjCqACqrFUsIlih6x5WwgoQm7BajQw==
 
-ginkgoch-geom@^1.0.13:
-  version "1.0.13"
-  resolved "https://registry.yarnpkg.com/ginkgoch-geom/-/ginkgoch-geom-1.0.13.tgz#1325e8de40d32006d06681212b41b404d26abe50"
-  integrity sha512-oVSz0tQQU3RQjnIK7Vc4B+aS6z5MMke1JFFGIP0+vhW7STQ/jvyYvE6Y0WXxy05hgXiG2D8ASUtocJjlF35xmw==
+ginkgoch-geom@^1.0.14:
+  version "1.0.14"
+  resolved "https://registry.yarnpkg.com/ginkgoch-geom/-/ginkgoch-geom-1.0.14.tgz#4e187f2d1d1cd0f6836a80a1327a1c1e1396b8e3"
+  integrity sha512-PNPXZWTgndG4IrOdfqbejUtUAo6qOMDljOePgVZNnpWjVCItlKM6AUUNujUri8j8zg+InP6EPU3JYXB2vp3Uqg==
   dependencies:
     "@types/jsts" "^0.17.0"
     "@types/lodash" "^4.14.136"
     "@types/node" "^12.6.8"
-    ginkgoch-buffer-io "^1.1.0"
+    ginkgoch-buffer-io "^1.1.1"
     jsts "^2.0.6"
     lodash "^4.17.15"
 
