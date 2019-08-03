@@ -6,4 +6,5 @@ package-lock.json
 *.code-workspace
 .idea/
 built/
+dist/
 yarn-error.log
