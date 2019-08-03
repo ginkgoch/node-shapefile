@@ -7,7 +7,7 @@ import Shx from '../shx/Shx';
 import ShpHeader from './ShpHeader';
 import Optional from '../base/Optional';
 import ShpIterator from './ShpIterator';
-import Opener from '../base/Openable';
+import Opener from '../base/Opener';
 import GeomParser from './parser/GeomParser';
 import { FileStream } from '../shared/FileStream';
 import IQueryFilter from '../shared/IQueryFilter';
