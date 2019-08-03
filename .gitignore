@@ -8,3 +8,4 @@ package-lock.json
 built/
 dist/
 yarn-error.log
+yarn.lock
