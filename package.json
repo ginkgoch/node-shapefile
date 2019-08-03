@@ -14,6 +14,8 @@
   "scripts": {
     "test": "./node_modules/.bin/jest",
     "build": "rm -rf built && ./node_modules/.bin/tsc",
+    "webpack": "rm -rf dist && ./node_modules/.bin/webpack --config webpack.dev.js",
+    "webpack-prod": "rm -rf dist && ./node_modules/.bin/webpack --config webpack.prod.js",
     "doc": "rm -rf docs && ./node_modules/.bin/typedoc --includes src/shapefile --out docs --module commonjs --mode file ./src"
   },
   "author": {
@@ -48,6 +50,7 @@
     "typescript": "^3.5.3",
     "webpack": "^4.29.0",
     "webpack-cli": "^3.3.6",
+    "webpack-merge": "^4.2.1",
     "webpack-dev-server": "^3.1.14"
   }
 }
