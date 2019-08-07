@@ -227,7 +227,7 @@ export default class Dbf extends OpenerSync {
      * Remove record at index.
      * @param {number} id The record id to delete. Start from 1.
      */
-    removeAt(id: number) {
+    remove(id: number) {
         Validators.checkIsOpened(this.isOpened);
         Validators.checkIndexIsGEZero(id);
 
@@ -240,7 +240,7 @@ export default class Dbf extends OpenerSync {
      * Recover the deleted record by id. Edited record doesn't support.
      * @param {number} id The record id to delete. Start from 1.
      */
-    recoverAt(id: number) {
+    recover(id: number) {
         Validators.checkIsOpened(this.isOpened);
         Validators.checkIndexIsGEZero(id);
 

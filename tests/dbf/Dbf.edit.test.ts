@@ -111,13 +111,13 @@ describe('dbf deletion test', () => {
             dbf.open();
 
             const idToRemove = 20;
-            dbf.removeAt(idToRemove);
+            dbf.remove(idToRemove);
             let r = dbf.get(idToRemove);
 
             expect(r.id).toBe(20);
             expect(r.deleted).toBeTruthy();
 
-            dbf.recoverAt(idToRemove);
+            dbf.recover(idToRemove);
             r = dbf.get(idToRemove);
             expect(r.id).toBe(20);
             expect(r.deleted).toBeFalsy();
