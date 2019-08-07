@@ -4,13 +4,13 @@ import DbfField from './DbfField'
 import DbfHeader from './DbfHeader'
 import DbfRecord from './DbfRecord'
 import DbfIterator from './DbfIterator'
-import Opener from '../base/Opener'
+import OpenerSync from '../base/OpenerSync'
 import Validators from '../shared/Validators'
 import IQueryFilter from '../shared/IQueryFilter';
 import { FileStream } from "../shared/FileStream";
 import FilterUtils from '../shared/FilterUtils';
 
-export default class Dbf extends Opener {
+export default class Dbf extends OpenerSync {
     filePath: string
     _fd?: number
     _header?: DbfHeader
@@ -227,7 +227,7 @@ export default class Dbf extends Opener {
      * Remove record at index.
      * @param {number} id The record id to delete. Start from 1.
      */
-    removeAt(id: number) {
+    remove(id: number) {
         Validators.checkIsOpened(this.isOpened);
         Validators.checkIndexIsGEZero(id);
 
@@ -240,7 +240,7 @@ export default class Dbf extends Opener {
      * Recover the deleted record by id. Edited record doesn't support.
      * @param {number} id The record id to delete. Start from 1.
      */
-    recoverAt(id: number) {
+    recover(id: number) {
         Validators.checkIsOpened(this.isOpened);
         Validators.checkIndexIsGEZero(id);
 

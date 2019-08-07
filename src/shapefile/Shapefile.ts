@@ -6,7 +6,7 @@ import { IFeature, Feature } from "ginkgoch-geom";
 import Shp from "../shp/Shp";
 import Dbf from "../dbf/Dbf";
 import DbfField from '../dbf/DbfField';
-import Opener from "../base/Opener";
+import OpenerSync from "../base/OpenerSync";
 import Optional from "../base/Optional";
 import DbfRecord from '../dbf/DbfRecord';
 import IQueryFilter from "../shared/IQueryFilter";
@@ -16,7 +16,7 @@ import { Validators, ShapefileType, Constants } from "../shared";
 /**
  * The Shapefile class.
  */
-export default class Shapefile extends Opener {
+export default class Shapefile extends OpenerSync {
     filePath: string;
     _flag: string;
     _shp: Optional<Shp>;
@@ -193,7 +193,7 @@ export default class Shapefile extends Opener {
         Validators.checkIsOpened(this.isOpened);
 
         this._shp.value.remove(id);
-        this._dbf.value.removeAt(id);
+        this._dbf.value.remove(id);
     }
 
     /**
