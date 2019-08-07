@@ -1,4 +1,4 @@
-export default class Opener {
+export default class OpenerSync {
     isOpened : boolean;
 
     constructor() {
