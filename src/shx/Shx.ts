@@ -4,10 +4,10 @@ import ShxIterator from './ShxIterator';
 import FilterUtils from '../shared/FilterUtils';
 import { Validators, Constants } from '../shared';
 import IQueryFilter from '../shared/IQueryFilter';
-import Opener from '../base/Opener';
+import OpenerSync from '../base/OpenerSync';
 import { FileStream } from '../shared/FileStream';
 
-export default class Shx extends Opener {
+export default class Shx extends OpenerSync {
     filePath: string
     _flag: string
     _fd?: number
