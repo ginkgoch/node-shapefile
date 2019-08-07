@@ -7,14 +7,14 @@ import Shx from '../shx/Shx';
 import ShpHeader from './ShpHeader';
 import Optional from '../base/Optional';
 import ShpIterator from './ShpIterator';
-import Opener from '../base/Opener';
+import OpenerSync from '../base/OpenerSync';
 import GeomParser from './parser/GeomParser';
 import { FileStream } from '../shared/FileStream';
 import IQueryFilter from '../shared/IQueryFilter';
 import GeomParserFactory from './parser/GeomParserFactory';
 import { Validators, ShapefileType, Constants } from "../shared";
 
-export default class Shp extends Opener {
+export default class Shp extends OpenerSync {
     filePath: string;
     _flag: string;
     _fd: number | undefined;

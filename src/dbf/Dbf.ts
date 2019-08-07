@@ -4,13 +4,13 @@ import DbfField from './DbfField'
 import DbfHeader from './DbfHeader'
 import DbfRecord from './DbfRecord'
 import DbfIterator from './DbfIterator'
-import Opener from '../base/Opener'
+import OpenerSync from '../base/OpenerSync'
 import Validators from '../shared/Validators'
 import IQueryFilter from '../shared/IQueryFilter';
 import { FileStream } from "../shared/FileStream";
 import FilterUtils from '../shared/FilterUtils';
 
-export default class Dbf extends Opener {
+export default class Dbf extends OpenerSync {
     filePath: string
     _fd?: number
     _header?: DbfHeader
