@@ -194,6 +194,12 @@ describe('Dbf records test', () => {
             });
         });
     });
+
+    it('temp file path', () => {
+        const srcFilePath = '/user/local/Downloads/usstates.dbf';
+        const tmpFilePath = (Dbf as any)._tempFilePath(srcFilePath);
+        expect(tmpFilePath).toEqual('/user/local/Downloads/usstates_tmp.dbf');
+    })
 });
 
 

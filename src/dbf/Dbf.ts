@@ -1,25 +1,29 @@
-import fs from 'fs'
-import _ from 'lodash'
-import DbfField from './DbfField'
-import DbfHeader from './DbfHeader'
-import DbfRecord from './DbfRecord'
-import DbfIterator from './DbfIterator'
-import OpenerSync from '../base/OpenerSync'
-import Validators from '../shared/Validators'
+import fs from 'fs';
+import path from 'path';
+import _ from 'lodash';
+import DbfField from './DbfField';
+import DbfHeader from './DbfHeader';
+import DbfRecord from './DbfRecord';
+import DbfIterator from './DbfIterator';
+import OpenerSync from '../base/OpenerSync';
+import Validators from '../shared/Validators';
 import IQueryFilter from '../shared/IQueryFilter';
 import { FileStream } from "../shared/FileStream";
 import FilterUtils from '../shared/FilterUtils';
+import DbfFieldEditCache from './DbfFieldEditCache';
 
 export default class Dbf extends OpenerSync {
-    filePath: string
-    _fd?: number
-    _header?: DbfHeader
-    _flag: string
+    filePath: string;
+    _fd?: number;
+    _header?: DbfHeader;
+    _flag: string;
+    _fieldEditCache: DbfFieldEditCache;
 
     constructor(filePath: string, flag = 'rs') {
         super();
         this.filePath = filePath;
         this._flag = flag;
+        this._fieldEditCache = new DbfFieldEditCache();
     }
 
     /**
@@ -247,6 +251,110 @@ export default class Dbf extends OpenerSync {
         const position = this._getOffsetById(id);
         const buff = Buffer.from(' ');
         fs.writeSync(<number>this._fd, buff, 0, 1, position);
+    }
+
+    pushField(field: DbfField) {
+        this._fieldEditCache.pushField(field);
+    }
+
+    removeField(fieldName: string) {
+        this._fieldEditCache.removeField(fieldName);
+    }
+
+    updateField(fieldName: string, newField: DbfField) {
+        this._fieldEditCache.updateField(fieldName, newField);
+    }
+
+    flushFields() {
+        const sizeChangedFields = new Array<DbfField>();
+        this._fieldEditCache.updatedFields.forEach((v, k) => {
+            let originField = this.__header.fields.find(f => f.name === k) as DbfField;
+            originField.name = v.name;
+
+            if (originField.length !== v.length || originField.type !== v.type) {
+                sizeChangedFields.push(v);
+            }
+        });
+
+        this.__header.write(this.__fd);
+
+        if (this._fieldEditCache.addedFields.length > 0 ||
+            this._fieldEditCache.removedFields.length > 0 ||
+            sizeChangedFields.length > 0) {
+            const newFields = this._newFields(this._fieldEditCache, sizeChangedFields);
+
+            const sourceFilePath = this.filePath;
+            const targetFilePath = this._migrateToTempDbf(newFields);
+
+            this.close();
+            try {
+                fs.copyFileSync(targetFilePath, sourceFilePath);
+            } finally {
+                this.open();
+            }
+        }
+    }
+
+    private _migrateToTempDbf(newFields: DbfField[]) {
+        const tempFilePath = Dbf._tempFilePath(this.filePath);
+        const tempDbf = Dbf.createEmpty(tempFilePath, newFields);
+        tempDbf.open();
+
+        const iterator = this.iterator();
+        let record = iterator.next();
+        while (!iterator.done) {
+            if (record.hasValue) {
+                const sourceRecord = record.value;
+                const tempRecord = new DbfRecord(newFields);
+                (sourceRecord.header as DbfHeader).fields.forEach(sourceField => {
+                    if (newFields.some(f => f.name === sourceField.name)) {
+                        tempRecord.values.set(sourceField.name, sourceRecord.values.get(sourceField.name));
+                        tempDbf.push(tempRecord);
+                    }
+                });
+            }
+            
+            record = iterator.next();
+        }
+
+        tempDbf.close();
+        return tempFilePath;
+    }
+
+    private static _tempFilePath(filePath: string) {
+        const folder = path.dirname(filePath);
+        const ext = path.extname(filePath);
+        const name = path.basename(filePath, ext);
+
+        let newFilePath = `${ folder }/${ name }_tmp${ ext }`;
+        let i = 1;
+        while (fs.existsSync(newFilePath)) {
+            newFilePath = `${ folder }/${ name }_tmp_${ i }${ ext }`;
+            i++;
+        }
+
+        return newFilePath;
+    }
+
+    private _newFields(fieldEditCache: DbfFieldEditCache, sizeChangedFields: DbfField[]) {
+        const addedFieldNames = fieldEditCache.addedFields.map(f => f.name);
+        const sizeChangedFieldNames = sizeChangedFields.map(f => f.name);
+        const newFields = new Array<DbfField>();
+
+        const predict = (field: DbfField) => (f: string) => f === field.name;
+
+        this.__header.fields.forEach(f => {
+            if (!sizeChangedFieldNames.some(predict(f)) &&
+                !addedFieldNames.some(predict(f)) &&
+                !fieldEditCache.removedFields.some(predict(f))) {
+                const newField = new DbfField(f.name, f.type, f.length, f.decimal);
+                newFields.push(newField);
+            }
+        });
+
+        fieldEditCache.addedFields.concat(sizeChangedFields).forEach(f => newFields.push(f));
+
+        return newFields;
     }
 
     /**
