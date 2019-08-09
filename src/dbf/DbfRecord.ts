@@ -77,7 +77,9 @@ export default class DbfRecord {
                     throw new Error("Memo is not supported.");
                 default:
                     const fieldBuff = Buffer.alloc(field.length);
-                    fieldBuff.write(value);
+                    if (value !== undefined) {
+                        fieldBuff.write(value);
+                    }
                     bw.writeBuffer(fieldBuff);
                     break;
             }
@@ -181,6 +183,8 @@ export default class DbfRecord {
 
     static _getNumberBuffer(value: any, field: DbfField): Buffer {
         const buff = Buffer.alloc(field.length);
+        if (value === undefined) return buff;
+
         value = value.toString();
         const dotIndex = value.indexOf('.');
         if (field.decimal > 0 && dotIndex > -1) {
