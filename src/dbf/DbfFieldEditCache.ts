@@ -22,4 +22,10 @@ export default class DbfFieldEditCache {
     updateField(fieldName: string, newField: DbfField) {
         this.updatedFields.set(fieldName, newField);
     }
+
+    clear() {
+        this.addedFields = [];
+        this.removedFields = [];
+        this.updatedFields.clear();
+    }
 }

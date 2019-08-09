@@ -290,9 +290,11 @@ export default class Dbf extends OpenerSync {
             try {
                 fs.copyFileSync(targetFilePath, sourceFilePath);
             } finally {
+                this._fieldEditCache.clear();
                 if (fs.existsSync(targetFilePath)) {
                     fs.unlinkSync(targetFilePath);
                 }
+
                 this.open();
             }
         }
