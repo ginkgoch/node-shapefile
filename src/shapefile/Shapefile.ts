@@ -196,6 +196,30 @@ export default class Shapefile extends OpenerSync {
         this._dbf.value.remove(id);
     }
 
+    pushField(field: DbfField) {
+        Validators.checkIsOpened(this.isOpened);
+        
+        this._dbf.value.pushField(field);
+    }
+    
+    removeField(fieldName: string) {
+        Validators.checkIsOpened(this.isOpened);
+        
+        this._dbf.value.removeField(fieldName);
+    }
+    
+    updateField(fieldName: string, newField: DbfField) {
+        Validators.checkIsOpened(this.isOpened);
+
+        this._dbf.value.updateField(fieldName, newField);
+    }
+
+    flushField() {
+        Validators.checkIsOpened(this.isOpened);
+
+        this._dbf.value.flushFields();
+    }
+
     /**
      * Creates an empty shapefile as well as its shape index file and d-base file.
      * @param {string} filePath The shapefile path. File path extension must be '.shp'.
