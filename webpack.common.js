@@ -20,6 +20,18 @@ module.exports = {
       commonjs2: "jsts",
       amd: "jsts",
       root: "jsts"
+    },
+    "ginkgoch-buffer-io": {
+      commonjs: "ginkgoch-buffer-io",
+      commonjs2: "ginkgoch-buffer-io",
+      amd: "ginkgoch-buffer-io",
+      root: "ginkgoch-buffer-io"
+    },
+    "ginkgoch-geom": {
+      commonjs: "ginkgoch-geom",
+      commonjs2: "ginkgoch-geom",
+      amd: "ginkgoch-geom",
+      root: "ginkgoch-geom"
     }
   },
   module: {
