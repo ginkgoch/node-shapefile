@@ -14,8 +14,7 @@
   ],
   "scripts": {
     "test": "./node_modules/.bin/jest",
-    "build": "rm -rf built && ./node_modules/.bin/tsc",
-    "build-prod": "rm -rf dist && ./node_modules/.bin/webpack --config webpack.prod.js",
+    "build": "rm -rf dist && ./node_modules/.bin/webpack",
     "doc": "rm -rf docs && ./node_modules/.bin/typedoc --includes src/shapefile --out docs --module commonjs --mode file ./src",
     "clean": "rm -rf dist && rm -rf built"
   },
@@ -42,7 +41,6 @@
     "@babel/preset-env": "^7.3.1",
     "@types/jest": "^24.0.15",
     "babel-loader": "^8.0.5",
-    "dts-gen": "^0.5.8",
     "jest": "^24.8.0",
     "jest-cli": "^24.8.0",
     "ts-jest": "^24.0.2",

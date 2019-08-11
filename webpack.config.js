@@ -1,6 +1,7 @@
 const path = require('path');
 module.exports = {
   entry: path.join(__dirname, 'src', 'index.ts'),
+  mode: 'production',
   watch: false,
   target: 'node',
   output: {
