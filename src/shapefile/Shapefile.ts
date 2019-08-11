@@ -214,7 +214,7 @@ export default class Shapefile extends OpenerSync {
         this._dbf.value.updateField(fieldName, newField);
     }
 
-    flushField() {
+    flushFields() {
         Validators.checkIsOpened(this.isOpened);
 
         this._dbf.value.flushFields();
