@@ -24,7 +24,7 @@
     "url": "https://github.com/ginkgoch"
   },
   "repository": {
-    "type": "git",
+    "type": "github",
     "url": "https://github.com/ginkgoch/node-shapefile"
   },
   "license": "MIT",
@@ -33,7 +33,7 @@
     "@types/lodash": "^4.14.136",
     "@types/node": "^12.6.8",
     "ginkgoch-buffer-io": "^1.1.1",
-    "ginkgoch-geom": "^1.7.0",
+    "ginkgoch-geom": "^1.7.5",
     "lodash": "^4.17.14"
   },
   "devDependencies": {
