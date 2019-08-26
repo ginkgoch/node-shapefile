@@ -44,15 +44,27 @@ export class FileStream {
         return buff;
     }
 
-    seek(position: number) {
-        this.position = position;
+    seek(position: number, origin: 'begin' | 'current' | 'end' = 'begin') {
+        switch (origin) {
+            case 'current':
+                this.position += position;
+                break;
+            case 'end':
+                const size = fs.fstatSync(this.fd).size;
+                this.position = size - position - 1;
+                break;
+            case 'begin':
+            default:
+                this.position = position;
+                break;
+        }
     }
 
     close() {
         if (this._requireClose) {
             fs.closeSync(this.fd);
         }
-    
+
         this.total = 0;
         this.position = 0;
         this.cacheStart = 0;
