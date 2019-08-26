@@ -1,6 +1,6 @@
 {
   "name": "ginkgoch-shapefile",
-  "version": "2.3.5",
+  "version": "2.3.6",
   "description": "This is a NodeJs library to help to read/write shapefile from your disk.",
   "main": "./dist/bundle.js",
   "types": "./dist/index.d.ts",
