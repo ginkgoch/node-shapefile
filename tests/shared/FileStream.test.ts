@@ -19,6 +19,18 @@ describe('FileReader', () => {
         stream.close();
     });
 
+    it('seek', () => {
+        const stream = new FileStream(filePath);
+        stream.seek(30);
+        expect(stream.position).toBe(30);
+
+        stream.seek(10, 'current');
+        expect(stream.position).toBe(40);
+
+        stream.seek(10, 'end');
+        expect(stream.position).toBe(856);
+    });
+
     it('read - 1', () => {
         const stream = new FileStream(filePath);
         let buff = stream.read(20);
