@@ -60,6 +60,14 @@ export class FileStream {
         }
     }
 
+    write(buff: Buffer, offset = 0, length = buff.length) {
+        const writtenLength = fs.writeSync(this.fd, buff, offset, length, this.position);
+        this.position += writtenLength;
+        if (this.position > this.total) {
+            this.total  = this.position;
+        }
+    }
+
     close() {
         if (this._requireClose) {
             fs.closeSync(this.fd);

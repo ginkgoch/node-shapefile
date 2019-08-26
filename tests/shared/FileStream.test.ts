@@ -58,4 +58,36 @@ describe('FileReader', () => {
         expect(content).toEqual(fs.readFileSync(filePath).toString());
         stream.close();
     });
+
+    it('write', () => {
+        const filePath = './tests/data/fswrite-tmp.txt';
+
+        let fd = fs.openSync(filePath, 'w+');
+        try {
+            const stream = new FileStream(fd);
+
+            let buff = Buffer.alloc(4);
+            buff.writeInt32LE(1024, 0);
+
+            stream.write(buff);
+
+            buff.writeInt32LE(512, 0);
+            stream.write(buff);
+            expect(stream.position).toBe(8);
+
+            stream.seek(0, 'begin');
+            let buff1 = stream.read(4);
+            expect(buff1.readInt32LE(0)).toBe(1024);
+
+            buff1 = stream.read(4);
+            expect(buff1.readInt32LE(0)).toBe(512);
+        }
+        catch {
+            throw new Error('operation failed.');
+        }
+        finally {
+            fs.closeSync(fd);
+            fs.unlinkSync(filePath);
+        }
+    });
 });
