@@ -28,7 +28,7 @@ describe('FileReader', () => {
         expect(stream.position).toBe(40);
 
         stream.seek(10, 'end');
-        expect(stream.position).toBe(856);
+        expect(stream.position).toBe(857);
     });
 
     it('read - 1', () => {
