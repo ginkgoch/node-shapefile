@@ -44,18 +44,18 @@ export class FileStream {
         return buff;
     }
 
-    seek(position: number, origin: 'begin' | 'current' | 'end' = 'begin') {
+    seek(offset: number, origin: 'begin' | 'current' | 'end' = 'begin') {
         switch (origin) {
             case 'current':
-                this.position += position;
+                this.position += offset;
                 break;
             case 'end':
                 const size = fs.fstatSync(this.fd).size;
-                this.position = size - position - 1;
+                this.position = size - offset;
                 break;
             case 'begin':
             default:
-                this.position = position;
+                this.position = offset;
                 break;
         }
     }
