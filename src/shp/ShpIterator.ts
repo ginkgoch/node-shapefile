@@ -6,7 +6,7 @@ import ShpReader from "./ShpReader";
 import Iterator from "../base/Iterator";
 import Optional from "../base/Optional";
 import GeomParser from "./parser/GeomParser";
-import { FileStream } from "../shared/FileStream";
+import { FileStream } from 'ginkgoch-filestream';
 import IQueryFilter from "../shared/IQueryFilter";
 import FilterUtils from "../shared/FilterUtils";
 

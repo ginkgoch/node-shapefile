@@ -9,7 +9,7 @@ import Optional from '../base/Optional';
 import ShpIterator from './ShpIterator';
 import OpenerSync from '../base/OpenerSync';
 import GeomParser from './parser/GeomParser';
-import { FileStream } from '../shared/FileStream';
+import { FileStream } from 'ginkgoch-filestream';
 import IQueryFilter from '../shared/IQueryFilter';
 import GeomParserFactory from './parser/GeomParserFactory';
 import { Validators, ShapefileType, Constants } from "../shared";

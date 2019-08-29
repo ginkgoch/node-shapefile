@@ -8,7 +8,7 @@ import DbfIterator from './DbfIterator';
 import OpenerSync from '../base/OpenerSync';
 import Validators from '../shared/Validators';
 import IQueryFilter from '../shared/IQueryFilter';
-import { FileStream } from "../shared/FileStream";
+import { FileStream } from 'ginkgoch-filestream';
 import FilterUtils from '../shared/FilterUtils';
 import DbfFieldEditCache from './DbfFieldEditCache';
 
