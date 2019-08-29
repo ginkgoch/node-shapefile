@@ -3,7 +3,7 @@ import Optional from '../base/Optional';
 import Iterator from "../base/Iterator"
 import DbfRecord from '../dbf/DbfRecord'
 import DbfHeader from '../dbf/DbfHeader'
-import { FileStream } from "../shared/FileStream";
+import { FileStream } from 'ginkgoch-filestream';
 import IQueryFilter from '../shared/IQueryFilter';
 import FilterUtils from '../shared/FilterUtils';
 
