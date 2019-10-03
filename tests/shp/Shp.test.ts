@@ -3,7 +3,7 @@
 import _ from 'lodash';
 import '../jest/JestEx';
 import Shp from "../../src/shp/Shp";
-import { Envelope, GeometryType, Polygon, Point, LineString, Geometry } from 'ginkgoch-geom';
+import { Envelope, GeometryType, Polygon, Point, LineString, Geometry, MultiPolygon } from 'ginkgoch-geom';
 import Shapefile from '../../src/shapefile/Shapefile';
 
 const citiesPath = './tests/data/cities_e.shp';
@@ -126,15 +126,15 @@ describe('shapefile test - polygon', () => {
         let recordOpt = getFirstRecord(shpPath);
         expect(recordOpt).toBeGeneralRecord(1);
 
-        const record = recordOpt as Polygon;
-        expect(record.type).toEqual(GeometryType.Polygon);
+        const record = recordOpt as MultiPolygon;
+        expect(record.type).toEqual(GeometryType.MultiPolygon);
         expect(record.coordinates().length).toBe(3);
-        expect(record.coordinates()[0].length).toBe(244);
-        expect(record.coordinates()[1].length).toBe(12);
-        expect(record.coordinates()[2].length).toBe(20);
-        expect(record.coordinates()[0][0]).toEqual(record.coordinates()[0][243]);
-        expect(record.coordinates()[1][0]).toEqual(record.coordinates()[1][11]);
-        expect(record.coordinates()[2][0]).toEqual(record.coordinates()[2][19]);
+        expect(record.coordinates()[0][0].length).toBe(244);
+        expect(record.coordinates()[1][0].length).toBe(12);
+        expect(record.coordinates()[2][0].length).toBe(20);
+        expect(record.coordinates()[0][0][0]).toEqual(record.coordinates()[0][0][243]);
+        expect(record.coordinates()[1][0][0]).toEqual(record.coordinates()[1][0][11]);
+        expect(record.coordinates()[2][0][0]).toEqual(record.coordinates()[2][0][19]);
     });
 });
 
