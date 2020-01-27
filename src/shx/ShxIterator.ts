@@ -1,7 +1,7 @@
 import Iterator from "../base/Iterator";
 import ShxRecord from "./ShxRecord";
 import Optional from "../base/Optional";
-import { FileStream } from '../shared/FileStream'
+import { FileStream } from 'ginkgoch-filestream';
 import { Constants } from "../shared";
 import IQueryFilter from "../shared/IQueryFilter";
 import FilterUtils from "../shared/FilterUtils";

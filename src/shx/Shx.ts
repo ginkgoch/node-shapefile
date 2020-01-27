@@ -5,7 +5,7 @@ import FilterUtils from '../shared/FilterUtils';
 import { Validators, Constants } from '../shared';
 import IQueryFilter from '../shared/IQueryFilter';
 import OpenerSync from '../base/OpenerSync';
-import { FileStream } from '../shared/FileStream';
+import { FileStream } from 'ginkgoch-filestream';
 
 export default class Shx extends OpenerSync {
     filePath: string

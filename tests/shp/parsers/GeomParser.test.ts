@@ -1,8 +1,7 @@
 import * as shared from '../../../src/shared';
 import ShpReader from "../../../src/shp/ShpReader";
-import GeomParser from "../../../src/shp/parser/GeomParser";
 import GeomParserFactory from "../../../src/shp/parser/GeomParserFactory";
-import { Point } from 'ginkgoch-geom';
+import { Point, MultiPolygon } from 'ginkgoch-geom';
 
 describe('parser tests', () => {
     test('get parsers test', () => {
@@ -117,7 +116,9 @@ describe('parser tests', () => {
         const reader = new ShpReader(buff);
 
         const geomInfo = parser.value.read(reader) as any;
-        const geom = geomInfo.readGeom();
-        expect(geom.coordinates()).toEqual(line);
+        const geom = geomInfo.readGeom() as MultiPolygon;
+
+        expect(geom.children[0].coordinates()).toEqual([line[0]]);
+        expect(geom.children[1].coordinates()).toEqual([line[1]]);
     });
 });
