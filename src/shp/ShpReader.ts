@@ -29,12 +29,14 @@ export default class ShpReader extends BufferReader {
         const points = [];
         let currentPart = new Array<number[]>();
 
-        let nextPartIndex = parts.shift();
+        let partCursor = 0;
+        let nextPartIndex = parts[partCursor];
         for (let i = 0; i < numPoints; i++) {
             if (i === nextPartIndex) {
                 currentPart = new Array<number[]>();
                 points.push(currentPart);
-                nextPartIndex = parts.shift();
+                partCursor++;
+                nextPartIndex = parts[partCursor];
             }
 
             const p = this.nextPoint();

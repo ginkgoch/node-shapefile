@@ -1,5 +1,5 @@
 declare namespace jest {
-    interface Matchers<R> {
+    interface Matchers<R extends CustomMatcherResult> {
         toBeNullOrUndefined(): R;
         toBeGeneralRecord(id: number): R;
         toBeClosePointTo(expected: any, numDigit: number): R;
