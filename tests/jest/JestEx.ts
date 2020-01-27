@@ -10,11 +10,11 @@ expect.extend({
         expect(current).not.toBeUndefined();
         expect(current.id).toBe(id);
 
-        return { pass: true, message: '' };
+        return { pass: true, message: () => '' };
     },
 
     toBeNullOrUndefined: (actual: any) => {
-        return { pass: _.isNull(actual) || _.isUndefined(actual), message: '' };
+        return { pass: _.isNull(actual) || _.isUndefined(actual), message: () => '' };
     },
 
     toBeClosePointTo: (actual: any, expected: any, numDigit = 4) => {
@@ -30,7 +30,7 @@ expect.extend({
 
         expect(actual[0]).toBeCloseTo(x, numDigit);
         expect(actual[1]).toBeCloseTo(y, numDigit);
-        return { pass: true, message: '' };
+        return { pass: true, message: () => '' };
     },
 
     toBeClosePolyLineTo: (actual: any, expected: any, numDigit = 4) => {
@@ -42,6 +42,6 @@ expect.extend({
             expect(actual.coordinates[i][1]).toBeCloseTo(pointArrays[i][1], numDigit);
         }
 
-        return { pass: true, message: '' };
+        return { pass: true, message: () => '' };
     }
 });
