@@ -175,14 +175,18 @@ export default class Shapefile extends OpenerSync {
         this._dbf.value.push(dbfRecord);
     }
 
-    update(feature: IFeature) {
+    update(feature: IFeature, target: 'all'|'geom'|'properties' = 'all') {
         Validators.checkIsOpened(this.isOpened);
 
-        this._shp.value.update(feature.id, feature.geometry);
+        if (target === 'all' || target === 'geom') {
+            this._shp.value.update(feature.id, feature.geometry);
+        }
 
-        const dbfRecord = new DbfRecord(feature.properties);
-        dbfRecord.id = feature.id;
-        this._dbf.value.update(dbfRecord);
+        if (target === 'all' || target === 'properties') {
+            const dbfRecord = new DbfRecord(feature.properties);
+            dbfRecord.id = feature.id;
+            this._dbf.value.update(dbfRecord);
+        }
     }
 
     /**
