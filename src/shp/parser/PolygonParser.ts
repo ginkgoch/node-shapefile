@@ -38,21 +38,22 @@ export default class PolygonParser extends GeomParser {
     }
 
     protected _write(coordinates: any, writer: ShpWriter): void {
-        const geom = coordinates as number[][][];
+        const geom = PolygonParser._normalizeCoordinates(coordinates);
 
-        let numParts = geom.length;
         let parts = [];
         let numPoints = 0;
         let points = new Array<number[]>();
         for (let i = 0; i < geom.length; i++) {
-            parts.push(numPoints);
             for (let j = 0; j < geom[i].length; j++) {
-                points.push(geom[i][j]);
-                numPoints++;
+                parts.push(numPoints);
+                for (let k = 0; k < geom[i][j].length; k++) {
+                    points.push(geom[i][j][k]);
+                    numPoints++;
+                }
             }
         }
 
-        writer.writeInt32LE(numParts);
+        writer.writeInt32LE(parts.length);
         writer.writeInt32LE(numPoints);
         writer.writeParts(parts);
         points.forEach(p => {
@@ -61,16 +62,18 @@ export default class PolygonParser extends GeomParser {
     }
 
     protected _size(coordinates: any): number {
-        const geom = coordinates as number[][][];
+        const geom = PolygonParser._normalizeCoordinates(coordinates);
 
         let parts = [];
         let numPoints = 0;
         let vertices = new Array<number[]>();
         for (let i = 0; i < geom.length; i++) {
-            parts.push(numPoints);
             for (let j = 0; j < geom[i].length; j++) {
-                vertices.push(geom[i][j]);
-                numPoints++;
+                parts.push(numPoints);
+                for (let k = 0; k < geom[i][j].length; k++) {
+                    vertices.push(geom[i][j][k]);
+                    numPoints++;
+                }
             }
         }
 
@@ -83,6 +86,27 @@ export default class PolygonParser extends GeomParser {
          * points
          */
         return 4 + Constants.SIZE_ENVELOPE + 4 + 4 + 4 * parts.length + Constants.SIZE_POINT * vertices.length;
+    }
+
+    private static _normalizeCoordinates(coordinates: any): number[][][][] {
+        let depth = PolygonParser._depth(coordinates);
+        while (depth < 3) {
+            coordinates = [coordinates];
+            depth++;
+        }
+
+        const geom = coordinates as number[][][][];
+        return geom;
+    }
+
+    private static _depth(obj: any) {
+        let depth = 0;
+        while(obj instanceof Array) {
+            depth++;
+            obj = obj[0]
+        }
+
+        return depth - 1;
     }
 }
 

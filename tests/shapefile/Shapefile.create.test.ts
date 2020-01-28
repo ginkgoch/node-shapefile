@@ -5,7 +5,8 @@ import DbfField from "../../src/dbf/DbfField";
 import { ShapefileType } from "../../src/shared";
 import Shapefile from "../../src/shapefile/Shapefile";
 import { DbfFieldType } from "../../src/dbf/DbfFieldType";
-import { Point, Feature, IFeature } from "ginkgoch-geom";
+import { Point, Feature, IFeature, GeometryFactory, MultiPolygon, Polygon, LinearRing } from "ginkgoch-geom";
+import Shp from "../../src/shp/Shp";
 
 describe('Shapefile create', () => {
     it('createEmpty', () => {
@@ -99,6 +100,26 @@ describe('Shapefile create', () => {
         })
     });
 
+    it('create shapefile with multi polygon feature', () => {
+        let filePath = './tests/data/shapefile_create_new_with_multi_polygon.shp';
+
+        try {
+            let geom = new MultiPolygon();
+            geom.children.push(new Polygon(new LinearRing([{x: 0, y: 0}, {x: 5, y: 0}, {x: 5, y: 5}, {x: 0, y: 5}, {x: 0, y: 0}])));
+            geom.children.push(new Polygon(new LinearRing([{x: 10, y: 10}, {x: 15, y: 10}, {x: 15, y: 15}, {x: 10, y: 15}, {x: 10, y: 10}])));
+            
+            let shp = Shp.createEmpty(filePath, ShapefileType.polygon);
+            shp.open();
+            shp.push(geom);
+            shp.close();
+    
+            shp.open();
+            let geom1 = shp.get(1);
+            shp.close();
+        } finally {
+            Utils.clearShapefiles(filePath);
+        }
+    });
 });
 
 function createShapefileForEditing(filePath: string, action: (f: Shapefile) => void) {
