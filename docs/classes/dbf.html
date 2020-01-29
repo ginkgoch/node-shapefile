@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Dbf | ginkgoch-shapefile</title>
+	<title>Dbf | ginkgoch-shapefile - v2.4.0</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">ginkgoch-shapefile</a>
+					<a href="../index.html" class="title">ginkgoch-shapefile - v2.4.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -70,7 +70,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="opener.html" class="tsd-signature-type">Opener</a>
+						<a href="openersync.html" class="tsd-signature-type">OpenerSync</a>
 						<ul class="tsd-hierarchy">
 							<li>
 								<span class="target">Dbf</span>
@@ -93,6 +93,7 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="dbf.html#_fd" class="tsd-kind-icon">_fd</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="dbf.html#_fieldeditcache" class="tsd-kind-icon">_field<wbr>Edit<wbr>Cache</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="dbf.html#_flag" class="tsd-kind-icon">_flag</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="dbf.html#_header" class="tsd-kind-icon">_header</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="dbf.html#filepath" class="tsd-kind-icon">file<wbr>Path</a></li>
@@ -113,10 +114,13 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="dbf.html#_fieldnames" class="tsd-kind-icon">_field<wbr>Names</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="dbf.html#_flush" class="tsd-kind-icon">_flush</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="dbf.html#_getoffsetbyid" class="tsd-kind-icon">_get<wbr>Offset<wbr>ById</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="dbf.html#_migratetotempdbf" class="tsd-kind-icon">_migrate<wbr>ToTemp<wbr>Dbf</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="dbf.html#_newfields" class="tsd-kind-icon">_new<wbr>Fields</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="dbf.html#_open" class="tsd-kind-icon">_open</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="dbf.html#_readheader" class="tsd-kind-icon">_read<wbr>Header</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="dbf.html#close" class="tsd-kind-icon">close</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="dbf.html#fields" class="tsd-kind-icon">fields</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="dbf.html#flushfields" class="tsd-kind-icon">flush<wbr>Fields</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="dbf.html#get" class="tsd-kind-icon">get</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="dbf.html#iterator" class="tsd-kind-icon">iterator</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="dbf.html#open" class="tsd-kind-icon">open</a></li>
@@ -124,11 +128,15 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="dbf.html#openwith" class="tsd-kind-icon">open<wbr>With</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="dbf.html#push" class="tsd-kind-icon">push</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="dbf.html#pushall" class="tsd-kind-icon">push<wbr>All</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="dbf.html#pushfield" class="tsd-kind-icon">push<wbr>Field</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="dbf.html#records" class="tsd-kind-icon">records</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="dbf.html#recoverat" class="tsd-kind-icon">recover<wbr>At</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="dbf.html#removeat" class="tsd-kind-icon">remove<wbr>At</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="dbf.html#recover" class="tsd-kind-icon">recover</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="dbf.html#remove" class="tsd-kind-icon">remove</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="dbf.html#removefield" class="tsd-kind-icon">remove<wbr>Field</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="dbf.html#update" class="tsd-kind-icon">update</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="dbf.html#updateall" class="tsd-kind-icon">update<wbr>All</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="dbf.html#updatefield" class="tsd-kind-icon">update<wbr>Field</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="dbf.html#_tempfilepath" class="tsd-kind-icon">_temp<wbr>File<wbr>Path</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="dbf.html#createempty" class="tsd-kind-icon">create<wbr>Empty</a></li>
 							</ul>
 						</section>
@@ -146,9 +154,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides <a href="opener.html">Opener</a>.<a href="opener.html#constructor">constructor</a></p>
+								<p>Overrides <a href="openersync.html">OpenerSync</a>.<a href="openersync.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L17">dbf/Dbf.ts:17</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L20">src/dbf/Dbf.ts:20</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -173,7 +181,17 @@
 					<div class="tsd-signature tsd-kind-icon">_fd<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L15">dbf/Dbf.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L17">src/dbf/Dbf.ts:17</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="_fieldeditcache" class="tsd-anchor"></a>
+					<h3>_field<wbr>Edit<wbr>Cache</h3>
+					<div class="tsd-signature tsd-kind-icon">_field<wbr>Edit<wbr>Cache<span class="tsd-signature-symbol">:</span> <a href="dbffieldeditcache.html" class="tsd-signature-type">DbfFieldEditCache</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L20">src/dbf/Dbf.ts:20</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -183,7 +201,7 @@
 					<div class="tsd-signature tsd-kind-icon">_flag<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L17">dbf/Dbf.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L19">src/dbf/Dbf.ts:19</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -193,7 +211,7 @@
 					<div class="tsd-signature tsd-kind-icon">_header<span class="tsd-signature-symbol">:</span> <a href="dbfheader.html" class="tsd-signature-type">DbfHeader</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L16">dbf/Dbf.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L18">src/dbf/Dbf.ts:18</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -203,7 +221,7 @@
 					<div class="tsd-signature tsd-kind-icon">file<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L14">dbf/Dbf.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L16">src/dbf/Dbf.ts:16</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -212,9 +230,9 @@
 					<h3>is<wbr>Opened</h3>
 					<div class="tsd-signature tsd-kind-icon">is<wbr>Opened<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="opener.html">Opener</a>.<a href="opener.html#isopened">isOpened</a></p>
+						<p>Inherited from <a href="openersync.html">OpenerSync</a>.<a href="openersync.html#isopened">isOpened</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/base/Openable.ts#L2">base/Openable.ts:2</a></li>
+							<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/base/OpenerSync.ts#L2">src/base/OpenerSync.ts:2</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -231,7 +249,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L264">dbf/Dbf.ts:264</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L377">src/dbf/Dbf.ts:377</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -248,7 +266,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L268">dbf/Dbf.ts:268</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L381">src/dbf/Dbf.ts:381</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="dbfheader.html" class="tsd-signature-type">DbfHeader</a></h4>
@@ -267,9 +285,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides <a href="opener.html">Opener</a>.<a href="opener.html#_close">_close</a></p>
+								<p>Overrides <a href="openersync.html">OpenerSync</a>.<a href="openersync.html#_close">_close</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L45">dbf/Dbf.ts:45</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L49">src/dbf/Dbf.ts:49</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -292,7 +310,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L276">dbf/Dbf.ts:276</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L389">src/dbf/Dbf.ts:389</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h4>
@@ -309,7 +327,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L211">dbf/Dbf.ts:211</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L215">src/dbf/Dbf.ts:215</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -334,7 +352,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L272">dbf/Dbf.ts:272</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L385">src/dbf/Dbf.ts:385</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -347,6 +365,55 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="_migratetotempdbf" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> _migrate<wbr>ToTemp<wbr>Dbf</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">_migrate<wbr>ToTemp<wbr>Dbf<span class="tsd-signature-symbol">(</span>newFields<span class="tsd-signature-symbol">: </span><a href="dbffield.html" class="tsd-signature-type">DbfField</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L303">src/dbf/Dbf.ts:303</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>newFields: <a href="dbffield.html" class="tsd-signature-type">DbfField</a><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="_newfields" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> _new<wbr>Fields</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">_new<wbr>Fields<span class="tsd-signature-symbol">(</span>fieldEditCache<span class="tsd-signature-symbol">: </span><a href="dbffieldeditcache.html" class="tsd-signature-type">DbfFieldEditCache</a>, sizeChangedFields<span class="tsd-signature-symbol">: </span><a href="dbffield.html" class="tsd-signature-type">DbfField</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="dbffield.html" class="tsd-signature-type">DbfField</a><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L344">src/dbf/Dbf.ts:344</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>fieldEditCache: <a href="dbffieldeditcache.html" class="tsd-signature-type">DbfFieldEditCache</a></h5>
+								</li>
+								<li>
+									<h5>sizeChangedFields: <a href="dbffield.html" class="tsd-signature-type">DbfField</a><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="dbffield.html" class="tsd-signature-type">DbfField</a><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 					<a name="_open" class="tsd-anchor"></a>
 					<h3>_open</h3>
@@ -356,9 +423,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides <a href="opener.html">Opener</a>.<a href="opener.html#_open">_open</a></p>
+								<p>Overrides <a href="openersync.html">OpenerSync</a>.<a href="openersync.html#_open">_open</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L28">dbf/Dbf.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L32">src/dbf/Dbf.ts:32</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -381,7 +448,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L50">dbf/Dbf.ts:50</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L54">src/dbf/Dbf.ts:54</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="dbfheader.html" class="tsd-signature-type">DbfHeader</a></h4>
@@ -397,9 +464,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="opener.html">Opener</a>.<a href="opener.html#close">close</a></p>
+								<p>Inherited from <a href="openersync.html">OpenerSync</a>.<a href="openersync.html#close">close</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/base/Openable.ts#L18">base/Openable.ts:18</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/base/OpenerSync.ts#L18">src/base/OpenerSync.ts:18</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -416,7 +483,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L33">dbf/Dbf.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L37">src/dbf/Dbf.ts:37</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -433,6 +500,23 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="flushfields" class="tsd-anchor"></a>
+					<h3>flush<wbr>Fields</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">flush<wbr>Fields<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L268">src/dbf/Dbf.ts:268</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="get" class="tsd-anchor"></a>
 					<h3>get</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -442,7 +526,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L61">dbf/Dbf.ts:61</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L65">src/dbf/Dbf.ts:65</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -479,7 +563,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L70">dbf/Dbf.ts:70</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L74">src/dbf/Dbf.ts:74</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -501,9 +585,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="opener.html">Opener</a>.<a href="opener.html#open">open</a></p>
+								<p>Inherited from <a href="openersync.html">OpenerSync</a>.<a href="openersync.html#open">open</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/base/Openable.ts#L8">base/Openable.ts:8</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/base/OpenerSync.ts#L8">src/base/OpenerSync.ts:8</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
@@ -520,7 +604,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L255">dbf/Dbf.ts:255</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L368">src/dbf/Dbf.ts:368</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -541,9 +625,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="opener.html">Opener</a>.<a href="opener.html#openwith">openWith</a></p>
+								<p>Inherited from <a href="openersync.html">OpenerSync</a>.<a href="openersync.html#openwith">openWith</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/base/Openable.ts#L27">base/Openable.ts:27</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/base/OpenerSync.ts#L27">src/base/OpenerSync.ts:27</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -580,7 +664,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L128">dbf/Dbf.ts:128</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L132">src/dbf/Dbf.ts:132</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -594,7 +678,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L129">dbf/Dbf.ts:129</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L133">src/dbf/Dbf.ts:133</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -608,7 +692,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L136">dbf/Dbf.ts:136</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L140">src/dbf/Dbf.ts:140</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -644,7 +728,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L165">dbf/Dbf.ts:165</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L169">src/dbf/Dbf.ts:169</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -671,6 +755,29 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="pushfield" class="tsd-anchor"></a>
+					<h3>push<wbr>Field</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">push<wbr>Field<span class="tsd-signature-symbol">(</span>field<span class="tsd-signature-symbol">: </span><a href="dbffield.html" class="tsd-signature-type">DbfField</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L256">src/dbf/Dbf.ts:256</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>field: <a href="dbffield.html" class="tsd-signature-type">DbfField</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="records" class="tsd-anchor"></a>
 					<h3>records</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -680,7 +787,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L80">dbf/Dbf.ts:80</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L84">src/dbf/Dbf.ts:84</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -696,16 +803,16 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="recoverat" class="tsd-anchor"></a>
-					<h3>recover<wbr>At</h3>
+					<a name="recover" class="tsd-anchor"></a>
+					<h3>recover</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">recover<wbr>At<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">recover<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L243">dbf/Dbf.ts:243</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L247">src/dbf/Dbf.ts:247</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -727,16 +834,16 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="removeat" class="tsd-anchor"></a>
-					<h3>remove<wbr>At</h3>
+					<a name="remove" class="tsd-anchor"></a>
+					<h3>remove</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">remove<wbr>At<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">remove<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L230">dbf/Dbf.ts:230</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L234">src/dbf/Dbf.ts:234</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -758,6 +865,29 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="removefield" class="tsd-anchor"></a>
+					<h3>remove<wbr>Field</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">remove<wbr>Field<span class="tsd-signature-symbol">(</span>fieldName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L260">src/dbf/Dbf.ts:260</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>fieldName: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="update" class="tsd-anchor"></a>
 					<h3>update</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -767,7 +897,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L191">dbf/Dbf.ts:191</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L195">src/dbf/Dbf.ts:195</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -804,7 +934,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L202">dbf/Dbf.ts:202</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L206">src/dbf/Dbf.ts:206</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -831,6 +961,55 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="updatefield" class="tsd-anchor"></a>
+					<h3>update<wbr>Field</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">update<wbr>Field<span class="tsd-signature-symbol">(</span>fieldName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, newField<span class="tsd-signature-symbol">: </span><a href="dbffield.html" class="tsd-signature-type">DbfField</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L264">src/dbf/Dbf.ts:264</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>fieldName: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>newField: <a href="dbffield.html" class="tsd-signature-type">DbfField</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="_tempfilepath" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> _temp<wbr>File<wbr>Path</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">_temp<wbr>File<wbr>Path<span class="tsd-signature-symbol">(</span>filePath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L329">src/dbf/Dbf.ts:329</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>filePath: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
 					<a name="createempty" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> create<wbr>Empty</h3>
@@ -841,7 +1020,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/dbf/Dbf.ts#L118">dbf/Dbf.ts:118</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/dbf/Dbf.ts#L122">src/dbf/Dbf.ts:122</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -893,6 +1072,9 @@
 								<a href="dbf.html#_fd" class="tsd-kind-icon">_fd</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="dbf.html#_fieldeditcache" class="tsd-kind-icon">_field<wbr>Edit<wbr>Cache</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="dbf.html#_flag" class="tsd-kind-icon">_flag</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
@@ -922,6 +1104,12 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="dbf.html#_getoffsetbyid" class="tsd-kind-icon">_get<wbr>Offset<wbr>ById</a>
 							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="dbf.html#_migratetotempdbf" class="tsd-kind-icon">_migrate<wbr>ToTemp<wbr>Dbf</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="dbf.html#_newfields" class="tsd-kind-icon">_new<wbr>Fields</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 								<a href="dbf.html#_open" class="tsd-kind-icon">_open</a>
 							</li>
@@ -933,6 +1121,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="dbf.html#fields" class="tsd-kind-icon">fields</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="dbf.html#flushfields" class="tsd-kind-icon">flush<wbr>Fields</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="dbf.html#get" class="tsd-kind-icon">get</a>
@@ -956,19 +1147,31 @@
 								<a href="dbf.html#pushall" class="tsd-kind-icon">push<wbr>All</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="dbf.html#pushfield" class="tsd-kind-icon">push<wbr>Field</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="dbf.html#records" class="tsd-kind-icon">records</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="dbf.html#recoverat" class="tsd-kind-icon">recover<wbr>At</a>
+								<a href="dbf.html#recover" class="tsd-kind-icon">recover</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="dbf.html#removeat" class="tsd-kind-icon">remove<wbr>At</a>
+								<a href="dbf.html#remove" class="tsd-kind-icon">remove</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="dbf.html#removefield" class="tsd-kind-icon">remove<wbr>Field</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="dbf.html#update" class="tsd-kind-icon">update</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="dbf.html#updateall" class="tsd-kind-icon">update<wbr>All</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="dbf.html#updatefield" class="tsd-kind-icon">update<wbr>Field</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="dbf.html#_tempfilepath" class="tsd-kind-icon">_temp<wbr>File<wbr>Path</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 								<a href="dbf.html#createempty" class="tsd-kind-icon">create<wbr>Empty</a>
@@ -981,6 +1184,9 @@
 						<a href="dbffield.html" class="tsd-kind-icon">Dbf<wbr>Field</a>
 					</li>
 					<li class=" tsd-kind-class">
+						<a href="dbffieldeditcache.html" class="tsd-kind-icon">Dbf<wbr>Field<wbr>Edit<wbr>Cache</a>
+					</li>
+					<li class=" tsd-kind-class">
 						<a href="dbfheader.html" class="tsd-kind-icon">Dbf<wbr>Header</a>
 					</li>
 					<li class=" tsd-kind-class">
@@ -991,9 +1197,6 @@
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="enumutils.html" class="tsd-kind-icon">Enum<wbr>Utils</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="filestream.html" class="tsd-kind-icon">File<wbr>Stream</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="filterutils.html" class="tsd-kind-icon">Filter<wbr>Utils</a>
@@ -1011,7 +1214,7 @@
 						<a href="multipointparser.html" class="tsd-kind-icon">Multi<wbr>Point<wbr>Parser</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="opener.html" class="tsd-kind-icon">Opener</a>
+						<a href="openersync.html" class="tsd-kind-icon">Opener<wbr>Sync</a>
 					</li>
 					<li class=" tsd-kind-class tsd-has-type-parameter">
 						<a href="optional.html" class="tsd-kind-icon">Optional</a>
@@ -1024,6 +1227,9 @@
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="polygonparser.html" class="tsd-kind-icon">Polygon<wbr>Parser</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="ringtopolygonconverter.html" class="tsd-kind-icon">Ring<wbr>ToPolygon<wbr>Converter</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="shapefile.html" class="tsd-kind-icon">Shapefile</a>
@@ -1060,9 +1266,6 @@
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="../interfaces/shxrecord.html" class="tsd-kind-icon">Shx<wbr>Record</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-is-not-exported">
-						<a href="../globals.html#cache_block_size" class="tsd-kind-icon">CACHE_<wbr>BLOCK_<wbr>SIZE</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-is-not-exported">
 						<a href="../globals.html#field_name_size" class="tsd-kind-icon">FIELD_<wbr>NAME_<wbr>SIZE</a>
