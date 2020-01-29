@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ShpWriter | ginkgoch-shapefile</title>
+	<title>ShpWriter | ginkgoch-shapefile - v2.4.0</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">ginkgoch-shapefile</a>
+					<a href="../index.html" class="title">ginkgoch-shapefile - v2.4.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -93,7 +93,7 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="shpwriter.html#buffer" class="tsd-kind-icon">buffer</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="shpwriter.html#offset" class="tsd-kind-icon">offset</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="shpwriter.html#position" class="tsd-kind-icon">position</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -147,7 +147,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter.__constructor</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:4</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:4</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -176,18 +176,18 @@
 					<aside class="tsd-sources">
 						<p>Inherited from BufferWriter.buffer</p>
 						<ul>
-							<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:3</li>
+							<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:3</li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
-					<a name="offset" class="tsd-anchor"></a>
-					<h3>offset</h3>
-					<div class="tsd-signature tsd-kind-icon">offset<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="position" class="tsd-anchor"></a>
+					<h3>position</h3>
+					<div class="tsd-signature tsd-kind-icon">position<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from BufferWriter.offset</p>
+						<p>Inherited from BufferWriter.position</p>
 						<ul>
-							<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:4</li>
+							<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:4</li>
 						</ul>
 					</aside>
 				</section>
@@ -205,7 +205,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter._checkOffsetInRange</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:35</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:40</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -229,7 +229,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter._checkPositive</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:34</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:39</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -256,7 +256,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter._writeXX</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:33</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:38</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -276,23 +276,31 @@
 					<a name="seek" class="tsd-anchor"></a>
 					<h3>seek</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">seek<span class="tsd-signature-symbol">(</span>offset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, fromBeginning<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">seek<span class="tsd-signature-symbol">(</span>offset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, origin<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"begin"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"current"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"end"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter.seek</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:10</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:15</li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>offset: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The offset to seek.</p>
+									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> fromBeginning: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> origin: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"begin"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"current"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"end"</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The seek origin. True means seeking from begining. False means seeking from current position. Default is True.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -310,7 +318,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter.writeBuffer</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:31</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:36</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -334,7 +342,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter.writeDouble</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:11</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:16</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -358,7 +366,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter.writeDoubleBE</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:13</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:18</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -382,7 +390,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter.writeDoubleLE</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:12</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:17</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -405,7 +413,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/shp/ShpWriter.ts#L5">shp/ShpWriter.ts:5</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/shp/ShpWriter.ts#L5">src/shp/ShpWriter.ts:5</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -429,7 +437,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter.writeFloat</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:14</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:19</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -453,7 +461,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter.writeFloatBE</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:16</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:21</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -477,7 +485,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter.writeFloatLE</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:15</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:20</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -501,7 +509,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter.writeInt16</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:26</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:31</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -525,7 +533,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter.writeInt16BE</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:28</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:33</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -549,7 +557,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter.writeInt16LE</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:27</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:32</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -573,7 +581,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter.writeInt32</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:17</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:22</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -597,7 +605,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter.writeInt32BE</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:19</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:24</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -621,7 +629,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter.writeInt32LE</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:18</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:23</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -645,7 +653,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter.writeInt8</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:30</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:35</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -668,7 +676,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/shp/ShpWriter.ts#L22">shp/ShpWriter.ts:22</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/shp/ShpWriter.ts#L22">src/shp/ShpWriter.ts:22</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -691,7 +699,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/shp/ShpWriter.ts#L12">shp/ShpWriter.ts:12</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/shp/ShpWriter.ts#L12">src/shp/ShpWriter.ts:12</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -714,7 +722,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/shp/ShpWriter.ts#L28">shp/ShpWriter.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/shp/ShpWriter.ts#L28">src/shp/ShpWriter.ts:28</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -746,7 +754,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter.writeString</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:32</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:37</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -773,7 +781,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter.writeUInt16</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:23</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:28</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -797,7 +805,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter.writeUInt16BE</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:25</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:30</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -821,7 +829,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter.writeUInt16LE</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:24</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:29</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -845,7 +853,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter.writeUInt32</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:20</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:25</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -869,7 +877,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter.writeUInt32BE</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:22</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:27</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -893,7 +901,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter.writeUInt32LE</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:21</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:26</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -917,7 +925,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BufferWriter.writeUInt8</p>
 								<ul>
-									<li>Defined in /Users/howardch/Downloads/ginkgoch-projects/node-shapefile-reader/node_modules/ginkgoch-buffer-io/built/writer.d.ts:29</li>
+									<li>Defined in node_modules/ginkgoch-buffer-io/dist/writer.d.ts:34</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -955,6 +963,9 @@
 						<a href="dbffield.html" class="tsd-kind-icon">Dbf<wbr>Field</a>
 					</li>
 					<li class=" tsd-kind-class">
+						<a href="dbffieldeditcache.html" class="tsd-kind-icon">Dbf<wbr>Field<wbr>Edit<wbr>Cache</a>
+					</li>
+					<li class=" tsd-kind-class">
 						<a href="dbfheader.html" class="tsd-kind-icon">Dbf<wbr>Header</a>
 					</li>
 					<li class=" tsd-kind-class">
@@ -965,9 +976,6 @@
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="enumutils.html" class="tsd-kind-icon">Enum<wbr>Utils</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="filestream.html" class="tsd-kind-icon">File<wbr>Stream</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="filterutils.html" class="tsd-kind-icon">Filter<wbr>Utils</a>
@@ -985,7 +993,7 @@
 						<a href="multipointparser.html" class="tsd-kind-icon">Multi<wbr>Point<wbr>Parser</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="opener.html" class="tsd-kind-icon">Opener</a>
+						<a href="openersync.html" class="tsd-kind-icon">Opener<wbr>Sync</a>
 					</li>
 					<li class=" tsd-kind-class tsd-has-type-parameter">
 						<a href="optional.html" class="tsd-kind-icon">Optional</a>
@@ -998,6 +1006,9 @@
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="polygonparser.html" class="tsd-kind-icon">Polygon<wbr>Parser</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="ringtopolygonconverter.html" class="tsd-kind-icon">Ring<wbr>ToPolygon<wbr>Converter</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="shapefile.html" class="tsd-kind-icon">Shapefile</a>
@@ -1029,7 +1040,7 @@
 								<a href="shpwriter.html#buffer" class="tsd-kind-icon">buffer</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
-								<a href="shpwriter.html#offset" class="tsd-kind-icon">offset</a>
+								<a href="shpwriter.html#position" class="tsd-kind-icon">position</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="shpwriter.html#_checkoffsetinrange" class="tsd-kind-icon">_check<wbr>Offset<wbr>InRange</a>
@@ -1139,9 +1150,6 @@
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="../interfaces/shxrecord.html" class="tsd-kind-icon">Shx<wbr>Record</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-is-not-exported">
-						<a href="../globals.html#cache_block_size" class="tsd-kind-icon">CACHE_<wbr>BLOCK_<wbr>SIZE</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-is-not-exported">
 						<a href="../globals.html#field_name_size" class="tsd-kind-icon">FIELD_<wbr>NAME_<wbr>SIZE</a>

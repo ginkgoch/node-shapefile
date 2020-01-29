@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>PolygonParser | ginkgoch-shapefile</title>
+	<title>PolygonParser | ginkgoch-shapefile - v2.4.0</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">ginkgoch-shapefile</a>
+					<a href="../index.html" class="title">ginkgoch-shapefile - v2.4.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -118,6 +118,8 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="polygonparser.html#readgeom" class="tsd-kind-icon">read<wbr>Geom</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="polygonparser.html#write" class="tsd-kind-icon">write</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="polygonparser.html#writegeom" class="tsd-kind-icon">write<wbr>Geom</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="polygonparser.html#_depth" class="tsd-kind-icon">_depth</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="polygonparser.html#_normalizecoordinates" class="tsd-kind-icon">_normalize<wbr>Coordinates</a></li>
 							</ul>
 						</section>
 					</div>
@@ -136,7 +138,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="geomparser.html">GeomParser</a>.<a href="geomparser.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/shp/parser/GeomParser.ts#L11">shp/parser/GeomParser.ts:11</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/shp/parser/GeomParser.ts#L11">src/shp/parser/GeomParser.ts:11</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="polygonparser.html" class="tsd-signature-type">PolygonParser</a></h4>
@@ -153,7 +155,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="geomparser.html">GeomParser</a>.<a href="geomparser.html#envelope">envelope</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/shp/parser/GeomParser.ts#L11">shp/parser/GeomParser.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/shp/parser/GeomParser.ts#L11">src/shp/parser/GeomParser.ts:11</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -164,7 +166,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="geomparser.html">GeomParser</a>.<a href="geomparser.html#reader">reader</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/shp/parser/GeomParser.ts#L10">shp/parser/GeomParser.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/shp/parser/GeomParser.ts#L10">src/shp/parser/GeomParser.ts:10</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -175,7 +177,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="geomparser.html">GeomParser</a>.<a href="geomparser.html#type">type</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/shp/parser/GeomParser.ts#L9">shp/parser/GeomParser.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/shp/parser/GeomParser.ts#L9">src/shp/parser/GeomParser.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -193,7 +195,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="geomparser.html">GeomParser</a>.<a href="geomparser.html#_reader">_reader</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/shp/parser/GeomParser.ts#L69">shp/parser/GeomParser.ts:69</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/shp/parser/GeomParser.ts#L69">src/shp/parser/GeomParser.ts:69</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="shpreader.html" class="tsd-signature-type">ShpReader</a></h4>
@@ -211,7 +213,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="geomparser.html">GeomParser</a>.<a href="geomparser.html#expectedtype">expectedType</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/shp/parser/PolygonParser.ts#L7">shp/parser/PolygonParser.ts:7</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/shp/parser/PolygonParser.ts#L7">src/shp/parser/PolygonParser.ts:7</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="../enums/shapefiletype.html" class="tsd-signature-type">ShapefileType</a></h4>
@@ -229,7 +231,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="geomparser.html">GeomParser</a>.<a href="geomparser.html#expectedtypename">expectedTypeName</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/shp/parser/PolygonParser.ts#L30">shp/parser/PolygonParser.ts:30</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/shp/parser/PolygonParser.ts#L36">src/shp/parser/PolygonParser.ts:36</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -250,7 +252,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="geomparser.html">GeomParser</a>.<a href="geomparser.html#_read">_read</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/shp/parser/GeomParser.ts#L31">shp/parser/GeomParser.ts:31</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/shp/parser/GeomParser.ts#L31">src/shp/parser/GeomParser.ts:31</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
@@ -288,7 +290,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="geomparser.html">GeomParser</a>.<a href="geomparser.html#_readgeom">_readGeom</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/shp/parser/PolygonParser.ts#L11">shp/parser/PolygonParser.ts:11</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/shp/parser/PolygonParser.ts#L11">src/shp/parser/PolygonParser.ts:11</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Geometry</span></h4>
@@ -306,7 +308,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="geomparser.html">GeomParser</a>.<a href="geomparser.html#_size">_size</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/shp/parser/PolygonParser.ts#L57">shp/parser/PolygonParser.ts:57</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/shp/parser/PolygonParser.ts#L64">src/shp/parser/PolygonParser.ts:64</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -330,7 +332,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="geomparser.html">GeomParser</a>.<a href="geomparser.html#_write">_write</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/shp/parser/PolygonParser.ts#L34">shp/parser/PolygonParser.ts:34</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/shp/parser/PolygonParser.ts#L40">src/shp/parser/PolygonParser.ts:40</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -357,7 +359,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="geomparser.html">GeomParser</a>.<a href="geomparser.html#getbuff">getBuff</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/shp/parser/GeomParser.ts#L36">shp/parser/GeomParser.ts:36</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/shp/parser/GeomParser.ts#L36">src/shp/parser/GeomParser.ts:36</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -381,7 +383,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="geomparser.html">GeomParser</a>.<a href="geomparser.html#getgeombuff">getGeomBuff</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/shp/parser/GeomParser.ts#L75">shp/parser/GeomParser.ts:75</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/shp/parser/GeomParser.ts#L75">src/shp/parser/GeomParser.ts:75</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -405,7 +407,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="geomparser.html">GeomParser</a>.<a href="geomparser.html#read">read</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/shp/parser/GeomParser.ts#L17">shp/parser/GeomParser.ts:17</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/shp/parser/GeomParser.ts#L17">src/shp/parser/GeomParser.ts:17</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -432,7 +434,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="geomparser.html">GeomParser</a>.<a href="geomparser.html#readgeom">readGeom</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/shp/parser/GeomParser.ts#L63">shp/parser/GeomParser.ts:63</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/shp/parser/GeomParser.ts#L63">src/shp/parser/GeomParser.ts:63</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Geometry</span></h4>
@@ -450,7 +452,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="geomparser.html">GeomParser</a>.<a href="geomparser.html#write">write</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/shp/parser/GeomParser.ts#L45">shp/parser/GeomParser.ts:45</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/shp/parser/GeomParser.ts#L45">src/shp/parser/GeomParser.ts:45</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -477,7 +479,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="geomparser.html">GeomParser</a>.<a href="geomparser.html#writegeom">writeGeom</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/ae846c8/src/shp/parser/GeomParser.ts#L85">shp/parser/GeomParser.ts:85</a></li>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/shp/parser/GeomParser.ts#L85">src/shp/parser/GeomParser.ts:85</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -490,6 +492,52 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="_depth" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> _depth</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">_depth<span class="tsd-signature-symbol">(</span>obj<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/shp/parser/PolygonParser.ts#L102">src/shp/parser/PolygonParser.ts:102</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>obj: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="_normalizecoordinates" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> _normalize<wbr>Coordinates</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">_normalize<wbr>Coordinates<span class="tsd-signature-symbol">(</span>coordinates<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/ginkgoch/node-shapefile/blob/3ac49d8/src/shp/parser/PolygonParser.ts#L91">src/shp/parser/PolygonParser.ts:91</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>coordinates: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -518,6 +566,9 @@
 						<a href="dbffield.html" class="tsd-kind-icon">Dbf<wbr>Field</a>
 					</li>
 					<li class=" tsd-kind-class">
+						<a href="dbffieldeditcache.html" class="tsd-kind-icon">Dbf<wbr>Field<wbr>Edit<wbr>Cache</a>
+					</li>
+					<li class=" tsd-kind-class">
 						<a href="dbfheader.html" class="tsd-kind-icon">Dbf<wbr>Header</a>
 					</li>
 					<li class=" tsd-kind-class">
@@ -528,9 +579,6 @@
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="enumutils.html" class="tsd-kind-icon">Enum<wbr>Utils</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="filestream.html" class="tsd-kind-icon">File<wbr>Stream</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="filterutils.html" class="tsd-kind-icon">Filter<wbr>Utils</a>
@@ -548,7 +596,7 @@
 						<a href="multipointparser.html" class="tsd-kind-icon">Multi<wbr>Point<wbr>Parser</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="opener.html" class="tsd-kind-icon">Opener</a>
+						<a href="openersync.html" class="tsd-kind-icon">Opener<wbr>Sync</a>
 					</li>
 					<li class=" tsd-kind-class tsd-has-type-parameter">
 						<a href="optional.html" class="tsd-kind-icon">Optional</a>
@@ -615,10 +663,19 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="polygonparser.html#writegeom" class="tsd-kind-icon">write<wbr>Geom</a>
 							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="polygonparser.html#_depth" class="tsd-kind-icon">_depth</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="polygonparser.html#_normalizecoordinates" class="tsd-kind-icon">_normalize<wbr>Coordinates</a>
+							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="ringtopolygonconverter.html" class="tsd-kind-icon">Ring<wbr>ToPolygon<wbr>Converter</a>
+					</li>
 					<li class=" tsd-kind-class">
 						<a href="shapefile.html" class="tsd-kind-icon">Shapefile</a>
 					</li>
@@ -654,9 +711,6 @@
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="../interfaces/shxrecord.html" class="tsd-kind-icon">Shx<wbr>Record</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-is-not-exported">
-						<a href="../globals.html#cache_block_size" class="tsd-kind-icon">CACHE_<wbr>BLOCK_<wbr>SIZE</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-is-not-exported">
 						<a href="../globals.html#field_name_size" class="tsd-kind-icon">FIELD_<wbr>NAME_<wbr>SIZE</a>
