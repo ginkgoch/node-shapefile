@@ -7,10 +7,10 @@ export default class ShpHeader {
     fileLength: number = 100;
     version: number = 1000;
     fileType: number = 5;
-    minx: number = Number.MAX_VALUE;
-    miny: number = Number.MAX_VALUE;
-    maxx: number = Number.MIN_VALUE;
-    maxy: number = Number.MIN_VALUE;
+    minx: number = Number.POSITIVE_INFINITY;
+    miny: number = Number.POSITIVE_INFINITY;
+    maxx: number = Number.NEGATIVE_INFINITY;
+    maxy: number = Number.NEGATIVE_INFINITY;
 
     get envelope(): IEnvelope { 
         return { 
